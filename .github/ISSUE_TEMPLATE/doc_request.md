@@ -4,7 +4,7 @@ about: Uma sugestão para o projeto
 title: "[docs] "
 labels: ["documentation"]
 assignees: ""
-projects: ["mijin"]
+projects: ["mija"]
 ---
 
 # **📚 Requisição de Documentação**

@@ -1,3 +1,3 @@
-# Mijin
+# Mija
 
-A **Mi**ni**J**ava Implementation in Kotl**in**
+A **Mi**ni**J**ava compiler implementation

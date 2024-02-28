@@ -4,7 +4,7 @@ about: "Reportar um bug para o projeto"
 title: "[bug] "
 labels: ["bug"]
 assignees:
-projects: ["mijin"]
+projects: ["mija"]
 ---
 
 # **🐞 Bug Report**

@@ -3,11 +3,11 @@ authors = ["Antonio Rego", "Pedro Belém", "Said Rodrigues"]
 language = "en"
 multilingual = false
 src = "src"
-title = "Mijin"
-description = "A MiniJava compiler implementation written in Kotlin for MIPS32 UArch"
+title = "Mija"
+description = "A MiniJava compiler implementation for MIPS32 UArch"
 
 [output.html]
-git-repository-url = "https://github.com/taldoflemis/mijin"
+git-repository-url = "https://github.com/taldoflemis/mija"
 additional-js = ["mermaid.min.js", "mermaid-init.js"]
 additional-css = ["theme/catppuccin.css"]
 default-theme = "latte"

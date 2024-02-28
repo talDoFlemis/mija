@@ -4,7 +4,7 @@ about: Uma sugestão para o projeto
 title: "[feat] "
 labels: ["feature"]
 assignees: ""
-projects: ["mijin"]
+projects: ["mija"]
 ---
 
 # **🚀 Nova Feature**
