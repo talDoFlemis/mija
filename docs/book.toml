@@ -1,0 +1,19 @@
+[book]
+authors = ["Antonio Rego", "Pedro Belém", "Said Rodrigues"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Mijin"
+description = "A MiniJava compiler implementation written in Kotlin for MIPS32 UArch"
+
+[output.html]
+git-repository-url = "https://github.com/taldoflemis/mijin"
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
+additional-css = ["theme/catppuccin.css"]
+default-theme = "latte"
+preferred-dark-theme = "mocha"
+
+[preprocessor]
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
