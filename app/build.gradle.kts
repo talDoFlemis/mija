@@ -38,6 +38,7 @@ sourceSets {
 
 idea {
     module {
+        sourceDirs.add(file(layout.buildDirectory.dir("generated/org/example/parser")))
         generatedSourceDirs.add(file(layout.buildDirectory.dir("generated/org/example/parser")))
     }
 }
