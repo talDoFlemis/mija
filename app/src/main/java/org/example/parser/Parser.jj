@@ -7,12 +7,12 @@ PARSER_BEGIN(Parser)
 package org.example.parser;
 
 public class Parser {
-    public Parser(){
-        super();
-    }
 }
 
 PARSER_END(Parser)
+
+/* Ignore Whitespace */
+SKIP : {" " |  "\n" | "\r" | "\r\n" | "\t" }
 
 /* Ignore Comments */
 SKIP: {
@@ -80,6 +80,13 @@ TOKEN: {
 | <BANG: "!">
 }
 
+void Program(): {}
+{
+    MainClass()
+    (ClassDeclaration())*
+    <EOF>
+}
+
 /* Entry Point */
 void MainClass(): {}
 {
@@ -90,6 +97,56 @@ void MainClass(): {}
     <RPAREN> <LSQUIRLY>
     Statement()
     <RSQUIRLY> <RSQUIRLY>
+}
+
+void Type(): {}
+{
+    <INT_ARRAY>
+|   <INT>
+|   <BOOLEAN>
+|   Identifier()
+}
+
+void VarDeclaration(): {}
+{
+    Type()
+    Identifier()
+    <SEMICOLON>
+}
+
+void MethodDeclaration(): {}
+{
+    <PUBLIC>
+    Type()
+    Identifier()
+    <LPAREN>
+    (
+        Type()
+        Identifier()
+        (
+            <COMMA>
+            Type()
+            Identifier()
+        )*
+    )?
+    <RPAREN>
+    <LSQUIRLY>
+    (LOOKAHEAD(2) VarDeclaration())*
+    (Statement())*
+    <RETURN>
+    Expression()
+    <SEMICOLON> <RSQUIRLY>
+}
+
+void ClassDeclaration(): {}
+{
+    <CLASS>
+    Identifier()
+    (<EXTENDS> Identifier() <RPAREN>)?
+    <LSQUIRLY>
+    (VarDeclaration())*
+    (MethodDeclaration())*
+    <RSQUIRLY>
 }
 
 void Identifier(): {}
@@ -109,11 +166,6 @@ void Expression(): {}
 |   <NEW>
 |   <BANG> Expression()
 |   <LPAREN> Expression() <RPAREN>
-}
-
-void Expression2(): {}
-{
-    |
 }
 
 void BlockStatement(): {}
