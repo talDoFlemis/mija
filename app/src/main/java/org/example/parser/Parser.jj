@@ -1,31 +1,227 @@
 options {
     DEBUG_PARSER = true;
-    STATIC = false;
 }
 
-PARSER_BEGIN(Example)
+PARSER_BEGIN(Parser)
 
 package org.example.parser;
 
-/** Simple brace matcher. */
-public class Example {
-    public Example(){
-        super();
-    }
+public class Parser {
 }
 
-PARSER_END(Example)
+PARSER_END(Parser)
 
-/** Root production. */
-void Input() :
-{}
-{
-  MatchedBraces() ("\n"|"\r")* <EOF>
+/* Ignore Whitespace */
+SKIP : {" " |  "\n" | "\r" | "\r\n" | "\t" }
+
+/* Ignore Comments */
+SKIP: {
+  <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
 }
 
-/** Brace matching production. */
-void MatchedBraces() :
-{}
+/* Punctuation */
+TOKEN: {
+  <LSQUIRLY: "{">
+| <RSQUIRLY: "}">
+| <LPAREN: "(" >
+| <RPAREN: ")" >
+| <LBRACKET: "[">
+| <RBRACKET: "]" >
+| <COMMA: ",">
+| <SEMICOLON: ";">
+| <DOT: ".">
+}
+
+/* Keywords */
+TOKEN: {
+  <CLASS: "class">
+| <PUBLIC: "public">
+| <STATIC: "static">
+| <VOID: "void">
+| <MAIN: "main">
+| <EXTENDS: "extends">
+| <RETURN: "return">
+| <STRING: "String">
+| <IF: "if">
+| <ELSE: "else">
+| <WHILE: "while">
+| <THIS: "this">
+| <NEW: "new">
+| <LENGTH: "length">
+| <SOUT: "System.out.println">
+}
+
+/* Types */
+TOKEN: {
+  <INT: "int">
+| <INT_ARRAY: "int[]">
+| <BOOLEAN: "boolean">
+}
+
+/* Literals */
+TOKEN: {
+  <TRUE_LITERAL: "true">
+| <FALSE_LITERAL: "false">
+| <#DIGIT: ["0"-"9"]>
+| <#LETTER: ["a"-"z", "A"-"Z"]>
+| <IDENTIFIER: <LETTER>(<LETTER> | <DIGIT> | "_")* >
+| <INTEGER_LITERAL:(<DIGIT>)+>
+}
+
+/* Operators */
+TOKEN: {
+  <EQ: "=">
+| <AND: "&&">
+| <LT: "<">
+| <PLUS: "+">
+| <MINUS: "-">
+| <STAR: "*">
+| <BANG: "!">
+}
+
+void Program(): {}
 {
-  "{" [ MatchedBraces() ] "}"
+    MainClass()
+    (ClassDeclaration())*
+    <EOF>
+}
+
+/* Entry Point */
+void MainClass(): {}
+{
+    <CLASS>
+    <IDENTIFIER>
+    <LSQUIRLY> <PUBLIC> <STATIC> <VOID> <MAIN> <LPAREN> <STRING> <LBRACKET> <RBRACKET>
+    <IDENTIFIER>
+    <RPAREN> <LSQUIRLY>
+    Statement()
+    <RSQUIRLY> <RSQUIRLY>
+}
+
+void Type(): {}
+{
+    <INT_ARRAY>
+|   <INT>
+|   <BOOLEAN>
+|   Identifier()
+}
+
+void VarDeclaration(): {}
+{
+    Type()
+    Identifier()
+    <SEMICOLON>
+}
+
+void MethodDeclaration(): {}
+{
+    <PUBLIC>
+    Type()
+    Identifier()
+    <LPAREN>
+    (
+        Type()
+        Identifier()
+        (
+            <COMMA>
+            Type()
+            Identifier()
+        )*
+    )?
+    <RPAREN>
+    <LSQUIRLY>
+    (LOOKAHEAD(2) VarDeclaration())*
+    (Statement())*
+    <RETURN>
+    Expression()
+    <SEMICOLON> <RSQUIRLY>
+}
+
+void ClassDeclaration(): {}
+{
+    <CLASS>
+    Identifier()
+    (<EXTENDS> Identifier() <RPAREN>)?
+    <LSQUIRLY>
+    (VarDeclaration())*
+    (MethodDeclaration())*
+    <RSQUIRLY>
+}
+
+void Identifier(): {}
+{
+    <IDENTIFIER>
+}
+
+void Expression(): {}
+{
+    <INTEGER_LITERAL>
+|   <TRUE_LITERAL>
+|   <FALSE_LITERAL>
+|   <THIS>
+|   <IDENTIFIER>
+|   LOOKAHEAD(4) <NEW> <IDENTIFIER> <LPAREN> <RPAREN>
+|   LOOKAHEAD(3) <NEW> <INT> <LBRACKET> Expression() <RBRACKET>
+|   <NEW>
+|   <BANG> Expression()
+|   <LPAREN> Expression() <RPAREN>
+}
+
+void BlockStatement(): {}
+{
+    <LSQUIRLY> (Statement())* <RSQUIRLY>
+}
+
+void IfStatement(): {}
+{
+    <IF> <LPAREN>
+    Expression()
+    <RPAREN>
+    Statement()
+    <ELSE>
+    Statement()
+}
+
+void WhileStatement(): {}
+{
+    <WHILE> <LPAREN>
+    Expression()
+    <RPAREN>
+    Statement()
+}
+
+void SoutStatement(): {}
+{
+    <SOUT> <LPAREN>
+    Expression()
+    <RPAREN> <SEMICOLON>
+}
+
+void AssignStatement(): {}
+{
+    Identifier()
+    <EQ>
+    Expression()
+    <SEMICOLON>
+}
+
+void ArrayAssignStatement(): {}
+{
+    Identifier()
+    <LBRACKET>
+    Expression()
+    <RBRACKET> <EQ>
+    Expression()
+    <SEMICOLON>
+}
+
+void Statement(): {}
+{
+    BlockStatement()
+|   IfStatement()
+|   WhileStatement()
+|   SoutStatement()
+|   LOOKAHEAD(2) AssignStatement()
+|   ArrayAssignStatement()
 }
