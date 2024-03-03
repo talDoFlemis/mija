@@ -14,6 +14,11 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     implementation(libs.guava)
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+
+    testCompileOnly("org.projectlombok:lombok:1.18.30")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 }
 
 tasks {
@@ -33,6 +38,7 @@ sourceSets {
 
 idea {
     module {
+        sourceDirs.add(file(layout.buildDirectory.dir("generated/org/example/parser")))
         generatedSourceDirs.add(file(layout.buildDirectory.dir("generated/org/example/parser")))
     }
 }
