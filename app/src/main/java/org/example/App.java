@@ -1,9 +1,8 @@
 package org.example;
 
 
-import org.example.parser.ParseException;
-import org.example.parser.Parser;
-import org.example.parser.Token;
+import org.example.javacc.ParseException;
+import org.example.javacc.Parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

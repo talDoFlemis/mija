@@ -2,6 +2,7 @@ plugins {
     application
     id("org.javacc.javacc") version "3.0.2"
     idea
+    id("io.freefair.lombok") version "8.6"
 }
 
 repositories {
@@ -14,32 +15,27 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     implementation(libs.guava)
-    compileOnly("org.projectlombok:lombok:1.18.30")
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
-
-    testCompileOnly("org.projectlombok:lombok:1.18.30")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 }
 
 tasks {
     compileJavacc {
-        inputDirectory = file("src/main/java/org/example/parser")
-        outputDirectory = file(layout.buildDirectory.dir("generated/org/example/parser"))
+        inputDirectory = file("src/main/javacc")
+        outputDirectory = file(layout.buildDirectory.dir("generated/javacc"))
     }
 }
 
 sourceSets {
     main {
         java {
-            srcDir(layout.buildDirectory.dir("generated/org/example/parser"))
+            srcDir(file(layout.buildDirectory.dir("generated/javacc")))
         }
     }
 }
 
 idea {
     module {
-        sourceDirs.add(file(layout.buildDirectory.dir("generated/org/example/parser")))
-        generatedSourceDirs.add(file(layout.buildDirectory.dir("generated/org/example/parser")))
+        sourceDirs.addAll(files(layout.buildDirectory.dir("generated/javacc")))
+        generatedSourceDirs.addAll(files(layout.buildDirectory.dir("generated/javacc")))
     }
 }
 

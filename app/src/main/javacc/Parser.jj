@@ -4,7 +4,7 @@ options {
 
 PARSER_BEGIN(Parser)
 
-package org.example.parser;
+package org.example.javacc;
 
 public class Parser {
 }
