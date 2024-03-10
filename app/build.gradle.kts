@@ -17,6 +17,10 @@ dependencies {
 
     implementation(libs.guava)
 
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.23.0"))
+    implementation("org.apache.logging.log4j:log4j-api")
+    runtimeOnly("org.apache.logging.log4j:log4j-core")
+
     antlr("org.antlr:antlr4:4.7.1")
 }
 
