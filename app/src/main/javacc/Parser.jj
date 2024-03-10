@@ -1,5 +1,4 @@
 options {
-    DEBUG_PARSER = true;
 }
 
 PARSER_BEGIN(Parser)
