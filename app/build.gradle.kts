@@ -3,6 +3,7 @@ plugins {
     id("org.javacc.javacc") version "3.0.2"
     idea
     id("io.freefair.lombok") version "8.6"
+    antlr
 }
 
 repositories {
@@ -15,6 +16,12 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     implementation(libs.guava)
+
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.23.0"))
+    implementation("org.apache.logging.log4j:log4j-api")
+    runtimeOnly("org.apache.logging.log4j:log4j-core")
+
+    antlr("org.antlr:antlr4:4.7.1")
 }
 
 tasks {
