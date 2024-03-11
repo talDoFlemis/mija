@@ -6,185 +6,111 @@ grammar MiniJava;
 package org.example.antlr;
 }
 
-goal
-    :   mainClassDeclaration
-        classDeclaration*
-        EOF
-    ;
+// Ignore Whitespace
+WS: [ \t\r\n]+ -> skip;
 
-mainClassDeclaration
-    :   'class' ID
-        mainClassBody
-    ;
+// Ignore Comments
+COMMENT: '/*' .*? '*/' -> skip;
 
-classDeclaration
-    :   'class' ID ('extends' type)?
-        classBody
-    ;
+// Ignore Single Line Comments
+LINE_COMMENT: '//' ~[\r\n]* -> skip;
 
-mainClassBody
-    :   '{' mainMethod '}'
-    ;
+// Tokens
+/* Punctuation */
+LSQUIRLY : '{';
+RSQUIRLY : '}';
+LPAREN : '(';
+RPAREN : ')';
+LBRACKET : '[';
+RBRACKET : ']';
+COMMA : ',';
+SEMICOLON : ';';
+DOT : '.';
 
-mainMethod
-    :   mainMethodDeclaration '{' statement '}'
-    ;
+/* Keywords */
+CLASS : 'class';
+PUBLIC : 'public';
+STATIC : 'static';
+VOID : 'void';
+MAIN : 'main';
+EXTENDS : 'extends';
+RETURN : 'return';
+STRING : 'String';
+IF : 'if';
+ELSE : 'else';
+WHILE : 'while';
+THIS : 'this';
+NEW : 'new';
+LENGTH : 'length';
+SOUT : 'System.out.println';
 
-mainMethodDeclaration
-    :   'public' 'static' 'void' 'main' '(' 'String' '[' ']' ID ')'
-    ;
+/* Types */
+INT : 'int';
+INT_ARRAY : 'int[]';
+BOOLEAN : 'boolean';
 
-classBody
-    :   '{' fieldDeclaration*
-            methodDeclaration* '}'
-    ;
+/* Literals */
+TRUE_LITERAL : 'true';
+FALSE_LITERAL : 'false';
+fragment DIGIT : [0-9];
+fragment LETTER : [a-zA-Z];
+IDENTIFIER : LETTER (LETTER | DIGIT | '_' )*;
+INTEGER_LITERAL : DIGIT+;
 
-fieldDeclaration
-    :   type ID ';'
-    ;
+/* Operators */
+EQ : '=';
+AND : '&&';
+LT : '<';
+PLUS : '+';
+MINUS : '-';
+STAR : '*';
+BANG : '!';
 
-varDeclaration
-    :   type ID ';'
-    ;
+program : mainClass (objectDecl)* EOF;
 
-methodDeclaration
-    :   ( 'public' type ID formalParameters
-        /* illegal method declarations */
-        |          type ID formalParameters
-            {notifyErrorListeners("method declaration without public");}
-        | 'public'      ID formalParameters
-            {notifyErrorListeners("method declaration without return type");}
-        | 'public' type    formalParameters
-            {notifyErrorListeners("method declaration without method name");}
-        | 'public' type ID
-            {notifyErrorListeners("method declaration without argument list");}
-        )
-        methodBody
-    ;
+mainClass : CLASS identifier LSQUIRLY PUBLIC STATIC VOID MAIN LPAREN STRING LBRACKET RBRACKET identifier RPAREN LSQUIRLY statement RSQUIRLY RSQUIRLY;
 
-methodBody
-    :   '{'
-            varDeclaration*
-            statement+
-        '}'
-    ;
+objectDecl : CLASS identifier (EXTENDS identifier)? LSQUIRLY (varDecl | methodDecl)* RSQUIRLY;
 
-formalParameters
-    :   '(' formalParameterList? ')'
-    ;
+integerArrayType : INT_ARRAY;
 
-formalParameterList
-    :   formalParameter (',' formalParameter)*
-    ;
+integerType : INT;
 
-formalParameter
-    :   type ID
-    ;
+booleanType : BOOLEAN;
 
-type
-    :   intArrayType
-    |   booleanType
-    |   intType
-    |   ID
-    ;
+type: integerType | booleanType | integerArrayType | identifier;
 
-statement
-    :   '{' statement* '}'
-    # nestedStatement
-    |   'if' '(' expression ')'
-            statement
-        'else'
-            statement
-    # ifElseStatement
-    |   'while' '(' expression ')'
-            statement
-    # whileStatement
-    |   'System.out.println' '(' expression ')' ';'
-    # printStatement
-    |   ID '=' expression ';'
-    # assignStatement
-    |   ID '[' expression ']' '=' expression ';'
-    # arrayAssignStatement
-    |   'return' expression ';'
-    # returnStatement
-    |   'recur' expression '?' methodArgumentList ':' expression ';'
-    # recurStatement
-    ;
+formal : type identifier;
+
+formalRest : COMMA formal;
+
+formalList : formal (formalRest)*;
+
+varDecl : type identifier SEMICOLON;
+
+methodDecl : PUBLIC type identifier LPAREN (formalList)? RPAREN LSQUIRLY (varDecl)* (statement)* RETURN expression SEMICOLON RSQUIRLY;
+
+identifier : IDENTIFIER;
 
 expression
-    :   expression '[' expression ']'
-    # arrayAccessExpression
-    |   expression '.' 'length'
-    # arrayLengthExpression
-    |   expression '.' ID methodArgumentList
-    # methodCallExpression
-    |   '-' expression
-    # negExpression
-    |   '!' expression
-    # notExpression
-    |   'new' 'int' '[' expression ']'
-    # arrayInstantiationExpression
-    |   'new' ID '(' ')'
-    # objectInstantiationExpression
-    |   expression '+'  expression
-    # addExpression
-    |   expression '-'  expression
-    # subExpression
-    |   expression '*'  expression
-    # mulExpression
-    |   expression '<'  expression
-    # ltExpression  
-    |   expression '&&' expression
-    # andExpression
-    |   INT
-    # intLitExpression
-    |   BOOL
-    # booleanLitExpression
-    |   ID
-    # identifierExpression
-    |   'this'
-    # thisExpression
-    |   '(' expression ')'
-    # parenExpression
-    ;
+    : expression ( AND | LT | PLUS | MINUS | STAR ) expression
+    | expression LBRACKET expression RBRACKET
+    | expression DOT LENGTH
+    | expression DOT identifier LPAREN (expression (COMMA expression)* )? RPAREN
+    | INTEGER_LITERAL
+    | TRUE_LITERAL
+    | FALSE_LITERAL
+    | identifier
+    | THIS
+    | NEW INT LBRACKET expression RBRACKET
+    | NEW identifier LPAREN RPAREN
+    | BANG expression
+    | LPAREN expression RPAREN;
 
-methodArgumentList
-    :   '(' (expression (',' expression)*)? ')'
-    ;
-
-intArrayType
-    :   'int' '[' ']'
-    ;
-
-booleanType
-    :   'boolean'
-    ;
-
-intType
-    :   'int'
-    ;
-
-INT
-    :   ('0' | [1-9][0-9]*) 
-    ;
-
-BOOL
-    :   'true'
-    |   'false'
-    ;
-
-ID
-    :   [a-zA-Z_][0-9a-zA-Z_]*
-    ;
-
-WS
-    :   [ \r\t\n]+ -> skip
-    ;
-
-COMMENT
-    : '/*' .*? '*/' -> skip
-    ;
-
-LINE_COMMENT
-    : '//' ~[\r\n]* -> skip
-    ;
+statement
+    : LSQUIRLY (statement)* RSQUIRLY
+    | IF LPAREN expression RPAREN statement ELSE statement
+    | WHILE LPAREN expression RPAREN statement
+    | identifier EQ expression SEMICOLON
+    | identifier LBRACKET expression RBRACKET EQ expression SEMICOLON
+    | SOUT LPAREN expression RPAREN SEMICOLON;
