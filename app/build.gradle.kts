@@ -4,6 +4,7 @@ plugins {
     idea
     id("io.freefair.lombok") version "8.6"
     antlr
+    kotlin("jvm")
 }
 
 repositories {
@@ -22,6 +23,7 @@ dependencies {
     runtimeOnly("org.apache.logging.log4j:log4j-core")
 
     antlr("org.antlr:antlr4:4.7.1")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks {
