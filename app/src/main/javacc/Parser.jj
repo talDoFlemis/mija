@@ -304,6 +304,7 @@ void PrimaryExpression(): {}
 |   TrueLiteral()
 |   FalseLiteral()
 |   ThisLiteral()
+|   Identifier()
 |   LOOKAHEAD(3) NewArray()
 |   NewObject()
 |   ParenthesizedExpression()
