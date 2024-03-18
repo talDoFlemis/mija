@@ -6,7 +6,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 
 class Programs {
-    interface Program {
+    interface IProgram {
         val path: String
 
         val inputStream: InputStream get() = javaClass.getResourceAsStream(path)!!
@@ -28,35 +28,35 @@ class Programs {
             }
     }
 
-    data object Factorial : Program {
+    data object Factorial : IProgram {
         override val path: String = "/programs/Factorial.java"
     }
 
-    data object BinarySearch : Program {
+    data object BinarySearch : IProgram {
         override val path: String = "/programs/BinarySearch.java"
     }
 
-    data object BubbleSort : Program {
+    data object BubbleSort : IProgram {
         override val path: String = "/programs/BubbleSort.java"
     }
 
-    data object LinearSearch : Program {
+    data object LinearSearch : IProgram {
         override val path: String = "/programs/LinearSearch.java"
     }
 
-    data object QuickSort : Program {
+    data object QuickSort : IProgram {
         override val path: String = "/programs/QuickSort.java"
     }
 
-    data object TreeVisitor : Program {
+    data object TreeVisitor : IProgram {
         override val path: String = "/programs/TreeVisitor.java"
     }
 
-    data object LinkedList : Program {
+    data object LinkedList : IProgram {
         override val path: String = "/programs/LinkedList.java"
     }
 
-    data object BinaryTree : Program {
+    data object BinaryTree : IProgram {
         override val path: String = "/programs/BinaryTree.java"
     }
 }
