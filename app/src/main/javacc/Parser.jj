@@ -1,0 +1,416 @@
+options {
+}
+
+PARSER_BEGIN(Parser)
+
+package org.example.javacc;
+
+public class Parser {
+}
+
+PARSER_END(Parser)
+
+/* Ignore Whitespace */
+SKIP : {" " |  "\n" | "\r" | "\r\n" | "\t" }
+
+/* Ignore Comments */
+SKIP: {
+  <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+}
+
+/* Punctuation */
+TOKEN: {
+  <LSQUIRLY: "{">
+| <RSQUIRLY: "}">
+| <LPAREN: "(" >
+| <RPAREN: ")" >
+| <LBRACKET: "[">
+| <RBRACKET: "]" >
+| <COMMA: ",">
+| <SEMICOLON: ";">
+| <DOT: ".">
+}
+
+/* Keywords */
+TOKEN: {
+  <CLASS: "class">
+| <PUBLIC: "public">
+| <STATIC: "static">
+| <VOID: "void">
+| <MAIN: "main">
+| <EXTENDS: "extends">
+| <RETURN: "return">
+| <STRING: "String">
+| <IF: "if">
+| <ELSE: "else">
+| <WHILE: "while">
+| <THIS: "this">
+| <NEW: "new">
+| <LENGTH: "length">
+| <SOUT: "System.out.println">
+}
+
+/* Types */
+TOKEN: {
+  <INT: "int">
+| <INT_ARRAY: "int[]">
+| <BOOLEAN: "boolean">
+}
+
+/* Literals */
+TOKEN: {
+  <TRUE_LITERAL: "true">
+| <FALSE_LITERAL: "false">
+| <#DIGIT: ["0"-"9"]>
+| <#LETTER: ["a"-"z", "A"-"Z"]>
+| <IDENTIFIER: <LETTER>(<LETTER> | <DIGIT> | "_")* >
+| <INTEGER_LITERAL:(<DIGIT>)+>
+}
+
+/* Operators */
+TOKEN: {
+  <EQ: "=">
+| <AND: "&&">
+| <LT: "<">
+| <PLUS: "+">
+| <MINUS: "-">
+| <STAR: "*">
+| <BANG: "!">
+}
+
+void Program(): {}
+{
+    MainClass()
+    (ObjectDecl())*
+    <EOF>
+}
+
+/* Entry Point */
+void MainClass(): {}
+{
+    <CLASS>
+    Identifier()
+    <LSQUIRLY> <PUBLIC> <STATIC> <VOID> <MAIN> <LPAREN> <STRING> <LBRACKET> <RBRACKET>
+    Identifier()
+    <RPAREN> <LSQUIRLY>
+    Statement()
+    <RSQUIRLY> <RSQUIRLY>
+}
+
+void ObjectDecl(): {}
+{
+    LOOKAHEAD(3) ClassDecl()
+|   ClassExtendsDecl()
+}
+
+void ClassDecl(): {}
+{
+    <CLASS>
+    Identifier()
+    <LSQUIRLY>
+    (VarDecl())*
+    (MethodDecl())*
+    <RSQUIRLY>
+}
+
+void ClassExtendsDecl(): {}
+{
+    <CLASS>
+    Identifier()
+    <EXTENDS>
+    Identifier()
+    <LSQUIRLY>
+    (VarDecl())*
+    (MethodDecl())*
+    <RSQUIRLY>
+}
+
+void IntegerArrayType(): {}
+{
+    <INT_ARRAY>
+}
+
+void IntegerType(): {}
+{
+    <INT>
+}
+
+void BooleanType(): {}
+{
+    <BOOLEAN>
+}
+
+void Type(): {}
+{
+    IntegerArrayType()
+|   IntegerType()
+|   BooleanType()
+|   Identifier()
+}
+
+void Formal(): {}
+{
+    Type()
+    Identifier()
+}
+
+void FormalRest(): {}
+{
+    <COMMA>
+    Formal()
+}
+
+void FormalList(): {}
+{
+    Formal()
+    (
+        FormalRest()
+    )*
+}
+
+void VarDecl(): {}
+{
+    Type()
+    Identifier()
+    <SEMICOLON>
+}
+
+void MethodDecl(): {}
+{
+    <PUBLIC>
+    Type()
+    Identifier()
+    <LPAREN>
+    (
+        FormalList()
+    )?
+    <RPAREN>
+    <LSQUIRLY>
+    (LOOKAHEAD(2) VarDecl())*
+    (Statement())*
+    <RETURN>
+    Expression()
+    <SEMICOLON> <RSQUIRLY>
+}
+
+void Identifier(): {}
+{
+    <IDENTIFIER>
+}
+
+void Expression(): {}
+{
+    LOOKAHEAD(Clause() <AND>) AndExpression()
+  | LOOKAHEAD(PrimaryExpression() <LT>) LTExpression()
+  | LOOKAHEAD(PrimaryExpression() <PLUS>) PlusExpression()
+  | LOOKAHEAD(PrimaryExpression() <MINUS>) MinusExpression()
+  | LOOKAHEAD(PrimaryExpression() <STAR>) StarExpression()
+  | LOOKAHEAD(PrimaryExpression() <LBRACKET>) Lookup()
+  | LOOKAHEAD(PrimaryExpression() <DOT> <LENGTH>) LengthMethod()
+  | LOOKAHEAD(PrimaryExpression() <DOT> Identifier() <LPAREN>) CallExpression()
+  | Clause()
+}
+
+void ExpressionRest(): {}
+{
+    <COMMA>
+    Expression()
+}
+
+void ExpressionList(): {}
+{
+    Expression()
+    (
+        ExpressionRest()
+    )*
+}
+void AndExpression() :
+{}
+{
+  Clause()
+  <AND>
+  Clause()
+}
+
+void LTExpression() :
+{}
+{
+  PrimaryExpression()
+  <LT>
+  PrimaryExpression()
+}
+
+void PlusExpression() :
+{}
+{
+  PrimaryExpression()
+  <PLUS>
+  PrimaryExpression()
+}
+
+void MinusExpression() :
+{}
+{
+  PrimaryExpression()
+  <MINUS>
+  PrimaryExpression()
+}
+
+void StarExpression() :
+{}
+{
+  PrimaryExpression()
+  <STAR>
+  PrimaryExpression()
+}
+
+void Lookup() :
+{}
+{
+  PrimaryExpression()
+  <LBRACKET>
+  PrimaryExpression()
+  <RBRACKET>
+}
+
+void LengthMethod() :
+{}
+{
+  PrimaryExpression()
+  <DOT> <LENGTH>
+}
+
+void CallExpression() :
+{}
+{
+  PrimaryExpression()
+  <DOT>
+  Identifier()
+  <LPAREN>
+  (ExpressionList())?
+  <RPAREN>
+}
+
+void Clause(): {}
+{
+    NotExpression()
+  | PrimaryExpression()
+}
+
+void PrimaryExpression(): {}
+{
+    IntegerLiteral()
+|   TrueLiteral()
+|   FalseLiteral()
+|   ThisLiteral()
+|   Identifier()
+|   LOOKAHEAD(3) NewArray()
+|   NewObject()
+|   ParenthesizedExpression()
+}
+
+void IntegerLiteral(): {}
+{
+    <INTEGER_LITERAL>
+}
+
+void TrueLiteral(): {}
+{
+    <TRUE_LITERAL>
+}
+
+void FalseLiteral(): {}
+{
+    <FALSE_LITERAL>
+}
+
+void ThisLiteral(): {}
+{
+    <THIS>
+}
+
+void NewObject(): {}
+{
+    <NEW>
+    Identifier()
+    <LPAREN> <RPAREN>
+}
+
+void NewArray(): {}
+{
+    <NEW> <INT> <LBRACKET>
+    Expression()
+    <RBRACKET>
+}
+
+void NotExpression(): {}
+{
+    <BANG>
+    Expression()
+}
+
+void ParenthesizedExpression(): {}
+{
+    <LPAREN>
+    Expression()
+    <RPAREN>
+}
+
+void BlockStatement(): {}
+{
+    <LSQUIRLY> (Statement())* <RSQUIRLY>
+}
+
+void IfStatement(): {}
+{
+    <IF> <LPAREN>
+    Expression()
+    <RPAREN>
+    Statement()
+    <ELSE>
+    Statement()
+}
+
+void WhileStatement(): {}
+{
+    <WHILE> <LPAREN>
+    Expression()
+    <RPAREN>
+    Statement()
+}
+
+void SoutStatement(): {}
+{
+    <SOUT> <LPAREN>
+    Expression()
+    <RPAREN> <SEMICOLON>
+}
+
+void AssignStatement(): {}
+{
+    Identifier()
+    <EQ>
+    Expression()
+    <SEMICOLON>
+}
+
+void ArrayAssignStatement(): {}
+{
+    Identifier()
+    <LBRACKET>
+    Expression()
+    <RBRACKET> <EQ>
+    Expression()
+    <SEMICOLON>
+}
+
+void Statement(): {}
+{
+    BlockStatement()
+|   IfStatement()
+|   WhileStatement()
+|   SoutStatement()
+|   LOOKAHEAD(2) AssignStatement()
+|   LOOKAHEAD(2) ArrayAssignStatement()
+}
