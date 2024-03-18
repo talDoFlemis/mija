@@ -4,7 +4,7 @@ plugins {
     idea
     id("io.freefair.lombok") version "8.6"
     antlr
-    kotlin("jvm") version "1.9.21"
+    kotlin("jvm") version "1.9.23"
 }
 
 repositories {
@@ -32,6 +32,11 @@ tasks {
         inputDirectory = file("src/main/javacc")
         outputDirectory = file(layout.buildDirectory.dir("generated/javacc"))
     }
+}
+
+sourceSets.configureEach {
+    val generateGrammarSource = tasks.named(getTaskName("generate", "GrammarSource"))
+    java.srcDir(generateGrammarSource.map { files() })
 }
 
 sourceSets {
