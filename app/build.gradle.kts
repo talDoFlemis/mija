@@ -4,6 +4,7 @@ plugins {
     idea
     id("io.freefair.lombok") version "8.6"
     antlr
+    kotlin("jvm") version "1.9.23"
 }
 
 repositories {
@@ -22,6 +23,8 @@ dependencies {
     runtimeOnly("org.apache.logging.log4j:log4j-core")
 
     antlr("org.antlr:antlr4:4.7.1")
+    implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1-Beta")
 }
 
 tasks {
@@ -29,6 +32,11 @@ tasks {
         inputDirectory = file("src/main/javacc")
         outputDirectory = file(layout.buildDirectory.dir("generated/javacc"))
     }
+}
+
+sourceSets.configureEach {
+    val generateGrammarSource = tasks.named(getTaskName("generate", "GrammarSource"))
+    java.srcDir(generateGrammarSource.map { files() })
 }
 
 sourceSets {
