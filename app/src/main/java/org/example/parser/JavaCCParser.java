@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.example.ast.Program;
 import org.example.javacc.Parser;
 
 import static org.example.javacc.Parser.*;
@@ -14,7 +15,7 @@ import static org.example.javacc.Parser.*;
 public class JavaCCParser implements ParserStrategy {
     private final Parser parser = new Parser(InputStream.nullInputStream());
 
-    public Optional<Void> getProgram(InputStream stream) {
+    public Optional<Program> getProgram(InputStream stream) {
         return Optional.empty();
     }
 

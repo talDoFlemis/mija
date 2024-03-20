@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.example.antlr.MiniJavaLexer;
 import org.example.antlr.MiniJavaParser;
+import org.example.ast.Program;
 
 import java.io.InputStream;
 import java.util.Optional;
@@ -14,7 +15,7 @@ import java.util.Optional;
 @Log4j2
 @NoArgsConstructor
 public class AntlrParser implements ParserStrategy {
-    public Optional<Void> getProgram(InputStream stream) {
+    public Optional<Program> getProgram(InputStream stream) {
         return Optional.empty();
     }
 
