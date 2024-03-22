@@ -8,7 +8,6 @@ import lombok.extern.log4j.Log4j2;
 import org.example.ast.Program;
 import org.example.javacc.Parser;
 
-import static org.example.javacc.Parser.*;
 
 @NoArgsConstructor
 @Log4j2
@@ -24,8 +23,8 @@ public class JavaCCParser implements ParserStrategy {
 
         boolean isOk = true;
         try {
-            ReInit(stream);
-            Program();
+            parser.ReInit(stream);
+            parser.Program();
         } catch (Exception e) {
             log.error("Syntax error", e);
             isOk = false;
