@@ -6,6 +6,7 @@ options {
 PARSER_BEGIN(Parser)
 
 package org.example.javacc;
+import org.example.ast.*;
 
 public class Parser {
 }
@@ -128,27 +129,16 @@ void ClassExtendsDecl(): {}
     <RSQUIRLY>
 }
 
-void IntegerArrayType(): {}
+Type Type(): {}
 {
     <INT_ARRAY>
-}
-
-void IntegerType(): {}
-{
-    <INT>
-}
-
-void BooleanType(): {}
-{
-    <BOOLEAN>
-}
-
-void Type(): {}
-{
-    IntegerArrayType()
-|   IntegerType()
-|   BooleanType()
-|   Identifier()
+    {return new IntArrayType();}
+|   <INT>
+    {return new IntegerType();}
+|   <BOOLEAN>
+    {return new BooleanType();}
+|   <IDENTIFIER>
+    {return new IdentifierType(token.image);}
 }
 
 void Formal(): {}

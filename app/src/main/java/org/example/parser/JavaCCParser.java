@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.ast.Program;
 import org.example.javacc.Parser;
+import org.example.ast.Type;
 
 
 @NoArgsConstructor
@@ -30,5 +31,10 @@ public class JavaCCParser implements ParserStrategy {
             isOk = false;
         }
         return isOk;
+    }
+
+    public Type getType(InputStream stream) throws org.example.javacc.ParseException {
+        parser.ReInit(stream);
+        return parser.Type();
     }
 }
