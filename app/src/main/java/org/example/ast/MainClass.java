@@ -13,7 +13,7 @@ import org.example.visitor.TypeVisitor;
 @AllArgsConstructor
 public class MainClass extends Node {
     private Identifier className;
-    private Identifier mainMethodName;
+    private Identifier argsName;
     private StatementList statements;
 
     @Override

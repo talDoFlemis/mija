@@ -7,14 +7,15 @@ import lombok.EqualsAndHashCode;
 import org.example.visitor.ASTVisitor;
 import org.example.visitor.TypeVisitor;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
 @AllArgsConstructor
 public class Call extends Expression {
-    private Expression expression;
-    private Identifier identifier;
-    private ExpressionList expressionList;
+    private Expression owner;
+    private Identifier method;
+    @Builder.Default
+    private ExpressionList expressionList = new ExpressionList();
 
 
     @Override

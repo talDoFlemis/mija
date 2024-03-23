@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import org.example.visitor.ASTVisitor;
 import org.example.visitor.TypeVisitor;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Data
 @AllArgsConstructor
 @Builder

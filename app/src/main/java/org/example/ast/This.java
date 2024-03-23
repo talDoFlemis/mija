@@ -1,8 +1,10 @@
 package org.example.ast;
 
+import lombok.EqualsAndHashCode;
 import org.example.visitor.ASTVisitor;
 import org.example.visitor.TypeVisitor;
 
+@EqualsAndHashCode(callSuper = false)
 public class This extends Expression {
     @Override
     public void accept(ASTVisitor v) {

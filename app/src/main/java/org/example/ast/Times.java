@@ -7,13 +7,13 @@ import lombok.EqualsAndHashCode;
 import org.example.visitor.ASTVisitor;
 import org.example.visitor.TypeVisitor;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
 @AllArgsConstructor
 public class Times extends Expression {
-    private Expression lhs;
-    private Expression rhs;
+    private Expression lhe;
+    private Expression rhe;
 
     @Override
     public void accept(ASTVisitor v) {
