@@ -141,24 +141,36 @@ Type Type(): {}
     {return new IdentifierType(token.image);}
 }
 
-void Formal(): {}
+Formal Formal(): {
+    Formal.FormalBuilder builder = Formal.builder();
+    Type type;
+}
 {
-    Type()
-    Identifier()
+    type = Type()
+    {builder.type(type);}
+    <IDENTIFIER>
+    {builder.name(token.image);}
+    {return builder.build();}
 }
 
-void FormalRest(): {}
+Formal FormalRest(): {}
 {
     <COMMA>
-    Formal()
+    {return Formal();}
 }
 
-void FormalList(): {}
+FormalList FormalList(): {
+    Formal form;
+    FormalList list = new FormalList();
+}
 {
-    Formal()
+    form = Formal()
+    {list.addFormal(form);}
     (
-        FormalRest()
+        form = FormalRest()
+        {list.addFormal(form);}
     )*
+    {return list;}
 }
 
 void VarDecl(): {}
