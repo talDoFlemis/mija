@@ -186,15 +186,15 @@ VarDecl VarDecl(): {
     {return builder.build();}
 }
 
-void MethodDecl(): {}
+void MethodDecl(): {
+    FormalList formals;
+}
 {
     <PUBLIC>
     Type()
     Identifier()
     <LPAREN>
-    (
-        FormalList()
-    )?
+    (formals = FormalList())?
     <RPAREN>
     <LSQUIRLY>
     (LOOKAHEAD(2) VarDecl())*
@@ -204,167 +204,258 @@ void MethodDecl(): {}
     <SEMICOLON> <RSQUIRLY>
 }
 
-void Identifier(): {}
+Identifier Identifier(): {}
 {
     <IDENTIFIER>
+    {return new Identifier(token.image);}
 }
 
-void Expression(): {}
+Expression Expression(): {
+    Expression expr;
+}
 {
-    LOOKAHEAD(Clause() <AND>) AndExpression()
-  | LOOKAHEAD(PrimaryExpression() <LT>) LTExpression()
-  | LOOKAHEAD(PrimaryExpression() <PLUS>) PlusExpression()
-  | LOOKAHEAD(PrimaryExpression() <MINUS>) MinusExpression()
-  | LOOKAHEAD(PrimaryExpression() <STAR>) StarExpression()
-  | LOOKAHEAD(PrimaryExpression() <LBRACKET>) Lookup()
-  | LOOKAHEAD(PrimaryExpression() <DOT> <LENGTH>) LengthMethod()
-  | LOOKAHEAD(PrimaryExpression() <DOT> Identifier() <LPAREN>) CallExpression()
-  | Clause()
+    LOOKAHEAD(Clause() <AND>) expr = AndExpression()
+    {return expr;}
+  | LOOKAHEAD(PrimaryExpression() <LT>) expr = LTExpression()
+    {return expr;}
+  | LOOKAHEAD(PrimaryExpression() <PLUS>) expr = PlusExpression()
+    {return expr;}
+  | LOOKAHEAD(PrimaryExpression() <MINUS>) expr = MinusExpression()
+    {return expr;}
+  | LOOKAHEAD(PrimaryExpression() <STAR>) expr = StarExpression()
+    {return expr;}
+  | LOOKAHEAD(PrimaryExpression() <LBRACKET>) expr = Lookup()
+    {return expr;}
+  | LOOKAHEAD(PrimaryExpression() <DOT> <LENGTH>) expr = LengthMethod()
+    {return expr;}
+  | LOOKAHEAD(PrimaryExpression() <DOT> Identifier() <LPAREN>) expr = CallExpression()
+    {return expr;}
+  | expr = Clause()
+    {return expr;}
 }
 
-void ExpressionRest(): {}
+Expression ExpressionRest(): {}
 {
     <COMMA>
-    Expression()
+    {return Expression();}
 }
 
-void ExpressionList(): {}
+ExpressionList ExpressionList(): {
+    Expression expr;
+    ExpressionList list = new ExpressionList();
+}
 {
-    Expression()
+    expr = Expression()
+    {list.addExpression(expr);}
     (
-        ExpressionRest()
+        expr = ExpressionRest()
+        {list.addExpression(expr);}
     )*
+    {return list;}
 }
-void AndExpression() :
-{}
+
+And AndExpression() :
 {
-  Clause()
+    And.AndBuilder builder = And.builder();
+    Expression lhe;
+    Expression rhe;
+}
+{
+    lhe = Clause()
+  {builder.lhe(lhe);}
   <AND>
-  Clause()
+    rhe = Clause()
+  {builder.rhe(rhe);}
+  {return builder.build();}
 }
 
-void LTExpression() :
-{}
+LessThan LTExpression() :
 {
-  PrimaryExpression()
+    LessThan.LessThanBuilder builder = LessThan.builder();
+}
+{
+  {builder.lhe(PrimaryExpression());}
   <LT>
-  PrimaryExpression()
+  {builder.rhe(PrimaryExpression());}
+  {return builder.build();}
 }
 
-void PlusExpression() :
-{}
+Plus PlusExpression() :
 {
-  PrimaryExpression()
+    Plus.PlusBuilder builder = Plus.builder();
+}
+{
+  {builder.lhe(PrimaryExpression());}
   <PLUS>
-  PrimaryExpression()
+  {builder.rhe(PrimaryExpression());}
+  {return builder.build();}
 }
 
-void MinusExpression() :
-{}
+Minus MinusExpression() :
 {
-  PrimaryExpression()
+    Minus.MinusBuilder builder = Minus.builder();
+}
+{
+  {builder.lhe(PrimaryExpression());}
   <MINUS>
-  PrimaryExpression()
+  {builder.rhe(PrimaryExpression());}
+  {return builder.build();}
 }
 
-void StarExpression() :
-{}
+Times StarExpression() :
 {
-  PrimaryExpression()
+    Times.TimesBuilder builder = Times.builder();
+}
+{
+  {builder.lhe(PrimaryExpression());}
   <STAR>
-  PrimaryExpression()
+  {builder.rhe(PrimaryExpression());}
+  {return builder.build();}
 }
 
-void Lookup() :
-{}
+ArrayLookup Lookup() :
 {
-  PrimaryExpression()
+    ArrayLookup.ArrayLookupBuilder builder = ArrayLookup.builder();
+}
+{
+  {builder.array(PrimaryExpression());}
   <LBRACKET>
-  PrimaryExpression()
+  {builder.idx(Expression());}
   <RBRACKET>
+  {return builder.build();}
 }
 
-void LengthMethod() :
-{}
+ArrayLength LengthMethod() :
 {
-  PrimaryExpression()
+    ArrayLength.ArrayLengthBuilder builder = ArrayLength.builder();
+    Expression expr;
+}
+{
+    expr = PrimaryExpression()
+  {builder.array(expr);}
   <DOT> <LENGTH>
+  {return builder.build();}
 }
 
-void CallExpression() :
-{}
+Call CallExpression() :
 {
-  PrimaryExpression()
+    Call.CallBuilder builder = Call.builder();
+    ExpressionList list;
+    Expression owner;
+    Identifier method;
+}
+{
+    owner = PrimaryExpression()
+  {builder.owner(owner);}
   <DOT>
-  Identifier()
+  method = Identifier()
+  {builder.method(method);}
   <LPAREN>
-  (ExpressionList())?
+  (
+     list = ExpressionList()
+     {builder.expressionList(list);}
+  )?
   <RPAREN>
+  {return builder.build();}
 }
 
-void Clause(): {}
+Expression Clause(): {
+    Expression expr;
+}
 {
-    NotExpression()
-  | PrimaryExpression()
+    expr = NotExpression()
+    {return expr;}
+  | expr = PrimaryExpression()
+    {return expr;}
 }
 
-void PrimaryExpression(): {}
+Expression PrimaryExpression(): {
+    Expression expr;
+}
 {
-    IntegerLiteral()
-|   TrueLiteral()
-|   FalseLiteral()
-|   ThisLiteral()
-|   Identifier()
-|   LOOKAHEAD(3) NewArray()
-|   NewObject()
-|   ParenthesizedExpression()
+    expr = IntegerLiteral()
+    {return expr;}
+|   expr = TrueLiteral()
+    {return expr;}
+|   expr = FalseLiteral()
+    {return expr;}
+|   expr = ThisLiteral()
+    {return expr;}
+|   expr = Identifier()
+    {return expr;}
+|   LOOKAHEAD(3) expr = NewArray()
+    {return expr;}
+|   expr = NewObject()
+    {return expr;}
+|   expr = ParenthesizedExpression()
+    {return expr;}
 }
 
-void IntegerLiteral(): {}
+IntegerLiteral IntegerLiteral(): {}
 {
     <INTEGER_LITERAL>
+    {return new IntegerLiteral(Integer.parseInt(token.image));}
 }
 
-void TrueLiteral(): {}
+True TrueLiteral(): {}
 {
     <TRUE_LITERAL>
+    {return new True();}
 }
 
-void FalseLiteral(): {}
+False FalseLiteral(): {}
 {
     <FALSE_LITERAL>
+    {return new False();}
 }
 
-void ThisLiteral(): {}
+This ThisLiteral(): {}
 {
     <THIS>
+    {return new This();}
 }
 
-void NewObject(): {}
+NewObject NewObject(): {
+    NewObject.NewObjectBuilder builder = NewObject.builder();
+    Identifier id;
+}
 {
     <NEW>
-    Identifier()
+    id = Identifier()
+    {builder.identifier(id);}
     <LPAREN> <RPAREN>
+    {return builder.build();}
 }
 
-void NewArray(): {}
+Expression NewArray(): {
+   NewArray.NewArrayBuilder builder = NewArray.builder();
+   Expression size;
+}
 {
     <NEW> <INT> <LBRACKET>
-    Expression()
+    size = Expression()
+    {builder.size(size);}
     <RBRACKET>
+    {return builder.build();}
 }
 
-void NotExpression(): {}
+Expression NotExpression(): {
+    Expression expr;
+}
 {
     <BANG>
-    Expression()
+    expr = Expression()
+    {return new Not(expr);}
 }
 
-void ParenthesizedExpression(): {}
+Expression ParenthesizedExpression(): {
+    Expression expr;
+}
 {
     <LPAREN>
-    Expression()
+    expr = Expression()
     <RPAREN>
+    {return expr;}
 }
 
 void BlockStatement(): {}

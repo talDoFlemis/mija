@@ -52,4 +52,8 @@ public class JavaCCParser implements ParserStrategy {
         return parser.VarDecl();
     }
 
+    public Expression getExpression(InputStream stream) throws org.example.javacc.ParseException {
+        parser.ReInit(stream);
+        return parser.Expression();
+    }
 }

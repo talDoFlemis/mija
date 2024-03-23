@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -88,6 +89,45 @@ class JavaCCParserTest {
         // ASSERT
         assertEquals(new VarDecl(new IntArrayType(), "x"), varDecl);
     }
+
+    static Stream<Arguments> shouldParseAnExpression(){
+        return Stream.of(
+                Arguments.of("5", new IntegerLiteral(5)),
+                Arguments.of("true", new True()),
+                Arguments.of("false", new False()),
+                Arguments.of("x", new Identifier("x")),
+                Arguments.of("x[5]", new ArrayLookup(new Identifier("x"), new IntegerLiteral(5))),
+                Arguments.of("x.length", new ArrayLength(new Identifier("x"))),
+                Arguments.of("!x", new Not(new Identifier("x"))),
+                Arguments.of("x + 5", new Plus(new Identifier("x"), new IntegerLiteral(5))),
+                Arguments.of("x - 5", new Minus(new Identifier("x"), new IntegerLiteral(5))),
+                Arguments.of("x * 5", new Times(new Identifier("x"), new IntegerLiteral(5))),
+                Arguments.of("x < 5", new LessThan(new Identifier("x"), new IntegerLiteral(5))),
+                Arguments.of("(x) && y", new And(new Identifier("x"), new Identifier("y"))),
+                Arguments.of("x[y]", new ArrayLookup(new Identifier("x"), new Identifier("y"))),
+                Arguments.of("new int[5]", new NewArray(new IntegerLiteral(5))),
+                Arguments.of("new gipity()", new NewObject(new Identifier("gipity"))),
+                Arguments.of("(x + 5)", new Plus(new Identifier("x"), new IntegerLiteral(5))),
+                Arguments.of("this", new This()),
+                Arguments.of("x.y()", new Call(new Identifier("x"), new Identifier("y"), new ExpressionList())),
+                Arguments.of("new Fac().ComputeFac()", new Call(new NewObject(new Identifier("Fac")), new Identifier("ComputeFac"), new ExpressionList())),
+                Arguments.of("!current_node.GetHas_Right() && !current_node.GetHas_Left()", new And(new Not(new Call(new Identifier("current_node"), new Identifier("GetHas_Right"), new ExpressionList())), new Not(new Call(new Identifier("current_node"), new Identifier("GetHas_Left"), new ExpressionList()))))
+        );
+    }
+    @DisplayName("Should parse an Expression")
+    @MethodSource
+    @ParameterizedTest
+    void shouldParseAnExpression(String input, Expression expectedExpression) throws org.example.javacc.ParseException {
+        // ARRANGE
+        var stream = getInputStream(input);
+
+        // ACT
+        var expression = parser.getExpression(stream);
+
+        // ASSERT
+        assertEquals(expectedExpression, expression);
+    }
+
 //    @Test
 //    @DisplayName("Should parse a Main Class")
 //    void shouldParseAMainClass() {
