@@ -173,11 +173,17 @@ FormalList FormalList(): {
     {return list;}
 }
 
-void VarDecl(): {}
+VarDecl VarDecl(): {
+    VarDecl.VarDeclBuilder builder = VarDecl.builder();
+    Type type;
+}
 {
-    Type()
-    Identifier()
+    type = Type()
+    {builder.type(type);}
+    <IDENTIFIER>
+    {builder.name(token.image);}
     <SEMICOLON>
+    {return builder.build();}
 }
 
 void MethodDecl(): {}

@@ -75,6 +75,19 @@ class JavaCCParserTest {
         assertEquals(expected, formals);
     }
 
+    @Test
+    @DisplayName("Should parse a VarDecl")
+    void shouldParseAVarDecl() throws org.example.javacc.ParseException {
+        // ARRANGE
+        String input = "int[] x;";
+        var stream = getInputStream(input);
+
+        // ACT
+        var varDecl = parser.getVarDecl(stream);
+
+        // ASSERT
+        assertEquals(new VarDecl(new IntArrayType(), "x"), varDecl);
+    }
 //    @Test
 //    @DisplayName("Should parse a Main Class")
 //    void shouldParseAMainClass() {

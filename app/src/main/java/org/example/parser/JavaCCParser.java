@@ -47,4 +47,9 @@ public class JavaCCParser implements ParserStrategy {
         return parser.FormalList();
     }
 
+    public VarDecl getVarDecl(InputStream stream) throws org.example.javacc.ParseException {
+        parser.ReInit(stream);
+        return parser.VarDecl();
+    }
+
 }
