@@ -1,6 +1,5 @@
 package org.example.parser;
 
-import kotlin.Pair;
 import org.example.ast.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -242,7 +241,7 @@ class JavaCCParserTest {
         assertEquals(expected, statement);
     }
 
-    static Stream<Arguments> shouldParseAMethodDeclaration(){
+    static Stream<Arguments> shouldParseAMethodDeclaration() {
         return Stream.of(
                 Arguments.of("public int x() { return 5; }",
                         MethodDecl.builder()
@@ -303,7 +302,7 @@ class JavaCCParserTest {
         assertEquals(expected, methodDecl);
     }
 
-    static Stream<Arguments> shouldParseAClassDeclaration(){
+    static Stream<Arguments> shouldParseAClassDeclaration() {
         return Stream.of(
                 Arguments.of("class Tubias { int x; }",
                         ClassDeclSimple.builder()
@@ -353,6 +352,7 @@ class JavaCCParserTest {
                 )
         );
     }
+
     @DisplayName("Should parse a Class Declaration")
     @ParameterizedTest
     @MethodSource
@@ -367,27 +367,71 @@ class JavaCCParserTest {
         assertEquals(expected, classDecl);
     }
 
-//    @Test
-//    @DisplayName("Should parse a Main Class")
-//    void shouldParseAMainClass() {
-//        // ARRANGE
-//        String input = """
-//                class Tubias {
-//                    public static void gepeto(String[] args) {
-//                        System.out.println("Hello, World!");
-//                    }
-//                }
-//                    """;
-//        var stream = getInputStream(input);
-//
-//        // ACT
-//        var option = parser.getProgram(stream);
-//        var kkk  = Program.builder();
-//
-//        // ASSERT
-//        var program = assertDoesNotThrow(option::get);
-//        var mainClass = program.getMainClass();
-//        assertEquals(new Identifier("Main"), mainClass.getClassName());
-//        assertEquals(new Identifier("gepeto"), mainClass.getMainMethodName());
-//    }
+    static Stream<Arguments> shouldParseAProgram() {
+        return Stream.of(
+                Arguments.of("""
+                                class Tubias {
+                                    public static void main(String[] args) {
+                                        System.out.println(1);
+                                    }
+                                }
+                                """,
+                        Program.builder()
+                                .mainClass(MainClass.builder()
+                                        .className(new Identifier("Tubias"))
+                                        .argsName(new Identifier("args"))
+                                        .statements(new StatementList(new ArrayList<>() {{
+                                            add(new Sout(new IntegerLiteral(1)));
+                                        }}))
+                                        .build()
+                                )
+                                .classes(new ClassDeclList())
+                                .build()
+                ),
+                Arguments.of("""
+                                class Tubias {
+                                    public static void main(String[] tobaianor) {
+                                        System.out.println(1);
+                                    }
+                                }
+                                class Gipity {
+                                    int x;
+                                }
+                                """,
+                        Program.builder()
+                                .mainClass(MainClass.builder()
+                                        .className(new Identifier("Tubias"))
+                                        .argsName(new Identifier("tobaianor"))
+                                        .statements(new StatementList(new ArrayList<>() {{
+                                            add(new Sout(new IntegerLiteral(1)));
+                                        }}))
+                                        .build()
+                                )
+                                .classes(new ClassDeclList(new ArrayList<>() {{
+                                    add(ClassDeclSimple.builder()
+                                            .className(new Identifier("Gipity"))
+                                            .fields(new VarDeclList(new ArrayList<>() {{
+                                                add(new VarDecl(new IntegerType(), "x"));
+                                            }}))
+                                            .build());
+                                }}))
+                                .build()
+                )
+        );
+    }
+
+    @DisplayName("Should parse a Program")
+    @ParameterizedTest
+    @MethodSource
+    void shouldParseAProgram(String input, Program expected) {
+        // ARRANGE
+        var stream = getInputStream(input);
+
+        // ACT
+        var option = parser.getProgram(stream);
+
+        // ASSERT
+        var program = assertDoesNotThrow(option::get);
+        assertEquals(expected, program);
+    }
 }

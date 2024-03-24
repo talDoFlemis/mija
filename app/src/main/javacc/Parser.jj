@@ -82,23 +82,42 @@ TOKEN: {
 | <BANG: "!">
 }
 
-void Program(): {}
+Program Program(): {
+    MainClass mainClass;
+    ClassDecl classDecl;
+    ClassDeclList list = new ClassDeclList();
+}
 {
-    MainClass()
-    (ClassDecl())*
+    mainClass = MainClass()
+    (
+        classDecl = ClassDecl()
+        {list.addClassDecl(classDecl);}
+    )*
     <EOF>
+    {return new Program(mainClass, list);}
 }
 
 /* Entry Point */
-void MainClass(): {}
+MainClass MainClass(): {
+    Identifier id;
+    Identifier argsName;
+    Statement stmt;
+    StatementList stmts = new StatementList();
+}
 {
     <CLASS>
-    Identifier()
+    id = Identifier()
     <LSQUIRLY> <PUBLIC> <STATIC> <VOID> <MAIN> <LPAREN> <STRING> <LBRACKET> <RBRACKET>
-    Identifier()
+    argsName = Identifier()
     <RPAREN> <LSQUIRLY>
-    Statement()
+    stmt = Statement()
+    {stmts.addStatement(stmt);}
+    (
+        stmt = Statement()
+        {stmts.addStatement(stmt);}
+    )*
     <RSQUIRLY> <RSQUIRLY>
+    {return new MainClass(id, argsName, stmts);}
 }
 
 ClassDecl ClassDecl(): {

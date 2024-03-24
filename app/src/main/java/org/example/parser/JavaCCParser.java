@@ -15,7 +15,15 @@ public class JavaCCParser implements ParserStrategy {
     private final Parser parser = new Parser(InputStream.nullInputStream());
 
     public Optional<Program> getProgram(InputStream stream) {
-        return Optional.empty();
+        log.info("Parsing program");
+
+        try {
+            parser.ReInit(stream);
+            return Optional.of(parser.Program());
+        } catch (Exception e) {
+            log.error("Error parsing program", e);
+            return Optional.empty();
+        }
     }
 
     public boolean isSyntaxOk(InputStream stream) {

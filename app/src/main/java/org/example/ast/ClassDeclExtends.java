@@ -14,8 +14,10 @@ import org.example.visitor.TypeVisitor;
 public class ClassDeclExtends extends ClassDecl {
     private Identifier className;
     private Identifier parent;
-    private VarDeclList fields;
-    private MethodDeclList methods;
+    @Builder.Default
+    private VarDeclList fields = new VarDeclList();
+    @Builder.Default
+    private MethodDeclList methods = new MethodDeclList();
 
     @Override
     public void accept(ASTVisitor v) {
