@@ -56,4 +56,9 @@ public class JavaCCParser implements ParserStrategy {
         parser.ReInit(stream);
         return parser.Expression();
     }
+
+    public Statement getStatement(InputStream stream) throws org.example.javacc.ParseException {
+        parser.ReInit(stream);
+        return parser.Statement();
+    }
 }

@@ -216,6 +216,32 @@ class JavaCCParserTest {
         assertEquals(expected, expression);
     }
 
+    static Stream<Arguments> shouldParseAStatement() {
+        return Stream.of(
+                Arguments.of("x = 5;", new Assign(new Identifier("x"), new IntegerLiteral(5))),
+                Arguments.of("x[5] = 5;", new ArrayAssign(new Identifier("x"), new IntegerLiteral(5), new IntegerLiteral(5))),
+                Arguments.of("System.out.println(5);", new Sout(new IntegerLiteral(5))),
+                Arguments.of("if (true) x = 5; else x = 777;", new If(new True(), new Assign(new Identifier("x"), new IntegerLiteral(5)), new Assign(new Identifier("x"), new IntegerLiteral(777)))),
+                Arguments.of("while (true) x = 5;", new While(new True(), new Assign(new Identifier("x"), new IntegerLiteral(5)))),
+                Arguments.of("{ x = 5; }", new Block(new StatementList(new ArrayList<>() {{
+                    add(new Assign(new Identifier("x"), new IntegerLiteral(5)));
+                }}))));
+    }
+
+    @DisplayName("Should parse a Statement")
+    @ParameterizedTest
+    @MethodSource
+    void shouldParseAStatement(String input, Statement expected) throws org.example.javacc.ParseException {
+        // ARRANGE
+        var stream = getInputStream(input);
+
+        // ACT
+        var statement = parser.getStatement(stream);
+
+        // ASSERT
+        assertEquals(expected, statement);
+    }
+
 //    @Test
 //    @DisplayName("Should parse a Main Class")
 //    void shouldParseAMainClass() {

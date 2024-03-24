@@ -449,60 +449,94 @@ Expression ParenthesizedExpression(): {
     {return expr;}
 }
 
-void BlockStatement(): {}
+Statement BlockStatement(): {
+    StatementList list = new StatementList();
+    Statement stmt;
+}
 {
-    <LSQUIRLY> (Statement())* <RSQUIRLY>
+    <LSQUIRLY>
+    (
+       stmt = Statement()
+       {list.addStatement(stmt);}
+    )* <RSQUIRLY>
+    {return new Block(list);}
 }
 
-void IfStatement(): {}
+Statement IfStatement(): {
+    Expression condition;
+    Statement consequence;
+    Statement alternative;
+}
 {
     <IF> <LPAREN>
-    Expression()
+    condition = Expression()
     <RPAREN>
-    Statement()
+    consequence = Statement()
     <ELSE>
-    Statement()
+    alternative = Statement()
+    {return new If(condition, consequence, alternative);}
 }
 
-void WhileStatement(): {}
+Statement WhileStatement(): {
+    Expression condition;
+    Statement body;
+}
 {
     <WHILE> <LPAREN>
-    Expression()
+    condition = Expression()
     <RPAREN>
-    Statement()
+    body = Statement()
+    {return new While(condition, body);}
 }
 
-void SoutStatement(): {}
+Statement SoutStatement(): {
+    Expression expr;
+}
 {
     <SOUT> <LPAREN>
-    Expression()
+    expr = Expression()
     <RPAREN> <SEMICOLON>
+    {return new Sout(expr);}
 }
 
-void AssignStatement(): {}
+Statement AssignStatement(): {
+    Identifier id;
+    Expression expr;
+}
 {
-    Identifier()
+    id = Identifier()
     <EQ>
-    Expression()
+    expr = Expression()
     <SEMICOLON>
+    {return new Assign(id, expr);}
 }
 
-void ArrayAssignStatement(): {}
+Statement ArrayAssignStatement(): {
+    Identifier id;
+    Expression idx;
+    Expression expr;
+}
 {
-    Identifier()
+    id = Identifier()
     <LBRACKET>
-    Expression()
+    idx = Expression()
     <RBRACKET> <EQ>
-    Expression()
+    expr = Expression()
     <SEMICOLON>
+    {return new ArrayAssign(id, idx, expr);}
 }
 
-void Statement(): {}
+Statement Statement(): {
+    Statement stmt;
+}
 {
-    BlockStatement()
-|   IfStatement()
-|   WhileStatement()
-|   SoutStatement()
-|   LOOKAHEAD(2) AssignStatement()
-|   LOOKAHEAD(2) ArrayAssignStatement()
+    (
+        stmt = BlockStatement()
+    |   stmt = IfStatement()
+    |   stmt = WhileStatement()
+    |   stmt = SoutStatement()
+    |   LOOKAHEAD(2) stmt = AssignStatement()
+    |   LOOKAHEAD(2) stmt = ArrayAssignStatement()
+    )
+    {return stmt;}
 }
