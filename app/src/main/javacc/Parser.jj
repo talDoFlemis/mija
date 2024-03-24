@@ -85,7 +85,7 @@ TOKEN: {
 void Program(): {}
 {
     MainClass()
-    (ObjectDecl())*
+    (ClassDecl())*
     <EOF>
 }
 
@@ -101,32 +101,64 @@ void MainClass(): {}
     <RSQUIRLY> <RSQUIRLY>
 }
 
-void ObjectDecl(): {}
+ClassDecl ClassDecl(): {
+    ClassDecl classDecl;
+}
 {
-    LOOKAHEAD(3) ClassDecl()
-|   ClassExtendsDecl()
+    (
+        LOOKAHEAD(<CLASS> Identifier() <EXTENDS>) classDecl = ClassExtendsDecl()
+    |   classDecl = ClassDeclSimple()
+    )
+    {return classDecl;}
 }
 
-void ClassDecl(): {}
+ClassDecl ClassDeclSimple(): {
+    Identifier id;
+    VarDecl var;
+    VarDeclList vars = new VarDeclList();
+    MethodDecl method;
+    MethodDeclList methods = new MethodDeclList();
+}
 {
     <CLASS>
-    Identifier()
+    id = Identifier()
     <LSQUIRLY>
-    (VarDecl())*
-    (MethodDecl())*
+    (
+        var = VarDecl()
+        {vars.addVarDecl(var);}
+    )*
+    (
+        method = MethodDecl()
+        {methods.addMethodDecl(method);}
+    )*
     <RSQUIRLY>
+    {return new ClassDeclSimple(id, vars, methods);}
 }
 
-void ClassExtendsDecl(): {}
+ClassDecl ClassExtendsDecl(): {
+    Identifier id;
+    Identifier parent;
+    VarDecl var;
+    VarDeclList vars = new VarDeclList();
+    MethodDecl method;
+    MethodDeclList methods = new MethodDeclList();
+}
 {
     <CLASS>
-    Identifier()
+    id = Identifier()
     <EXTENDS>
-    Identifier()
+    parent = Identifier()
     <LSQUIRLY>
-    (VarDecl())*
-    (MethodDecl())*
+    (
+        var = VarDecl()
+        {vars.addVarDecl(var);}
+    )*
+    (
+        method = MethodDecl()
+        {methods.addMethodDecl(method);}
+    )*
     <RSQUIRLY>
+    {return new ClassDeclExtends(id, parent, vars, methods);}
 }
 
 Type Type(): {}

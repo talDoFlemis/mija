@@ -303,6 +303,70 @@ class JavaCCParserTest {
         assertEquals(expected, methodDecl);
     }
 
+    static Stream<Arguments> shouldParseAClassDeclaration(){
+        return Stream.of(
+                Arguments.of("class Tubias { int x; }",
+                        ClassDeclSimple.builder()
+                                .className(new Identifier("Tubias"))
+                                .fields(new VarDeclList(new ArrayList<>() {{
+                                    add(new VarDecl(new IntegerType(), "x"));
+                                }}))
+                                .methods(new MethodDeclList())
+                                .build()
+                ),
+                Arguments.of("class Tubias { int x; public int x() { return 5; } }",
+                        ClassDeclSimple.builder()
+                                .className(new Identifier("Tubias"))
+                                .fields(new VarDeclList(new ArrayList<>() {{
+                                    add(new VarDecl(new IntegerType(), "x"));
+                                }}))
+                                .methods(new MethodDeclList(new ArrayList<>() {{
+                                    add(MethodDecl.builder()
+                                            .type(new IntegerType())
+                                            .identifier("x")
+                                            .formals(new FormalList())
+                                            .varDecls(new VarDeclList())
+                                            .statements(new StatementList())
+                                            .returnExpression(new IntegerLiteral(5))
+                                            .build());
+                                }}))
+                                .build()
+                ),
+                Arguments.of("class Tubias extends Gipity { int x; public int x() { return 5; } }",
+                        ClassDeclExtends.builder()
+                                .className(new Identifier("Tubias"))
+                                .parent(new Identifier("Gipity"))
+                                .fields(new VarDeclList(new ArrayList<>() {{
+                                    add(new VarDecl(new IntegerType(), "x"));
+                                }}))
+                                .methods(new MethodDeclList(new ArrayList<>() {{
+                                    add(MethodDecl.builder()
+                                            .type(new IntegerType())
+                                            .identifier("x")
+                                            .formals(new FormalList())
+                                            .varDecls(new VarDeclList())
+                                            .statements(new StatementList())
+                                            .returnExpression(new IntegerLiteral(5))
+                                            .build());
+                                }}))
+                                .build()
+                )
+        );
+    }
+    @DisplayName("Should parse a Class Declaration")
+    @ParameterizedTest
+    @MethodSource
+    void shouldParseAClassDeclaration(String input, ClassDecl expected) throws org.example.javacc.ParseException {
+        // ARRANGE
+        var stream = getInputStream(input);
+
+        // ACT
+        var classDecl = parser.getClassDecl(stream);
+
+        // ASSERT
+        assertEquals(expected, classDecl);
+    }
+
 //    @Test
 //    @DisplayName("Should parse a Main Class")
 //    void shouldParseAMainClass() {
