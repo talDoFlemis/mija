@@ -90,7 +90,7 @@ class JavaCCParserTest {
         assertEquals(new VarDecl(new IntArrayType(), "x"), varDecl);
     }
 
-    static Stream<Arguments> shouldParseAnExpression(){
+    static Stream<Arguments> shouldParseAnExpression() {
         return Stream.of(
                 Arguments.of("5", new IntegerLiteral(5)),
                 Arguments.of("true", new True()),
@@ -114,6 +114,7 @@ class JavaCCParserTest {
                 Arguments.of("!current_node.GetHas_Right() && !current_node.GetHas_Left()", new And(new Not(new Call(new Identifier("current_node"), new Identifier("GetHas_Right"), new ExpressionList())), new Not(new Call(new Identifier("current_node"), new Identifier("GetHas_Left"), new ExpressionList()))))
         );
     }
+
     @DisplayName("Should parse an Expression")
     @MethodSource
     @ParameterizedTest
@@ -126,6 +127,93 @@ class JavaCCParserTest {
 
         // ASSERT
         assertEquals(expectedExpression, expression);
+    }
+
+    static Stream<Arguments> shouldCheckForExpressionPrecedence() {
+        return Stream.of(
+                Arguments.of("3 < 5 && false",
+                        And.builder()
+                                .lhe(LessThan.builder()
+                                        .lhe(new IntegerLiteral(3))
+                                        .rhe(new IntegerLiteral(5))
+                                        .build()
+                                )
+                                .rhe(new False())
+                                .build()
+                ),
+                Arguments.of("a + b * c + d * e - f",
+                        Minus.builder()
+                                .lhe(Plus.builder()
+                                        .lhe(Plus.builder()
+                                                .lhe(new Identifier("a"))
+                                                .rhe(Times.builder()
+                                                        .lhe(new Identifier("b"))
+                                                        .rhe(new Identifier("c"))
+                                                        .build()
+                                                )
+                                                .build()
+                                        )
+                                        .rhe(Times.builder()
+                                                .lhe(new Identifier("d"))
+                                                .rhe(new Identifier("e"))
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .rhe(new Identifier("f"))
+                                .build()
+                ),
+                Arguments.of("3 + 4 * 5 && 3 * 1 + 4 * 5",
+                        And.builder()
+                                .lhe(Plus.builder()
+                                        .lhe(new IntegerLiteral(3))
+                                        .rhe(Times.builder()
+                                                .lhe(new IntegerLiteral(4))
+                                                .rhe(new IntegerLiteral(5))
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .rhe(Plus.builder()
+                                        .lhe(Times.builder()
+                                                .lhe(new IntegerLiteral(3))
+                                                .rhe(new IntegerLiteral(1))
+                                                .build()
+                                        )
+                                        .rhe(Times.builder()
+                                                .lhe(new IntegerLiteral(4))
+                                                .rhe(new IntegerLiteral(5))
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                ),
+                Arguments.of("3 * (4 + 5)",
+                        Times.builder()
+                                .lhe(new IntegerLiteral(3))
+                                .rhe(Plus.builder()
+                                        .lhe(new IntegerLiteral(4))
+                                        .rhe(new IntegerLiteral(5))
+                                        .build()
+                                )
+                                .build()
+                )
+        );
+    }
+
+    @DisplayName("Should check for expression precedence")
+    @ParameterizedTest
+    @MethodSource
+    void shouldCheckForExpressionPrecedence(String input, Expression expected) throws org.example.javacc.ParseException {
+        // ARRANGE
+        var stream = getInputStream(input);
+
+        // ACT
+        var expression = parser.getExpression(stream);
+
+        // ASSERT
+        assertEquals(expected, expression);
     }
 
 //    @Test

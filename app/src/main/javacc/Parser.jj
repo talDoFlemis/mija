@@ -211,26 +211,95 @@ Identifier Identifier(): {}
 }
 
 Expression Expression(): {
+    Expression lhe;
+    Expression rhe;
+}
+{
+    lhe = RelationalLevelPrecedence()
+    (
+        <AND>
+        rhe = RelationalLevelPrecedence()
+        {lhe = new And(lhe, rhe);}
+    )*
+    {return lhe;}
+}
+
+Expression RelationalLevelPrecedence(): {
+    Expression lhe;
+    Expression rhe;
+}
+{
+    lhe = SumLevelPrecedence()
+    (
+        <LT>
+        rhe = SumLevelPrecedence()
+        {lhe = new LessThan(lhe, rhe);}
+    )*
+    {return lhe;}
+}
+
+Expression SumLevelPrecedence(): {
+    Expression lhe;
+    Expression rhe;
+}
+{
+    lhe = ProductLevelPrecedence()
+    (
+        <PLUS>
+        rhe = ProductLevelPrecedence()
+        {lhe = new Plus(lhe, rhe);}
+    |
+        <MINUS>
+        rhe = ProductLevelPrecedence()
+        {lhe = new Minus(lhe, rhe);}
+    )*
+    {return lhe;}
+}
+
+Expression ProductLevelPrecedence(): {
+    Expression lhe;
+    Expression rhe;
+}
+{
+    lhe = PrefixLevelPrecedence()
+    (
+        <STAR>
+        rhe = PrefixLevelPrecedence()
+        {lhe = new Times(lhe, rhe);}
+    )*
+    {return lhe;}
+}
+
+Expression PrefixLevelPrecedence(): {
     Expression expr;
 }
 {
-    LOOKAHEAD(Clause() <AND>) expr = AndExpression()
+    (
+        <BANG>
+        expr = CallLevelPrecedence()
+        {expr = new Not(expr);}
+    |
+        expr = CallLevelPrecedence()
+    )
     {return expr;}
-  | LOOKAHEAD(PrimaryExpression() <LT>) expr = LTExpression()
-    {return expr;}
-  | LOOKAHEAD(PrimaryExpression() <PLUS>) expr = PlusExpression()
-    {return expr;}
-  | LOOKAHEAD(PrimaryExpression() <MINUS>) expr = MinusExpression()
-    {return expr;}
-  | LOOKAHEAD(PrimaryExpression() <STAR>) expr = StarExpression()
-    {return expr;}
-  | LOOKAHEAD(PrimaryExpression() <LBRACKET>) expr = Lookup()
-    {return expr;}
-  | LOOKAHEAD(PrimaryExpression() <DOT> <LENGTH>) expr = LengthMethod()
-    {return expr;}
-  | LOOKAHEAD(PrimaryExpression() <DOT> Identifier() <LPAREN>) expr = CallExpression()
-    {return expr;}
-  | expr = Clause()
+}
+
+Expression CallLevelPrecedence(): {
+    Expression expr;
+}
+{
+    (
+        LOOKAHEAD(PrimaryExpression() <LBRACKET>)
+        expr = Lookup()
+    |
+        LOOKAHEAD(PrimaryExpression() <DOT> <LENGTH>)
+        expr = LengthMethod()
+    |
+        LOOKAHEAD(PrimaryExpression() <DOT> Identifier() <LPAREN>)
+        expr = CallExpression()
+    |
+        expr = PrimaryExpression()
+    )
     {return expr;}
 }
 
@@ -252,65 +321,6 @@ ExpressionList ExpressionList(): {
         {list.addExpression(expr);}
     )*
     {return list;}
-}
-
-And AndExpression() :
-{
-    And.AndBuilder builder = And.builder();
-    Expression lhe;
-    Expression rhe;
-}
-{
-    lhe = Clause()
-  {builder.lhe(lhe);}
-  <AND>
-    rhe = Clause()
-  {builder.rhe(rhe);}
-  {return builder.build();}
-}
-
-LessThan LTExpression() :
-{
-    LessThan.LessThanBuilder builder = LessThan.builder();
-}
-{
-  {builder.lhe(PrimaryExpression());}
-  <LT>
-  {builder.rhe(PrimaryExpression());}
-  {return builder.build();}
-}
-
-Plus PlusExpression() :
-{
-    Plus.PlusBuilder builder = Plus.builder();
-}
-{
-  {builder.lhe(PrimaryExpression());}
-  <PLUS>
-  {builder.rhe(PrimaryExpression());}
-  {return builder.build();}
-}
-
-Minus MinusExpression() :
-{
-    Minus.MinusBuilder builder = Minus.builder();
-}
-{
-  {builder.lhe(PrimaryExpression());}
-  <MINUS>
-  {builder.rhe(PrimaryExpression());}
-  {return builder.build();}
-}
-
-Times StarExpression() :
-{
-    Times.TimesBuilder builder = Times.builder();
-}
-{
-  {builder.lhe(PrimaryExpression());}
-  <STAR>
-  {builder.rhe(PrimaryExpression());}
-  {return builder.build();}
 }
 
 ArrayLookup Lookup() :
@@ -357,16 +367,6 @@ Call CallExpression() :
   )?
   <RPAREN>
   {return builder.build();}
-}
-
-Expression Clause(): {
-    Expression expr;
-}
-{
-    expr = NotExpression()
-    {return expr;}
-  | expr = PrimaryExpression()
-    {return expr;}
 }
 
 Expression PrimaryExpression(): {
@@ -437,15 +437,6 @@ Expression NewArray(): {
     {builder.size(size);}
     <RBRACKET>
     {return builder.build();}
-}
-
-Expression NotExpression(): {
-    Expression expr;
-}
-{
-    <BANG>
-    expr = Expression()
-    {return new Not(expr);}
 }
 
 Expression ParenthesizedExpression(): {
