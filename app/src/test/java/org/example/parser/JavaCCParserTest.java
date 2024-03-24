@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
@@ -22,15 +21,18 @@ class JavaCCParserTest {
         return new ByteArrayInputStream(input.getBytes());
     }
 
+    static Stream<Arguments> shouldParseAType() {
+        return Stream.of(
+                Arguments.of("int", new IntegerType()),
+                Arguments.of("boolean", new BooleanType()),
+                Arguments.of("int[]", new IntArrayType()),
+                Arguments.of("tubias", new IdentifierType("tubias"))
+        );
+    }
     @DisplayName("Should parse a type")
     @ParameterizedTest
-    @CsvSource({
-            "int, org.example.ast.IntegerType",
-            "boolean, org.example.ast.BooleanType",
-            "int[], org.example.ast.IntArrayType",
-            "gipity, org.example.ast.IdentifierType"
-    })
-    void shouldParseAType(String input, String expectedClassName) throws org.example.javacc.ParseException, ClassNotFoundException {
+    @MethodSource
+    void shouldParseAType(String input, Type expected) throws org.example.javacc.ParseException {
         // ARRANGE
         var stream = getInputStream(input);
 
@@ -38,7 +40,7 @@ class JavaCCParserTest {
         var type = parser.getType(stream);
 
         // ASSERT
-        assertEquals(Class.forName(expectedClassName), type.getClass());
+        assertEquals(expected, type);
     }
 
     @Test
