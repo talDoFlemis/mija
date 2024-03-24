@@ -12,22 +12,6 @@ interface ParserTestDispatcher<Parser: ParserStrategy, Program: Programs.IProgra
     suspend fun useParser(block: suspend Parser.() -> Unit): Unit = parser.block()
 
     @Test
-    fun `Should check the syntax return ok (debug)`(): Unit =
-        runBlocking {
-            useParser {
-                // Assert
-                assertDoesNotThrow {
-                    // Arrange
-                    val code = program.inputStream
-                        .reader().use { it.readText() }
-
-                    // Act
-                    println(code)
-                }
-            }
-        }
-
-    @Test
     fun `Should check the syntax return ok`() =
         runBlocking {
             useParser {
