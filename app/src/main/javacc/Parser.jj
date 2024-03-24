@@ -6,7 +6,7 @@ options {
 PARSER_BEGIN(Parser)
 
 package org.example.javacc;
-import org.example.ast.*;
+import org.example.ast.*;import javax.swing.plaf.nimbus.State;
 
 public class Parser {
 }
@@ -186,22 +186,37 @@ VarDecl VarDecl(): {
     {return builder.build();}
 }
 
-void MethodDecl(): {
-    FormalList formals;
+MethodDecl MethodDecl(): {
+    Type returnType;
+    String id;
+    FormalList parameters = new FormalList();
+    VarDecl var;
+    VarDeclList vars = new VarDeclList();
+    Statement stmt;
+    StatementList stmts = new StatementList();
+    Expression returnExpr;
 }
 {
     <PUBLIC>
-    Type()
-    Identifier()
+    returnType = Type()
+    <IDENTIFIER>
+    {id = token.image;}
     <LPAREN>
-    (formals = FormalList())?
+    (parameters = FormalList())?
     <RPAREN>
     <LSQUIRLY>
-    (LOOKAHEAD(2) VarDecl())*
-    (Statement())*
+    (LOOKAHEAD(2)
+        var = VarDecl()
+        {vars.addVarDecl(var);}
+    )*
+    (
+        stmt = Statement()
+        {stmts.addStatement(stmt);}
+    )*
     <RETURN>
-    Expression()
+    returnExpr = Expression()
     <SEMICOLON> <RSQUIRLY>
+    {return new MethodDecl(returnType, id, parameters, vars, stmts, returnExpr);}
 }
 
 Identifier Identifier(): {}

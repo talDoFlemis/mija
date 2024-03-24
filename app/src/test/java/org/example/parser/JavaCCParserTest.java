@@ -242,6 +242,67 @@ class JavaCCParserTest {
         assertEquals(expected, statement);
     }
 
+    static Stream<Arguments> shouldParseAMethodDeclaration(){
+        return Stream.of(
+                Arguments.of("public int x() { return 5; }",
+                        MethodDecl.builder()
+                                .type(new IntegerType())
+                                .identifier("x")
+                                .formals(new FormalList())
+                                .varDecls(new VarDeclList())
+                                .statements(new StatementList())
+                                .returnExpression(new IntegerLiteral(5))
+                                .build()
+                ),
+                Arguments.of("public int x(int y, boolean z) { int x; return 5; }",
+                        MethodDecl.builder()
+                                .type(new IntegerType())
+                                .identifier("x")
+                                .formals(new FormalList(new ArrayList<>() {{
+                                    add(new Formal(new IntegerType(), "y"));
+                                    add(new Formal(new BooleanType(), "z"));
+                                }}))
+                                .varDecls(new VarDeclList(new ArrayList<>() {{
+                                    add(new VarDecl(new IntegerType(), "x"));
+                                }}))
+                                .statements(new StatementList())
+                                .returnExpression(new IntegerLiteral(5))
+                                .build()
+                ),
+                Arguments.of("public int x(int y, boolean z) { int x; x = 5; return x; }",
+                        MethodDecl.builder()
+                                .type(new IntegerType())
+                                .identifier("x")
+                                .formals(new FormalList(new ArrayList<>() {{
+                                    add(new Formal(new IntegerType(), "y"));
+                                    add(new Formal(new BooleanType(), "z"));
+                                }}))
+                                .varDecls(new VarDeclList(new ArrayList<>() {{
+                                    add(new VarDecl(new IntegerType(), "x"));
+                                }}))
+                                .statements(new StatementList(new ArrayList<>() {{
+                                    add(new Assign(new Identifier("x"), new IntegerLiteral(5)));
+                                }}))
+                                .returnExpression(new Identifier("x"))
+                                .build()
+                )
+        );
+    }
+
+    @DisplayName("Should parse a Method Declaration")
+    @ParameterizedTest
+    @MethodSource
+    void shouldParseAMethodDeclaration(String input, MethodDecl expected) throws org.example.javacc.ParseException {
+        // ARRANGE
+        var stream = getInputStream(input);
+
+        // ACT
+        var methodDecl = parser.getMethodDecl(stream);
+
+        // ASSERT
+        assertEquals(expected, methodDecl);
+    }
+
 //    @Test
 //    @DisplayName("Should parse a Main Class")
 //    void shouldParseAMainClass() {

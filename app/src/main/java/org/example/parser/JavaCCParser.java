@@ -61,4 +61,9 @@ public class JavaCCParser implements ParserStrategy {
         parser.ReInit(stream);
         return parser.Statement();
     }
+
+    public MethodDecl getMethodDecl(InputStream stream) throws org.example.javacc.ParseException {
+        parser.ReInit(stream);
+        return parser.MethodDecl();
+    }
 }
