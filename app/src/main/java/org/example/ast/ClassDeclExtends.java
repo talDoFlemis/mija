@@ -7,15 +7,17 @@ import lombok.EqualsAndHashCode;
 import org.example.visitor.ASTVisitor;
 import org.example.visitor.TypeVisitor;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
 @AllArgsConstructor
 public class ClassDeclExtends extends ClassDecl {
     private Identifier className;
     private Identifier parent;
-    private VarDeclList fields;
-    private MethodDeclList methods;
+    @Builder.Default
+    private VarDeclList fields = new VarDeclList();
+    @Builder.Default
+    private MethodDeclList methods = new MethodDeclList();
 
     @Override
     public void accept(ASTVisitor v) {

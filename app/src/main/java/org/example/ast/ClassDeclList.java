@@ -1,14 +1,19 @@
 package org.example.ast;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.util.ArrayList;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
 public class ClassDeclList {
-    private ArrayList<ClassDecl> classDecls;
+    @Builder.Default
+    private ArrayList<ClassDecl> classDecls =  new ArrayList<>();
+
+    public void addClassDecl(ClassDecl classDecl) {
+        classDecls.add(classDecl);
+    }
 }

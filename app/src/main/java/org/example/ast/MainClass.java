@@ -7,13 +7,13 @@ import lombok.EqualsAndHashCode;
 import org.example.visitor.ASTVisitor;
 import org.example.visitor.TypeVisitor;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
 @AllArgsConstructor
 public class MainClass extends Node {
     private Identifier className;
-    private Identifier mainMethodName;
+    private Identifier argsName;
     private StatementList statements;
 
     @Override

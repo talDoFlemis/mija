@@ -7,12 +7,12 @@ import lombok.EqualsAndHashCode;
 import org.example.visitor.ASTVisitor;
 import org.example.visitor.TypeVisitor;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
 @AllArgsConstructor
 public class NewArray extends Expression {
-    private int size;
+    private Expression size;
 
     @Override
     public void accept(ASTVisitor v) {
