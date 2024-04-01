@@ -23,12 +23,18 @@ public class App {
                 }
                 """;
         InputStream stream = new ByteArrayInputStream(s.getBytes());
+
         JavaCCParser javaCCParser = new JavaCCParser();
         log.info("Syntax is ok for JavaCC: {}", javaCCParser.isSyntaxOk(stream) ? "Yes" : "No");
 
         stream = new ByteArrayInputStream(s.getBytes());
         AntlrParser antlrParser = new AntlrParser();
         log.info("Syntax is ok for Antlr: {}", antlrParser.isSyntaxOk(stream) ? "Yes" : "No");
+
+        stream = new ByteArrayInputStream(s.getBytes());
+        var teste = antlrParser.getProgram(stream);
+        teste.ifPresent(System.out::println);
+
 
     }
 }

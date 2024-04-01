@@ -9,7 +9,7 @@ package org.example.antlr;
 goal: program EOF;
 program: mainClass ( classDeclaration )*;
 
-mainClass: CLASS IDENTIFIER LSQUIRLY PUBLIC STATIC VOID MAIN LPAREN STRING LBRACKET RBRACKET IDENTIFIER RPAREN LSQUIRLY statement RSQUIRLY RSQUIRLY;
+mainClass: CLASS IDENTIFIER LSQUIRLY PUBLIC STATIC VOID MAIN LPAREN STRING LBRACKET RBRACKET IDENTIFIER RPAREN LSQUIRLY stmList RSQUIRLY RSQUIRLY;
 classDeclaration: CLASS IDENTIFIER ( EXTENDS IDENTIFIER )? LSQUIRLY varDeclList methodDeclList RSQUIRLY #classDecl;
 
 
@@ -34,7 +34,7 @@ statement:
   LSQUIRLY stmList RSQUIRLY #stmBlock
 | IF LPAREN expression RPAREN statement ELSE statement #stmIf
 | WHILE LPAREN expression RPAREN statement #stmWhile
-| PRINT LPAREN expression RPAREN SEMICOLON #stmPrint
+| SOUT LPAREN expression RPAREN SEMICOLON #stmPrint
 | IDENTIFIER EQ expression SEMICOLON #stmAssign
 | IDENTIFIER LBRACKET expression RBRACKET EQ expression SEMICOLON #stmArrayAssign
 ;
@@ -49,7 +49,7 @@ expression:
 | THIS #expThis
 | NEW INT LBRACKET expression RBRACKET #expNewArray
 | NEW IDENTIFIER LPAREN RPAREN #expNewObject
-| <assoc=left> expression DOT 'length' #expArrayLength
+| <assoc=left> expression DOT LENGHT #expArrayLength
 | <assoc=left> expression LBRACKET expression RBRACKET #expArrayLookup
 | <assoc=left> expression STAR expression #expTimes
 | <assoc=left> expression AND expression #expAnd
@@ -84,11 +84,12 @@ BOOLEAN: 'boolean';
 WHILE: 'while';
 IF: 'if';
 ELSE: 'else';
-PRINT: 'System.out.println';
+SOUT: 'System.out.println';
 NEW: 'new';
 THIS: 'this';
 RETURN: 'return';
 STRING: 'String';
+LENGHT: 'length';
 
 
 // operators
