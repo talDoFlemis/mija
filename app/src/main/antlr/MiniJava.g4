@@ -49,13 +49,13 @@ expression:
 | THIS #expThis
 | NEW INT LBRACKET expression RBRACKET #expNewArray
 | NEW IDENTIFIER LPAREN RPAREN #expNewObject
-| <assoc=left> expression DOT LENGHT #expArrayLength
-| <assoc=left> expression LBRACKET expression RBRACKET #expArrayLookup
+| <assoc=left> expression LT expression #expLessThan
 | <assoc=left> expression STAR expression #expTimes
-| <assoc=left> expression AND expression #expAnd
 | <assoc=left> expression PLUS expression #expPlus
 | <assoc=left> expression MINUS expression #expMinus
-| <assoc=left> expression LT expression #expLessThan
+| <assoc=left> expression AND expression #expAnd
+| <assoc=left> expression DOT LENGHT #expArrayLength
+| <assoc=left> expression LBRACKET expression RBRACKET #expArrayLookup
 | <assoc=left> expression DOT IDENTIFIER LPAREN callArguments RPAREN #expCall
 ;
 

@@ -18,7 +18,10 @@ public class App {
         String s = """
                     class Factorial{
                     public static void main(String[] a){
-                        System.out.println(!7);
+                        System.out.println(3<5 && false);
+                        System.out.println(a + b * c + d * e - f);
+                        System.out.println(3 + 4 * 5 && 3 * 1 + 4 * 5);
+                        System.out.println(3 * (4 + 5));
                     }
                 }
                 """;
@@ -32,8 +35,16 @@ public class App {
         log.info("Syntax is ok for Antlr: {}", antlrParser.isSyntaxOk(stream) ? "Yes" : "No");
 
         stream = new ByteArrayInputStream(s.getBytes());
-        var teste = antlrParser.getProgram(stream);
-        teste.ifPresent(System.out::println);
+        var testeAntlr = antlrParser.getProgram(stream);
+
+
+        stream = new ByteArrayInputStream(s.getBytes());
+        var testeJavaCC = javaCCParser.getProgram(stream);
+
+        log.info("<<<<<<<<<<<<<<< ANTLR <<<<<<<<<<<<<<<");
+        testeAntlr.ifPresent(log::info);
+        log.info("<<<<<<<<<<<<<<< JAVACC <<<<<<<<<<<<<<<");
+        testeJavaCC.ifPresent(log::info);
 
 
     }
