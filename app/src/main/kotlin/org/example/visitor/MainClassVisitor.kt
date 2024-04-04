@@ -1,30 +1,27 @@
-package org.example.ast2.org.example.visitor
+package org.example.visitor
 
 import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensure
-import org.example.ast.Identifier
-import org.example.ast.IdentifierType
 import org.example.ast.MainClass
-import org.example.visitor.*
 
-class MainClassVisitor(override var table: Table) : SymbolVisitor<MainClass> {
+class MainClassVisitor : SymbolVisitor<MainClass>() {
     override fun visit(entity: MainClass): Either<Error, Table> = either {
-        ensure(!table.contains(entity.className)) {
+        ensure(!table.contains(entity.className.s)) {
             Error("MainClassVisitor: MainClass must have a unique name")
         }
 
         Table(
             ClassData(
-                name = entity.className,
+                name = entity.className.s,
                 fields = Table(),
                 methods = Table(
                     MethodData(
-                        name = Identifier("main"),
+                        name = entity.className.s,
                         args = Table(
                             ParamData(
-                                name = Identifier("args"),
-                                type = IdentifierType("String[]")
+                                name = entity.argsName.s,
+                                type = "String[]"
                             )
                         ),
                         locals = Table()
