@@ -13,7 +13,7 @@ import java.util.ArrayList;
 @NoArgsConstructor
 public class VarDeclList {
     @Builder.Default
-    private ArrayList<VarDecl> varDecls = new ArrayList<>();
+    public ArrayList<VarDecl> varDecls = new ArrayList<>();
 
     public void addVarDecl(VarDecl varDecl) {
         varDecls.add(varDecl);

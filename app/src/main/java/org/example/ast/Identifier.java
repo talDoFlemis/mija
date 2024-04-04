@@ -12,7 +12,7 @@ import org.example.visitor.TypeVisitor;
 @Data
 @AllArgsConstructor
 public class Identifier extends Expression {
-    private String s;
+    public String s;
     @Override
     public void accept(ASTVisitor v) {
         v.visit(this);

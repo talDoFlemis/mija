@@ -12,10 +12,10 @@ import org.example.visitor.TypeVisitor;
 @Builder
 @AllArgsConstructor
 public class MethodDecl extends Node {
-    private Type type;
-    private String identifier;
-    private FormalList formals;
-    private VarDeclList varDecls;
+    public Type type;
+    public String identifier;
+    public FormalList formals;
+    public VarDeclList varDecls;
     private StatementList statements;
     private Expression returnExpression;
 

@@ -12,8 +12,8 @@ import org.example.visitor.TypeVisitor;
 @Builder
 @AllArgsConstructor
 public class VarDecl extends Node {
-    private Type type;
-    private String name;
+    public Type type;
+    public String name;
 
     @Override
     public void accept(ASTVisitor v) {

@@ -12,8 +12,8 @@ import org.example.visitor.TypeVisitor;
 @Builder
 @AllArgsConstructor
 public class MainClass extends Node {
-    private Identifier className;
-    private Identifier argsName;
+    public Identifier className;
+    public Identifier argsName;
     private StatementList statements;
 
     @Override

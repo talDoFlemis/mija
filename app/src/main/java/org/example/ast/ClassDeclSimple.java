@@ -12,11 +12,11 @@ import org.example.visitor.TypeVisitor;
 @Builder
 @AllArgsConstructor
 public class ClassDeclSimple extends ClassDecl {
-    private Identifier className;
+    public Identifier className;
     @Builder.Default
-    private VarDeclList fields = new VarDeclList();
+    public VarDeclList fields = new VarDeclList();
     @Builder.Default
-    private MethodDeclList methods = new MethodDeclList();
+    public MethodDeclList methods = new MethodDeclList();
 
     @Override
     public void accept(ASTVisitor v) {

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @EqualsAndHashCode
 public class MethodDeclList {
     @Builder.Default
-    private ArrayList<MethodDecl> methodDecls = new ArrayList<>();
+    public ArrayList<MethodDecl> methodDecls = new ArrayList<>();
 
     public void addMethodDecl(MethodDecl methodDecl) {
         methodDecls.add(methodDecl);
