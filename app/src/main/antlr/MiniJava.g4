@@ -40,23 +40,23 @@ statement:
 ;
 
 expression:
- LPAREN expression RPAREN #expBracket
+  expression LBRACKET expression RBRACKET #expArrayLookup
+| expression DOT LENGHT #expArrayLength
+| expression DOT IDENTIFIER LPAREN callArguments RPAREN #expCall
 | BANG expression #expNot
+| NEW INT LBRACKET expression RBRACKET #expNewArray
+| NEW IDENTIFIER LPAREN RPAREN #expNewObject
+| expression STAR expression #expTimes
+| expression PLUS expression #expPlus
+| expression MINUS expression #expMinus
+| expression LT expression #expLessThan
+| expression AND expression #expAnd
 | INTEGER_LITERAL #expIntegerLiteral
 | TRUE_LITERAL #expTrue
 | FALSE_LITERAL #expFalse
 | IDENTIFIER #expIdentifierExp
 | THIS #expThis
-| NEW INT LBRACKET expression RBRACKET #expNewArray
-| NEW IDENTIFIER LPAREN RPAREN #expNewObject
-| <assoc=left> expression LT expression #expLessThan
-| <assoc=left> expression STAR expression #expTimes
-| <assoc=left> expression PLUS expression #expPlus
-| <assoc=left> expression MINUS expression #expMinus
-| <assoc=left> expression AND expression #expAnd
-| <assoc=left> expression DOT LENGHT #expArrayLength
-| <assoc=left> expression LBRACKET expression RBRACKET #expArrayLookup
-| <assoc=left> expression DOT IDENTIFIER LPAREN callArguments RPAREN #expCall
+| LPAREN expression RPAREN #expBracket
 ;
 
 callArguments: ( expression ( COMMA expression )* )?;

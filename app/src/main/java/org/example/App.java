@@ -17,13 +17,15 @@ public class App {
     public static void main(String[] args) {
         String s = """
                     class Factorial{
-                    public static void main(String[] a){
-                        System.out.println(3<5 && false);
-                        System.out.println(a + b * c + d * e - f);
-                        System.out.println(3 + 4 * 5 && 3 * 1 + 4 * 5);
-                        System.out.println(3 * (4 + 5));
+                        public static void main(String[] a){
+                            System.out.println(!7);
+                        }
                     }
-                }
+                    class Algo {    
+                        public int x() {
+                            return 5;
+                        }
+                    }
                 """;
         InputStream stream = new ByteArrayInputStream(s.getBytes());
 
