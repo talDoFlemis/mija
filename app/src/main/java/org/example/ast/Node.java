@@ -1,9 +1,7 @@
 package org.example.ast;
 
-import org.example.visitor.ASTVisitor;
-import org.example.visitor.TypeVisitor;
+import org.example.visitor.Visitor;
 
 public abstract class Node {
-    public abstract void accept(ASTVisitor v);
-    public abstract Type accept(TypeVisitor v);
+    public abstract <T> T accept(Visitor<T> v);
 }

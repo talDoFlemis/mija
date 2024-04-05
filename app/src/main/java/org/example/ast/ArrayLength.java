@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.example.visitor.ASTVisitor;
-import org.example.visitor.TypeVisitor;
+import org.example.visitor.Visitor;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
@@ -15,12 +14,7 @@ public class ArrayLength extends Expression {
     private Expression array;
 
     @Override
-    public void accept(ASTVisitor v) {
-        v.visit(this);
-    }
-
-    @Override
-    public Type accept(TypeVisitor v) {
+    public <T> T accept(Visitor<T> v) {
         return v.visit(this);
     }
 }

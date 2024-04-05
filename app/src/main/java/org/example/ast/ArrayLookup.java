@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.example.visitor.ASTVisitor;
-import org.example.visitor.TypeVisitor;
+import org.example.visitor.Visitor;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
@@ -14,13 +13,9 @@ import org.example.visitor.TypeVisitor;
 public class ArrayLookup extends Expression {
     private Expression array;
     private Expression idx;
-    @Override
-    public void accept(ASTVisitor v) {
-        v.visit(this);
-    }
 
     @Override
-    public Type accept(TypeVisitor v) {
+    public <T> T accept(Visitor<T> v) {
         return v.visit(this);
     }
 }
