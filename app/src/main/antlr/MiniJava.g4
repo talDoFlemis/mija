@@ -6,111 +6,110 @@ grammar MiniJava;
 package org.example.antlr;
 }
 
-// Ignore Whitespace
-WS: [ \t\r\n]+ -> skip;
+goal: program EOF;
+program: mainClass ( classDeclaration )*;
 
-// Ignore Comments
-COMMENT: '/*' .*? '*/' -> skip;
+mainClass: CLASS IDENTIFIER LSQUIRLY PUBLIC STATIC VOID MAIN LPAREN STRING LBRACKET RBRACKET IDENTIFIER RPAREN LSQUIRLY stmList RSQUIRLY RSQUIRLY;
+classDeclaration: CLASS IDENTIFIER ( EXTENDS IDENTIFIER )? LSQUIRLY varDeclList methodDeclList RSQUIRLY #classDecl;
 
-// Ignore Single Line Comments
-LINE_COMMENT: '//' ~[\r\n]* -> skip;
 
-// Tokens
-/* Punctuation */
-LSQUIRLY : '{';
-RSQUIRLY : '}';
-LPAREN : '(';
-RPAREN : ')';
-LBRACKET : '[';
-RBRACKET : ']';
-COMMA : ',';
-SEMICOLON : ';';
-DOT : '.';
+methodDeclList: ( methodDeclaration )*;
+varDeclList: ( varDeclaration )*;
+formalList: ( formal ( COMMA formal )* )?;
+stmList: ( statement )*;
 
-/* Keywords */
-CLASS : 'class';
-PUBLIC : 'public';
-STATIC : 'static';
-VOID : 'void';
-MAIN : 'main';
-EXTENDS : 'extends';
-RETURN : 'return';
-STRING : 'String';
-IF : 'if';
-ELSE : 'else';
-WHILE : 'while';
-THIS : 'this';
-NEW : 'new';
-LENGTH : 'length';
-SOUT : 'System.out.println';
+varDeclaration: type IDENTIFIER SEMICOLON #varDecl;
+methodDeclaration: PUBLIC type IDENTIFIER LPAREN formalList RPAREN LSQUIRLY varDeclList stmList RETURN expression SEMICOLON RSQUIRLY #methodDecl;
 
-/* Types */
-INT : 'int';
-INT_ARRAY : 'int[]';
-BOOLEAN : 'boolean';
+formal: type IDENTIFIER;
 
-/* Literals */
-TRUE_LITERAL : 'true';
-FALSE_LITERAL : 'false';
-fragment DIGIT : [0-9];
-fragment LETTER : [a-zA-Z];
-IDENTIFIER : LETTER (LETTER | DIGIT | '_' )*;
-INTEGER_LITERAL : DIGIT+;
+type:
+  INT LBRACKET RBRACKET #typeIntArray
+| BOOLEAN #typeBoolean
+| INT #typeInteger
+| IDENTIFIER #typeIdentifier
+;
 
-/* Operators */
-EQ : '=';
-AND : '&&';
-LT : '<';
-PLUS : '+';
-MINUS : '-';
-STAR : '*';
-BANG : '!';
+statement:
+  LSQUIRLY stmList RSQUIRLY #stmBlock
+| IF LPAREN expression RPAREN statement ELSE statement #stmIf
+| WHILE LPAREN expression RPAREN statement #stmWhile
+| SOUT LPAREN expression RPAREN SEMICOLON #stmPrint
+| IDENTIFIER EQ expression SEMICOLON #stmAssign
+| IDENTIFIER LBRACKET expression RBRACKET EQ expression SEMICOLON #stmArrayAssign
+;
 
-program : mainClass (objectDecl)* EOF;
+expression:
+  expression LBRACKET expression RBRACKET #expArrayLookup
+| expression DOT LENGHT #expArrayLength
+| expression DOT IDENTIFIER LPAREN callArguments RPAREN #expCall
+| BANG expression #expNot
+| NEW INT LBRACKET expression RBRACKET #expNewArray
+| NEW IDENTIFIER LPAREN RPAREN #expNewObject
+| expression STAR expression #expTimes
+| expression PLUS expression #expPlus
+| expression MINUS expression #expMinus
+| expression LT expression #expLessThan
+| expression AND expression #expAnd
+| INTEGER_LITERAL #expIntegerLiteral
+| TRUE_LITERAL #expTrue
+| FALSE_LITERAL #expFalse
+| IDENTIFIER #expIdentifierExp
+| THIS #expThis
+| LPAREN expression RPAREN #expBracket
+;
 
-mainClass : CLASS identifier LSQUIRLY PUBLIC STATIC VOID MAIN LPAREN STRING LBRACKET RBRACKET identifier RPAREN LSQUIRLY statement RSQUIRLY RSQUIRLY;
+callArguments: ( expression ( COMMA expression )* )?;
 
-objectDecl : CLASS identifier (EXTENDS identifier)? LSQUIRLY (varDecl | methodDecl)* RSQUIRLY;
+// tokens
+LPAREN: '(';
+RPAREN: ')';
+LBRACKET: '[';
+RBRACKET: ']';
+LSQUIRLY: '{';
+RSQUIRLY: '}';
+SEMICOLON: ';';
+COMMA: ',';
+DOT: '.';
 
-integerArrayType : INT_ARRAY;
+//keywords
+CLASS: 'class';
+EXTENDS: 'extends';
+PUBLIC: 'public';
+STATIC: 'static';
+VOID: 'void';
+MAIN: 'main';
+INT: 'int';
+BOOLEAN: 'boolean';
+WHILE: 'while';
+IF: 'if';
+ELSE: 'else';
+SOUT: 'System.out.println';
+NEW: 'new';
+THIS: 'this';
+RETURN: 'return';
+STRING: 'String';
+LENGHT: 'length';
 
-integerType : INT;
 
-booleanType : BOOLEAN;
+// operators
+EQ: '=';
+AND: '&&';
+LT: '<';
+PLUS: '+';
+MINUS: '-';
+STAR: '*';
+BANG: '!';
 
-type: integerType | booleanType | integerArrayType | identifier;
+// constants
+TRUE_LITERAL: 'true';
+FALSE_LITERAL: 'false';
+INTEGER_LITERAL: [0-9]+;
 
-formal : type identifier;
+//id
+IDENTIFIER: [_a-zA-Z] [_a-zA-Z0-9]*;
 
-formalRest : COMMA formal;
-
-formalList : formal (formalRest)*;
-
-varDecl : type identifier SEMICOLON;
-
-methodDecl : PUBLIC type identifier LPAREN (formalList)? RPAREN LSQUIRLY (varDecl)* (statement)* RETURN expression SEMICOLON RSQUIRLY;
-
-identifier : IDENTIFIER;
-
-expression
-    : expression ( AND | LT | PLUS | MINUS | STAR ) expression
-    | expression LBRACKET expression RBRACKET
-    | expression DOT LENGTH
-    | expression DOT identifier LPAREN (expression (COMMA expression)* )? RPAREN
-    | INTEGER_LITERAL
-    | TRUE_LITERAL
-    | FALSE_LITERAL
-    | identifier
-    | THIS
-    | NEW INT LBRACKET expression RBRACKET
-    | NEW identifier LPAREN RPAREN
-    | BANG expression
-    | LPAREN expression RPAREN;
-
-statement
-    : LSQUIRLY (statement)* RSQUIRLY
-    | IF LPAREN expression RPAREN statement ELSE statement
-    | WHILE LPAREN expression RPAREN statement
-    | identifier EQ expression SEMICOLON
-    | identifier LBRACKET expression RBRACKET EQ expression SEMICOLON
-    | SOUT LPAREN expression RPAREN SEMICOLON;
+COMMENT: (SINGLELINECOMMENT | MULTILINECOMMENT) -> skip;
+fragment SINGLELINECOMMENT: ('//' ~('\n')*);
+fragment MULTILINECOMMENT: '/*' .*? '*/';
+WS: [ \t\r\n] -> skip;
