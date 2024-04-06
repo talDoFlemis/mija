@@ -447,7 +447,7 @@ Expression PrimaryExpression(): {
     {return expr;}
 |   expr = ThisLiteral()
     {return expr;}
-|   expr = Identifier()
+|   expr = IdentifierExpression()
     {return expr;}
 |   LOOKAHEAD(3) expr = NewArray()
     {return expr;}
@@ -455,6 +455,12 @@ Expression PrimaryExpression(): {
     {return expr;}
 |   expr = ParenthesizedExpression()
     {return expr;}
+}
+
+IdentifierExpression IdentifierExpression(): {}
+{
+    <IDENTIFIER>
+    {return new IdentifierExpression(token.image);}
 }
 
 IntegerLiteral IntegerLiteral(): {}

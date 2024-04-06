@@ -12,7 +12,8 @@ import org.example.visitor.Visitor;
 @AllArgsConstructor
 public class While extends Statement {
     private Expression condition;
-    private Statement body;
+    @Builder.Default
+    private Statement body = new Block(new StatementList());
 
     @Override
     public <T> T accept(Visitor<T> v) {

@@ -10,7 +10,7 @@ import org.example.visitor.Visitor;
 @ToString
 @Data
 @AllArgsConstructor
-public class Identifier extends Expression {
+public class Identifier extends Node {
     private String s;
 
     @Override

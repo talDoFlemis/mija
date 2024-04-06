@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -189,7 +190,7 @@ class SymbolTableVisitorTest {
                                 .builder()
                                 .classParent(getMockedClassTable())
                                 .methodName("method")
-                                .paramsContext(new HashMap<>() {{
+                                .paramsContext(new LinkedHashMap<>() {{
                                     put("tubias", new IntegerType());
                                 }})
                                 .methodReturnType(new IntegerType())
@@ -253,7 +254,7 @@ class SymbolTableVisitorTest {
                                 .localsContext(new HashMap<>() {{
                                     put("tubias", new IntegerType());
                                 }})
-                                .paramsContext(new HashMap<>() {{
+                                .paramsContext(new LinkedHashMap<>() {{
                                     put("tubias", new IntegerType());
                                 }})
                                 .build()

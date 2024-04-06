@@ -13,9 +13,12 @@ import org.example.visitor.Visitor;
 public class MethodDecl extends Node {
     private Type type;
     private String identifier;
-    private FormalList formals;
-    private VarDeclList varDecls;
-    private StatementList statements;
+    @Builder.Default
+    private FormalList formals = new FormalList();
+    @Builder.Default
+    private VarDeclList varDecls = new VarDeclList();
+    @Builder.Default
+    private StatementList statements = new StatementList();
     private Expression returnExpression;
 
     @Override

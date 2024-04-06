@@ -96,23 +96,23 @@ class JavaCCParserTest {
                 Arguments.of("5", new IntegerLiteral(5)),
                 Arguments.of("true", new True()),
                 Arguments.of("false", new False()),
-                Arguments.of("x", new Identifier("x")),
-                Arguments.of("x[5]", new ArrayLookup(new Identifier("x"), new IntegerLiteral(5))),
-                Arguments.of("x.length", new ArrayLength(new Identifier("x"))),
-                Arguments.of("!x", new Not(new Identifier("x"))),
-                Arguments.of("x + 5", new Plus(new Identifier("x"), new IntegerLiteral(5))),
-                Arguments.of("x - 5", new Minus(new Identifier("x"), new IntegerLiteral(5))),
-                Arguments.of("x * 5", new Times(new Identifier("x"), new IntegerLiteral(5))),
-                Arguments.of("x < 5", new LessThan(new Identifier("x"), new IntegerLiteral(5))),
-                Arguments.of("(x) && y", new And(new Identifier("x"), new Identifier("y"))),
-                Arguments.of("x[y]", new ArrayLookup(new Identifier("x"), new Identifier("y"))),
+                Arguments.of("x", new IdentifierExpression("x")),
+                Arguments.of("x[5]", new ArrayLookup(new IdentifierExpression("x"), new IntegerLiteral(5))),
+                Arguments.of("x.length", new ArrayLength(new IdentifierExpression("x"))),
+                Arguments.of("!x", new Not(new IdentifierExpression("x"))),
+                Arguments.of("x + 5", new Plus(new IdentifierExpression("x"), new IntegerLiteral(5))),
+                Arguments.of("x - 5", new Minus(new IdentifierExpression("x"), new IntegerLiteral(5))),
+                Arguments.of("x * 5", new Times(new IdentifierExpression("x"), new IntegerLiteral(5))),
+                Arguments.of("x < 5", new LessThan(new IdentifierExpression("x"), new IntegerLiteral(5))),
+                Arguments.of("(x) && y", new And(new IdentifierExpression("x"), new IdentifierExpression("y"))),
+                Arguments.of("x[y]", new ArrayLookup(new IdentifierExpression("x"), new IdentifierExpression("y"))),
                 Arguments.of("new int[5]", new NewArray(new IntegerLiteral(5))),
                 Arguments.of("new gipity()", new NewObject(new Identifier("gipity"))),
-                Arguments.of("(x + 5)", new Plus(new Identifier("x"), new IntegerLiteral(5))),
+                Arguments.of("(x + 5)", new Plus(new IdentifierExpression("x"), new IntegerLiteral(5))),
                 Arguments.of("this", new This()),
-                Arguments.of("x.y()", new Call(new Identifier("x"), new Identifier("y"), new ExpressionList())),
+                Arguments.of("x.y()", new Call(new IdentifierExpression("x"), new Identifier("y"), new ExpressionList())),
                 Arguments.of("new Fac().ComputeFac()", new Call(new NewObject(new Identifier("Fac")), new Identifier("ComputeFac"), new ExpressionList())),
-                Arguments.of("!current_node.GetHas_Right() && !current_node.GetHas_Left()", new And(new Not(new Call(new Identifier("current_node"), new Identifier("GetHas_Right"), new ExpressionList())), new Not(new Call(new Identifier("current_node"), new Identifier("GetHas_Left"), new ExpressionList()))))
+                Arguments.of("!current_node.GetHas_Right() && !current_node.GetHas_Left()", new And(new Not(new Call(new IdentifierExpression("current_node"), new Identifier("GetHas_Right"), new ExpressionList())), new Not(new Call(new IdentifierExpression("current_node"), new Identifier("GetHas_Left"), new ExpressionList()))))
         );
     }
 
@@ -146,22 +146,22 @@ class JavaCCParserTest {
                         Minus.builder()
                                 .lhe(Plus.builder()
                                         .lhe(Plus.builder()
-                                                .lhe(new Identifier("a"))
+                                                .lhe(new IdentifierExpression("a"))
                                                 .rhe(Times.builder()
-                                                        .lhe(new Identifier("b"))
-                                                        .rhe(new Identifier("c"))
+                                                        .lhe(new IdentifierExpression("b"))
+                                                        .rhe(new IdentifierExpression("c"))
                                                         .build()
                                                 )
                                                 .build()
                                         )
                                         .rhe(Times.builder()
-                                                .lhe(new Identifier("d"))
-                                                .rhe(new Identifier("e"))
+                                                .lhe(new IdentifierExpression("d"))
+                                                .rhe(new IdentifierExpression("e"))
                                                 .build()
                                         )
                                         .build()
                                 )
-                                .rhe(new Identifier("f"))
+                                .rhe(new IdentifierExpression("f"))
                                 .build()
                 ),
                 Arguments.of("3 + 4 * 5 && 3 * 1 + 4 * 5",
@@ -284,7 +284,7 @@ class JavaCCParserTest {
                                 .statements(new StatementList(new ArrayList<>() {{
                                     add(new Assign(new Identifier("x"), new IntegerLiteral(5)));
                                 }}))
-                                .returnExpression(new Identifier("x"))
+                                .returnExpression(new IdentifierExpression("x"))
                                 .build()
                 )
         );
