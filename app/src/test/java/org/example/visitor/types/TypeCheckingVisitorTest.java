@@ -359,7 +359,7 @@ class TypeCheckingVisitorTest {
     @Test
     void shouldCheckForAValidAssignArray() {
         // ARRANGE
-        Program prog  = Program.builder()
+        Program prog = Program.builder()
                 .mainClass(mockedMainClass())
                 .classes(new ClassDeclList(new ArrayList<>() {{
                     add(ClassDeclSimple.builder()
@@ -406,7 +406,7 @@ class TypeCheckingVisitorTest {
                                 .identifier(new Identifier("x"))
                                 .index(new IntegerLiteral(2))
                                 .value(new False())
-                        .build()
+                                .build()
                 ),
                 Arguments.of(
                         new VarDeclList(new ArrayList<>() {{
@@ -432,7 +432,7 @@ class TypeCheckingVisitorTest {
     }
 
     @ParameterizedTest
-    @DisplayName("Should check for a valid Assign Array Statement")
+    @DisplayName("Should check for a invalid Assign Array Statement")
     @MethodSource
     void shouldCheckForAInvalidAssignArray(VarDeclList varList, ArrayAssign assign) {
         // ARRANGE
@@ -785,4 +785,257 @@ class TypeCheckingVisitorTest {
         assertFalse(typeVisitor.getErrors().isEmpty());
     }
 
+    @Test
+    @DisplayName("Should check for a invalid NewArray expression")
+    void shouldCheckForAInvalidNewArray() {
+        // ARRANGE
+        Program prog = Program.builder()
+                .mainClass(mockedMainClass())
+                .classes(new ClassDeclList(new ArrayList<>() {{
+                    add(ClassDeclSimple.builder()
+                            .className(new Identifier("Gabrigas"))
+                            .methods(new MethodDeclList(new ArrayList<>() {{
+                                add(MethodDecl.builder()
+                                        .identifier("main")
+                                        .formals(new FormalList(new ArrayList<>()))
+                                        .varDecls(new VarDeclList(new ArrayList<>() {{
+                                            add(VarDecl.builder().name("x").type(new IntArrayType()).build());
+                                        }}))
+                                        .statements(new StatementList(new ArrayList<>() {{
+                                            add(Assign.builder()
+                                                    .identifier(new Identifier("x"))
+                                                    .value(new NewArray(new True()))
+                                                    .build());
+                                        }}))
+                                        .type(new IntegerType())
+                                        .returnExpression(new IntegerLiteral(1))
+                                        .build());
+                            }}))
+                            .build());
+                }}))
+                .build();
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        prog.accept(symbolTableVisitor);
+        TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor(symbolTableVisitor.getMainTable());
+
+        // ACT
+        prog.accept(typeVisitor);
+
+        // ASSERT
+        assertFalse(typeVisitor.getErrors().isEmpty());
+    }
+
+    static Stream<Arguments> shouldCheckForAInvalidArrayLookup() {
+        return Stream.of(
+                Arguments.of(
+                        new VarDeclList(new ArrayList<>() {{
+                            add(VarDecl.builder().name("x").type(new IntArrayType()).build());
+                            add(VarDecl.builder().name("y").type(new IntegerType()).build());
+                        }}),
+                        new StatementList(new ArrayList<>() {{
+                            add(new Assign(new Identifier("y"), new ArrayLookup(new IdentifierExpression("x"), new True())));
+                        }})
+                ),
+                Arguments.of(
+                        new VarDeclList(new ArrayList<>() {{
+                            add(VarDecl.builder().name("x").type(new IntArrayType()).build());
+                            add(VarDecl.builder().name("y").type(new IntegerType()).build());
+                        }}),
+                        new StatementList(new ArrayList<>() {{
+                            add(new Assign(new Identifier("y"), new ArrayLookup(new IdentifierExpression("x"), new NewArray(new IntegerLiteral(1)))));
+                        }})
+                ),
+                Arguments.of(
+                        new VarDeclList(new ArrayList<>() {{
+                            add(VarDecl.builder().name("x").type(new IntArrayType()).build());
+                            add(VarDecl.builder().name("y").type(new IntegerType()).build());
+                        }}),
+                        new StatementList(new ArrayList<>() {{
+                            add(new Assign(new Identifier("y"), new ArrayLookup(new IdentifierExpression("x"), new NewObject(mockedMainClass().getClassName()))));
+                        }})
+                ),
+                Arguments.of(
+                        new VarDeclList(new ArrayList<>() {{
+                            add(VarDecl.builder().name("x").type(new IntegerType()).build());
+                            add(VarDecl.builder().name("y").type(new IntegerType()).build());
+                        }}),
+                        new StatementList(new ArrayList<>() {{
+                            add(new Assign(new Identifier("y"), new ArrayLookup(new IdentifierExpression("x"), new IntegerLiteral(1))));
+                        }})
+
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("Should check for a invalid Array Lookup expression")
+    @MethodSource
+    void shouldCheckForAInvalidArrayLookup(VarDeclList varList, StatementList stmList) {
+        // ARRANGE
+        Program prog = Program.builder()
+                .mainClass(mockedMainClass())
+                .classes(new ClassDeclList(new ArrayList<>() {{
+                    add(ClassDeclSimple.builder()
+                            .className(new Identifier("Gabrigas"))
+                            .methods(new MethodDeclList(new ArrayList<>() {{
+                                add(MethodDecl.builder()
+                                        .identifier("main")
+                                        .formals(new FormalList(new ArrayList<>()))
+                                        .varDecls(varList)
+                                        .statements(stmList)
+                                        .type(new IntegerType())
+                                        .returnExpression(new IntegerLiteral(1))
+                                        .build());
+                            }}))
+                            .build());
+                }}))
+                .build();
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        prog.accept(symbolTableVisitor);
+        TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor(symbolTableVisitor.getMainTable());
+
+        // ACT
+        prog.accept(typeVisitor);
+
+        // ASSERT
+        assertFalse(typeVisitor.getErrors().isEmpty());
+    }
+
+    static Stream<Arguments> shouldCheckForAInvalidCall() {
+        return Stream.of(
+                Arguments.of(
+                        new MethodDeclList(new ArrayList<>() {{
+                            add(MethodDecl.builder()
+                                    .identifier("main")
+                                    .formals(new FormalList(new ArrayList<>() {{
+                                        add(Formal.builder().name("x").type(new IntegerType()).build());
+                                    }}))
+                                    .type(new IntegerType())
+                                    .returnExpression(new IntegerLiteral(1))
+                                    .build());
+                            add(MethodDecl.builder()
+                                    .identifier("main")
+                                    .formals(new FormalList(new ArrayList<>()))
+                                    .statements(new StatementList(new ArrayList<>() {{
+                                        add(new Sout(Call.builder()
+                                                .owner(new This())
+                                                .method(new Identifier("main"))
+                                                .expressionList(new ExpressionList(new ArrayList<>() {{
+                                                    add(new False());
+                                                }}))
+                                                .build()));
+                                    }}))
+                                    .type(new IntegerType())
+                                    .returnExpression(new IntegerLiteral(1))
+                                    .build());
+                        }})
+                ),
+                Arguments.of(
+                        new MethodDeclList(new ArrayList<>() {{
+                            add(MethodDecl.builder()
+                                    .identifier("main")
+                                    .formals(new FormalList(new ArrayList<>() {{
+                                        add(Formal.builder().name("x").type(new IntegerType()).build());
+                                    }}))
+                                    .type(new IntegerType())
+                                    .returnExpression(new IntegerLiteral(1))
+                                    .build());
+                            add(MethodDecl.builder()
+                                    .identifier("main")
+                                    .formals(new FormalList(new ArrayList<>()))
+                                    .statements(new StatementList(new ArrayList<>() {{
+                                        add(new Sout(Call.builder()
+                                                .owner(new This())
+                                                .method(new Identifier("main"))
+                                                .expressionList(new ExpressionList(new ArrayList<>()))
+                                                .build()));
+                                    }}))
+                                    .type(new IntegerType())
+                                    .returnExpression(new IntegerLiteral(1))
+                                    .build());
+                        }})
+                ),
+                Arguments.of(
+                        new MethodDeclList(new ArrayList<>() {{
+                            add(MethodDecl.builder()
+                                    .identifier("main")
+                                    .formals(new FormalList(new ArrayList<>() {{
+                                        add(Formal.builder().name("x").type(new IntegerType()).build());
+                                    }}))
+                                    .type(new IntegerType())
+                                    .returnExpression(new IntegerLiteral(1))
+                                    .build());
+                            add(MethodDecl.builder()
+                                    .identifier("main")
+                                    .formals(new FormalList(new ArrayList<>()))
+                                    .statements(new StatementList(new ArrayList<>() {{
+                                        add(new Sout(Call.builder()
+                                                .owner(new This())
+                                                .method(new Identifier("main"))
+                                                .expressionList(new ExpressionList(new ArrayList<>() {{
+                                                    add(new IntegerLiteral(1));
+                                                    add(new IntegerLiteral(1));
+                                                }}))
+                                                .build()));
+                                    }}))
+                                    .type(new IntegerType())
+                                    .returnExpression(new IntegerLiteral(1))
+                                    .build());
+                        }})
+                ),
+                Arguments.of(
+                        new MethodDeclList(new ArrayList<>() {{
+                            add(MethodDecl.builder()
+                                    .identifier("main")
+                                    .formals(new FormalList(new ArrayList<>() {{
+                                        add(Formal.builder().name("x").type(new IntegerType()).build());
+                                        add(Formal.builder().name("y").type(new BooleanType()).build());
+                                    }}))
+                                    .type(new IntegerType())
+                                    .returnExpression(new IntegerLiteral(1))
+                                    .build());
+                            add(MethodDecl.builder()
+                                    .identifier("main")
+                                    .formals(new FormalList(new ArrayList<>()))
+                                    .statements(new StatementList(new ArrayList<>() {{
+                                        add(new Sout(Call.builder()
+                                                .owner(new This())
+                                                .method(new Identifier("main"))
+                                                .expressionList(new ExpressionList(new ArrayList<>() {{
+                                                    add(new IntegerLiteral(1));
+                                                    add(new IntegerLiteral(1));
+                                                }}))
+                                                .build()));
+                                    }}))
+                                    .type(new IntegerType())
+                                    .returnExpression(new IntegerLiteral(1))
+                                    .build());
+                        }}))
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("Should check for a invalid Call expression")
+    @MethodSource
+    void shouldCheckForAInvalidCall(MethodDeclList methods) {
+        // ARRANGE
+        Program prog = Program.builder()
+                .mainClass(mockedMainClass())
+                .classes(new ClassDeclList(new ArrayList<>() {{
+                    add(ClassDeclSimple.builder()
+                            .className(new Identifier("Gabrigas"))
+                            .methods(methods)
+                            .build());
+                }}))
+                .build();
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        prog.accept(symbolTableVisitor);
+        TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor(symbolTableVisitor.getMainTable());
+
+        // ACT
+        prog.accept(typeVisitor);
+
+        // ASSERT
+        assertFalse(typeVisitor.getErrors().isEmpty());
+    }
 }

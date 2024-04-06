@@ -14,7 +14,8 @@ public class MethodDecl extends Node {
     private Type type;
     private String identifier;
     private FormalList formals;
-    private VarDeclList varDecls;
+    @Builder.Default
+    private VarDeclList varDecls = new VarDeclList();
     @Builder.Default
     private StatementList statements = new StatementList();
     private Expression returnExpression;
