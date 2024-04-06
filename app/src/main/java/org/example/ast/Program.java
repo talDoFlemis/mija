@@ -12,7 +12,8 @@ import org.example.visitor.Visitor;
 @AllArgsConstructor
 public class Program extends Node {
     private MainClass mainClass;
-    private ClassDeclList classes;
+    @Builder.Default
+    private ClassDeclList classes = new ClassDeclList();
 
     @Override
     public <T> T accept(Visitor<T> v) {

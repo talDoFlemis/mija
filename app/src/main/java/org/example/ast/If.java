@@ -12,8 +12,10 @@ import org.example.visitor.Visitor;
 @AllArgsConstructor
 public class If extends Statement {
     private Expression condition;
-    private Statement thenBranch;
-    private Statement elseBranch;
+    @Builder.Default
+    private Statement thenBranch = new Block(new StatementList());
+    @Builder.Default
+    private Statement elseBranch = new Block(new StatementList());
 
     @Override
     public <T> T accept(Visitor<T> v) {

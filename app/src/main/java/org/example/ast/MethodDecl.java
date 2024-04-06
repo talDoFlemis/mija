@@ -15,7 +15,8 @@ public class MethodDecl extends Node {
     private String identifier;
     private FormalList formals;
     private VarDeclList varDecls;
-    private StatementList statements;
+    @Builder.Default
+    private StatementList statements = new StatementList();
     private Expression returnExpression;
 
     @Override
