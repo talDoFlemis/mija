@@ -223,7 +223,7 @@ public class ASTGenerator extends org.example.antlr.MiniJavaBaseListener {
     }
 
     public void exitExpIdentifierExp(@NotNull MiniJavaParser.ExpIdentifierExpContext ctx) {
-        expStack.push(new Identifier(ctx.getText()));
+        expStack.push(new IdentifierExpression(ctx.getText()));
     }
 
     public void exitExpNot(@NotNull MiniJavaParser.ExpNotContext ctx) {

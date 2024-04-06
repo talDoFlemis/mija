@@ -13,7 +13,8 @@ import org.example.visitor.Visitor;
 public class MethodDecl extends Node {
     private Type type;
     private String identifier;
-    private FormalList formals;
+    @Builder.Default
+    private FormalList formals = new FormalList();
     @Builder.Default
     private VarDeclList varDecls = new VarDeclList();
     @Builder.Default

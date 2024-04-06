@@ -47,52 +47,52 @@ class AntlrParserTest {
                 ),
                 Arguments.of("x",
                         Sout.builder().expression(
-                                new Identifier("x")
+                                new IdentifierExpression("x")
                         ).build()
                 ),
                 Arguments.of("x[5]",
                         Sout.builder().expression(
-                                new ArrayLookup(new Identifier("x"), new IntegerLiteral(5))
+                                new ArrayLookup(new IdentifierExpression("x"), new IntegerLiteral(5))
                         ).build()
                 ),
                 Arguments.of("x.length",
                         Sout.builder().expression(
-                                new ArrayLength(new Identifier("x"))
+                                new ArrayLength(new IdentifierExpression("x"))
                         ).build()
                 ),
                 Arguments.of("!x",
                         Sout.builder().expression(
-                                new Not(new Identifier("x"))
+                                new Not(new IdentifierExpression("x"))
                         ).build()
                 ),
                 Arguments.of("x + 5",
                         Sout.builder().expression(
-                                new Plus(new Identifier("x"), new IntegerLiteral(5))
+                                new Plus(new IdentifierExpression("x"), new IntegerLiteral(5))
                         ).build()
                 ),
                 Arguments.of("x - 5",
                         Sout.builder().expression(
-                                new Minus(new Identifier("x"), new IntegerLiteral(5))
+                                new Minus(new IdentifierExpression("x"), new IntegerLiteral(5))
                         ).build()
                 ),
                 Arguments.of("x * 5",
                         Sout.builder().expression(
-                                new Times(new Identifier("x"), new IntegerLiteral(5))
+                                new Times(new IdentifierExpression("x"), new IntegerLiteral(5))
                         ).build()
                 ),
                 Arguments.of("x < 5",
                         Sout.builder().expression(
-                                new LessThan(new Identifier("x"), new IntegerLiteral(5))
+                                new LessThan(new IdentifierExpression("x"), new IntegerLiteral(5))
                         ).build()
                 ),
                 Arguments.of("(x) && y",
                         Sout.builder().expression(
-                                new And(new Identifier("x"), new Identifier("y"))
+                                new And(new IdentifierExpression("x"), new IdentifierExpression("y"))
                         ).build()
                 ),
                 Arguments.of("x[y]",
                         Sout.builder().expression(
-                                new ArrayLookup(new Identifier("x"), new Identifier("y"))
+                                new ArrayLookup(new IdentifierExpression("x"), new IdentifierExpression("y"))
                         ).build()
                 ),
                 Arguments.of("new int[5]",
@@ -107,7 +107,7 @@ class AntlrParserTest {
                 ),
                 Arguments.of("(x + 5)",
                         Sout.builder().expression(
-                                new Plus(new Identifier("x"), new IntegerLiteral(5))
+                                new Plus(new IdentifierExpression("x"), new IntegerLiteral(5))
                         ).build()
                 ),
                 Arguments.of("this",
@@ -117,7 +117,7 @@ class AntlrParserTest {
                 ),
                 Arguments.of("x.y()",
                         Sout.builder().expression(
-                                new Call(new Identifier("x"), new Identifier("y"), new ExpressionList())
+                                new Call(new IdentifierExpression("x"), new Identifier("y"), new ExpressionList())
                         ).build()
                 ),
                 Arguments.of("new Fac().ComputeFac()",
@@ -127,7 +127,7 @@ class AntlrParserTest {
                 ),
                 Arguments.of("!current_node.GetHas_Right() && !current_node.GetHas_Left()",
                         Sout.builder().expression(
-                                new And(new Not(new Call(new Identifier("current_node"), new Identifier("GetHas_Right"), new ExpressionList())), new Not(new Call(new Identifier("current_node"), new Identifier("GetHas_Left"), new ExpressionList())))
+                                new And(new Not(new Call(new IdentifierExpression("current_node"), new Identifier("GetHas_Right"), new ExpressionList())), new Not(new Call(new IdentifierExpression("current_node"), new Identifier("GetHas_Left"), new ExpressionList())))
                         ).build()
                 )
         );
@@ -173,22 +173,22 @@ class AntlrParserTest {
                                         Minus.builder()
                                                 .lhe(Plus.builder()
                                                         .lhe(Plus.builder()
-                                                                .lhe(new Identifier("a"))
+                                                                .lhe(new IdentifierExpression("a"))
                                                                 .rhe(Times.builder()
-                                                                        .lhe(new Identifier("b"))
-                                                                        .rhe(new Identifier("c"))
+                                                                        .lhe(new IdentifierExpression("b"))
+                                                                        .rhe(new IdentifierExpression("c"))
                                                                         .build()
                                                                 )
                                                                 .build()
                                                         )
                                                         .rhe(Times.builder()
-                                                                .lhe(new Identifier("d"))
-                                                                .rhe(new Identifier("e"))
+                                                                .lhe(new IdentifierExpression("d"))
+                                                                .rhe(new IdentifierExpression("e"))
                                                                 .build()
                                                         )
                                                         .build()
                                                 )
-                                                .rhe(new Identifier("f"))
+                                                .rhe(new IdentifierExpression("f"))
                                                 .build()
                                 )
                                 .build()
@@ -528,7 +528,7 @@ class AntlrParserTest {
                                                             .statements(new StatementList(new ArrayList<>() {{
                                                                 add(new Assign(new Identifier("x"), new IntegerLiteral(5)));
                                                             }}))
-                                                            .returnExpression(new Identifier("x"))
+                                                            .returnExpression(new IdentifierExpression("x"))
                                                             .build()
                                             );
                                         }}
