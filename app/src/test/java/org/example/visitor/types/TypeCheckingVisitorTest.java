@@ -355,7 +355,434 @@ class TypeCheckingVisitorTest {
         assertFalse(typeVisitor.getErrors().isEmpty());
     }
 
+    @DisplayName("Should check for a valid Assign Array Statement")
+    @Test
+    void shouldCheckForAValidAssignArray() {
+        // ARRANGE
+        Program prog  = Program.builder()
+                .mainClass(mockedMainClass())
+                .classes(new ClassDeclList(new ArrayList<>() {{
+                    add(ClassDeclSimple.builder()
+                            .className(new Identifier("Gabrigas"))
+                            .methods(new MethodDeclList(new ArrayList<>() {{
+                                add(MethodDecl.builder()
+                                        .identifier("main")
+                                        .formals(new FormalList(new ArrayList<>()))
+                                        .varDecls(new VarDeclList(new ArrayList<>() {{
+                                            add(VarDecl.builder().name("x").type(new IntArrayType()).build());
+                                        }}))
+                                        .statements(new StatementList(new ArrayList<>() {{
+                                            add(ArrayAssign.builder()
+                                                    .identifier(new Identifier("x"))
+                                                    .index(new IntegerLiteral(1))
+                                                    .value(new IntegerLiteral(2))
+                                                    .build());
+                                        }}))
+                                        .type(new IntegerType())
+                                        .returnExpression(new IntegerLiteral(1))
+                                        .build());
+                            }}))
+                            .build());
+                }}))
+                .build();
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        prog.accept(symbolTableVisitor);
+        TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor(symbolTableVisitor.getMainTable());
 
+        // ACT
+        prog.accept(typeVisitor);
 
+        // ASSERT
+        assertTrue(typeVisitor.getErrors().isEmpty());
+    }
+
+    static Stream<Arguments> shouldCheckForAInvalidAssignArray() {
+        return Stream.of(
+                Arguments.of(
+                        new VarDeclList(new ArrayList<>() {{
+                            add(VarDecl.builder().name("x").type(new IntArrayType()).build());
+                        }}),
+                        ArrayAssign.builder()
+                                .identifier(new Identifier("x"))
+                                .index(new IntegerLiteral(2))
+                                .value(new False())
+                        .build()
+                ),
+                Arguments.of(
+                        new VarDeclList(new ArrayList<>() {{
+                            add(VarDecl.builder().name("x").type(new IntArrayType()).build());
+                        }}),
+                        ArrayAssign.builder()
+                                .identifier(new Identifier("x"))
+                                .index(new False())
+                                .value(new IntegerLiteral(2))
+                                .build()
+                ),
+                Arguments.of(
+                        new VarDeclList(new ArrayList<>() {{
+                            add(VarDecl.builder().name("x").type(new IntegerType()).build());
+                        }}),
+                        ArrayAssign.builder()
+                                .identifier(new Identifier("x"))
+                                .index(new IntegerLiteral(1))
+                                .value(new IntegerLiteral(2))
+                                .build()
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("Should check for a valid Assign Array Statement")
+    @MethodSource
+    void shouldCheckForAInvalidAssignArray(VarDeclList varList, ArrayAssign assign) {
+        // ARRANGE
+        Program prog = Program.builder()
+                .mainClass(mockedMainClass())
+                .classes(new ClassDeclList(new ArrayList<>() {{
+                    add(ClassDeclSimple.builder()
+                            .className(new Identifier("Gabrigas"))
+                            .methods(new MethodDeclList(new ArrayList<>() {{
+                                add(MethodDecl.builder()
+                                        .identifier("main")
+                                        .formals(new FormalList(new ArrayList<>()))
+                                        .varDecls(varList)
+                                        .statements(new StatementList(new ArrayList<>() {{
+                                            add(assign);
+                                        }}))
+                                        .type(new IntegerType())
+                                        .returnExpression(new IntegerLiteral(1))
+                                        .build());
+                            }}))
+                            .build());
+                }}))
+                .build();
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        prog.accept(symbolTableVisitor);
+        TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor(symbolTableVisitor.getMainTable());
+
+        // ACT
+        prog.accept(typeVisitor);
+
+        // ASSERT
+        assertFalse(typeVisitor.getErrors().isEmpty());
+    }
+
+    static Stream<Arguments> shouldCheckForAValidBooleanExpression() {
+        return Stream.of(
+                Arguments.of(
+                        And.builder()
+                                .lhe(new True())
+                                .rhe(new True())
+                                .build()
+                ),
+                Arguments.of(
+                        And.builder()
+                                .lhe(And.builder()
+                                        .lhe(new False())
+                                        .rhe(new True())
+                                        .build()
+                                )
+                                .rhe(And.builder()
+                                        .lhe(new False())
+                                        .rhe(new True())
+                                        .build())
+                                .build()
+                ),
+                Arguments.of(
+                        new Not(new False())
+                ),
+                Arguments.of(
+                        new Not(
+                                And.builder()
+                                        .lhe(new True())
+                                        .rhe(new True())
+                                        .build()
+                        )
+                ),
+                Arguments.of(
+                        LessThan.builder()
+                                .lhe(new IntegerLiteral(2))
+                                .rhe(new IntegerLiteral(1))
+                                .build()
+                )
+        );
+
+    }
+
+    @ParameterizedTest
+    @DisplayName("Should check for a valid boolean expression")
+    @MethodSource
+    void shouldCheckForAValidBooleanExpression(Expression exp) {
+        // ARRANGE
+        Program prog = Program.builder()
+                .mainClass(MainClass.builder()
+                        .className(new Identifier("Main"))
+                        .argsName(new Identifier("args"))
+                        .statements(
+                                new StatementList(new ArrayList<>() {{
+                                    add(
+                                            new If(exp, new Sout(new IntegerLiteral(1)), new Sout(new IntegerLiteral(1)))
+                                    );
+                                }})
+                        )
+                        .build())
+                .build();
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        prog.accept(symbolTableVisitor);
+        TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor(symbolTableVisitor.getMainTable());
+
+        // ACT
+        prog.accept(typeVisitor);
+
+        // ASSERT
+        assertTrue(typeVisitor.getErrors().isEmpty());
+    }
+
+    static Stream<Arguments> shouldCheckForAInvalidBooleanExpression() {
+        return Stream.of(
+                Arguments.of(
+                        And.builder()
+                                .lhe(new IntegerLiteral(1))
+                                .rhe(new True())
+                                .build()
+                ),
+                Arguments.of(
+                        And.builder()
+                                .lhe(And.builder()
+                                        .lhe(new False())
+                                        .rhe(new True())
+                                        .build()
+                                )
+                                .rhe(new IntegerLiteral(2))
+                                .build()
+                ),
+                Arguments.of(
+                        new Not(new IntegerLiteral(2))
+                ),
+                Arguments.of(
+                        LessThan.builder()
+                                .lhe(new IntegerLiteral(2))
+                                .rhe(new True())
+                                .build()
+                )
+        );
+
+    }
+
+    @ParameterizedTest
+    @DisplayName("Should check for a valid boolean expression")
+    @MethodSource
+    void shouldCheckForAInvalidBooleanExpression(Expression exp) {
+        // ARRANGE
+        Program prog = Program.builder()
+                .mainClass(MainClass.builder()
+                        .className(new Identifier("Main"))
+                        .argsName(new Identifier("args"))
+                        .statements(
+                                new StatementList(new ArrayList<>() {{
+                                    add(
+                                            new If(exp, new Sout(new IntegerLiteral(1)), new Sout(new IntegerLiteral(1)))
+                                    );
+                                }})
+                        )
+                        .build())
+                .build();
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        prog.accept(symbolTableVisitor);
+        TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor(symbolTableVisitor.getMainTable());
+
+        // ACT
+        prog.accept(typeVisitor);
+
+        // ASSERT
+        assertFalse(typeVisitor.getErrors().isEmpty());
+    }
+
+    static Stream<Arguments> shouldCheckForAValidBinaryExpression() {
+        return Stream.of(
+                Arguments.of(
+                        new Plus(
+                                new IntegerLiteral(1),
+                                new IntegerLiteral(1)
+                        )
+                ),
+                Arguments.of(
+                        new Plus(
+                                new Plus(
+                                        new IntegerLiteral(1),
+                                        new IntegerLiteral(1)
+                                ),
+                                new IntegerLiteral(1)
+                        )
+                ),
+                Arguments.of(
+                        new Minus(
+                                new IntegerLiteral(1),
+                                new IntegerLiteral(1)
+                        )
+                ),
+                Arguments.of(
+                        new Minus(
+                                new Minus(
+                                        new IntegerLiteral(1),
+                                        new IntegerLiteral(1)
+                                ),
+                                new IntegerLiteral(1)
+                        )
+                ),
+                Arguments.of(
+                        new Times(
+                                new IntegerLiteral(1),
+                                new IntegerLiteral(1)
+                        )
+                ),
+                Arguments.of(
+                        new Times(
+                                new Times(
+                                        new IntegerLiteral(1),
+                                        new IntegerLiteral(1)
+                                ),
+                                new IntegerLiteral(1)
+                        )
+                ),
+                Arguments.of(
+                        new ArrayLength(
+                                new NewArray(new IntegerLiteral(1))
+                        )
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("Should check for a valid binary expression")
+    @MethodSource
+    void shouldCheckForAValidBinaryExpression(Expression exp) {
+        // ARRANGE
+        Program prog = Program.builder()
+                .mainClass(mockedMainClass())
+                .classes(new ClassDeclList(new ArrayList<>() {{
+                    add(ClassDeclSimple.builder()
+                            .className(new Identifier("Gabrigas"))
+                            .methods(new MethodDeclList(new ArrayList<>() {{
+                                add(MethodDecl.builder()
+                                        .identifier("main")
+                                        .formals(new FormalList(new ArrayList<>()))
+                                        .varDecls(new VarDeclList(new ArrayList<>() {{
+                                            add(VarDecl.builder().name("x").type(new IntegerType()).build());
+                                        }}))
+                                        .statements(new StatementList(new ArrayList<>() {{
+                                            add(Assign.builder()
+                                                    .identifier(new Identifier("x"))
+                                                    .value(exp)
+                                                    .build());
+                                        }}))
+                                        .type(new IntegerType())
+                                        .returnExpression(new IntegerLiteral(1))
+                                        .build());
+                            }}))
+                            .build());
+                }}))
+                .build();
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        prog.accept(symbolTableVisitor);
+        TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor(symbolTableVisitor.getMainTable());
+
+        // ACT
+        prog.accept(typeVisitor);
+
+        // ASSERT
+        assertTrue(typeVisitor.getErrors().isEmpty());
+    }
+
+    static Stream<Arguments> shouldCheckForAInvalidBinaryExpression() {
+        return Stream.of(
+                Arguments.of(
+                        new Plus(
+                                new True(),
+                                new IntegerLiteral(1)
+                        )
+                ),
+                Arguments.of(
+                        new Plus(
+                                new Plus(
+                                        new True(),
+                                        new IntegerLiteral(1)
+                                ),
+                                new IntegerLiteral(1)
+                        )
+                ),
+                Arguments.of(
+                        new Minus(
+                                new IntegerLiteral(1),
+                                new True()
+                        )
+                ),
+                Arguments.of(
+                        new Minus(
+                                new Minus(
+                                        new True(),
+                                        new IntegerLiteral(1)
+                                ),
+                                new IntegerLiteral(1)
+                        )
+                ),
+                Arguments.of(
+                        new Times(
+                                new True(),
+                                new IntegerLiteral(1)
+                        )
+                ),
+                Arguments.of(
+                        new Times(
+                                new Times(
+                                        new True(),
+                                        new IntegerLiteral(1)
+                                ),
+                                new IntegerLiteral(1)
+                        )
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("Should check for a valid binary expression")
+    @MethodSource
+    void shouldCheckForAInvalidBinaryExpression(Expression exp) {
+        // ARRANGE
+        Program prog = Program.builder()
+                .mainClass(mockedMainClass())
+                .classes(new ClassDeclList(new ArrayList<>() {{
+                    add(ClassDeclSimple.builder()
+                            .className(new Identifier("Gabrigas"))
+                            .methods(new MethodDeclList(new ArrayList<>() {{
+                                add(MethodDecl.builder()
+                                        .identifier("main")
+                                        .formals(new FormalList(new ArrayList<>()))
+                                        .varDecls(new VarDeclList(new ArrayList<>() {{
+                                            add(VarDecl.builder().name("x").type(new IntegerType()).build());
+                                        }}))
+                                        .statements(new StatementList(new ArrayList<>() {{
+                                            add(Assign.builder()
+                                                    .identifier(new Identifier("x"))
+                                                    .value(exp)
+                                                    .build());
+                                        }}))
+                                        .type(new IntegerType())
+                                        .returnExpression(new IntegerLiteral(1))
+                                        .build());
+                            }}))
+                            .build());
+                }}))
+                .build();
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        prog.accept(symbolTableVisitor);
+        TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor(symbolTableVisitor.getMainTable());
+
+        // ACT
+        prog.accept(typeVisitor);
+
+        // ASSERT
+        assertFalse(typeVisitor.getErrors().isEmpty());
+    }
 
 }

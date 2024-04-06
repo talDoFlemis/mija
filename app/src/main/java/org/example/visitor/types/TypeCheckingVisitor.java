@@ -220,7 +220,7 @@ public class TypeCheckingVisitor implements Visitor<Type> {
         Type rheType = l.getRhe().accept(this);
 
         if (checkBinaryOperation("Less Than", lheType, rheType)) {
-            return new IntegerType();
+            return new BooleanType();
         }
         return null;
     }
@@ -389,7 +389,9 @@ public class TypeCheckingVisitor implements Visitor<Type> {
     private boolean checkIfIntArrayType(String name, Type anotherType) {
         boolean ok = true;
         if (!(anotherType instanceof IntArrayType)) {
-            addError(name + " is not an instance of IntArrayType, but " + anotherType.toString());
+            //TODO: TERNARIOOO
+            String s = anotherType != null ? anotherType.toString() : "null";
+            addError(name + " is not an instance of IntArrayType, but " + s);
             ok = false;
         }
         return ok;
@@ -398,6 +400,7 @@ public class TypeCheckingVisitor implements Visitor<Type> {
     private boolean checkIfIntegerType(String name, Type anotherType) {
         boolean ok = true;
         if (!(anotherType instanceof IntegerType)) {
+            //TODO: TERNARIOOO
             String s = anotherType != null ? anotherType.toString() : "null";
             addError(name + " is not an instance of IntegerType, but " + s);
             ok = false;
@@ -409,7 +412,9 @@ public class TypeCheckingVisitor implements Visitor<Type> {
         boolean ok = true;
         if (!(anotherType instanceof BooleanType)) {
             ok = false;
-            addError(name + " is not an instance of BooleanType, but " + anotherType.toString());
+            //TODO: TERNARIOOO
+            String s = anotherType != null ? anotherType.toString() : "null";
+            addError(name + " is not an instance of BooleanType, but " + s);
         }
         return ok;
     }
