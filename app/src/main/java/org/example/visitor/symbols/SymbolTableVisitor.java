@@ -21,6 +21,8 @@ public class SymbolTableVisitor implements Visitor<Void> {
     private MethodTable currentMethodTable = null;
     @Builder.Default
     private ArrayList<SymbolTableException> errors = new ArrayList<>();
+    @Builder.Default
+    private boolean ignoreExtends = false;
 
     public Void visit(And a) {
         return null;
@@ -184,10 +186,12 @@ public class SymbolTableVisitor implements Visitor<Void> {
 
         addClassToMainTable(currentClassTable);
 
+        ignoreExtends = true;
         c.getFields().getVarDecls().forEach(varDecl -> varDecl.accept(this));
         c.getMethods().getMethodDecls().forEach(method -> method.accept(this));
 
         currentClassTable = null;
+        ignoreExtends = false;
         return null;
     }
 
@@ -250,7 +254,7 @@ public class SymbolTableVisitor implements Visitor<Void> {
     }
 
     private void addMethodToClassTable(ClassTable classTable, MethodTable methodTable) {
-        if (classTable.getMethodsContext().containsKey(methodTable.getMethodName())) {
+        if (!ignoreExtends && classTable.getMethodsContext().containsKey(methodTable.getMethodName())) {
             var e = new SymbolTableException("The method " + methodTable.getMethodName() + " was already defined in class " + classTable.getClassName());
             errors.add(e);
             return;
@@ -268,7 +272,7 @@ public class SymbolTableVisitor implements Visitor<Void> {
     }
 
     private void addLocalsToMethodTable(MethodTable table, Type type, String name) {
-        if (table.getLocalsContext().containsKey(name)) {
+        if (!ignoreExtends && table.getLocalsContext().containsKey(name)) {
             var e = new SymbolTableException("The param " + name + " has been already defined in method " + table.getMethodName() + " on class " + table.getClassParent().getClassName());
             errors.add(e);
             return;
