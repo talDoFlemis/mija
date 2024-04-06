@@ -4,6 +4,7 @@ import lombok.*;
 import org.example.ast.Type;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 @AllArgsConstructor
 @Builder
@@ -16,7 +17,7 @@ public class MethodTable {
     @EqualsAndHashCode.Exclude
     private ClassTable classParent;
     @Builder.Default
-    HashMap<String, Type> paramsContext = new HashMap<>();
+    LinkedHashMap<String, Type> paramsContext = new LinkedHashMap<>();
     @Builder.Default
     HashMap<String, Type> localsContext = new HashMap<>();
 }
