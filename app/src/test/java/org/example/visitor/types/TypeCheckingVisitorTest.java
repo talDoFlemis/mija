@@ -1028,6 +1028,7 @@ class TypeCheckingVisitorTest {
                             .build());
                 }}))
                 .build();
+
         SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
         prog.accept(symbolTableVisitor);
         TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor(symbolTableVisitor.getMainTable());
@@ -1037,5 +1038,105 @@ class TypeCheckingVisitorTest {
 
         // ASSERT
         assertFalse(typeVisitor.getErrors().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should allow a subclass to be used as a superclass on method call")
+    void shouldAllowASubclassToBeUsedAsASuperclassOnMethodCall() {
+        // ARRANGE
+        Program prog = Program.builder()
+                .mainClass(MainClass.builder()
+                        .argsName(new Identifier("args"))
+                        .className(new Identifier("Main"))
+                        .statements(new StatementList(new ArrayList<>() {{
+                            add(new Sout(Call.builder()
+                                    .owner(new NewObject(new Identifier("Caller")))
+                                    .method(new Identifier("accept"))
+                                    .expressionList(new ExpressionList(new ArrayList<>() {{
+                                        add(new NewObject(new Identifier("MyVisitorExtends")));
+                                    }}))
+                                    .build()));
+                        }}))
+                        .build())
+                .classes(new ClassDeclList(new ArrayList<>() {{
+                    add(ClassDeclSimple.builder()
+                            .className(new Identifier("Visitor"))
+                            .build());
+                    add(ClassDeclExtends.builder()
+                            .className(new Identifier("MyVisitorExtends"))
+                            .parent(new Identifier("Visitor"))
+                            .build());
+                    add(ClassDeclSimple.builder()
+                            .className(new Identifier("Caller"))
+                            .methods(new MethodDeclList(new ArrayList<>() {{
+                                add(MethodDecl.builder()
+                                        .identifier("accept")
+                                        .formals(new FormalList(new ArrayList<>() {{
+                                            add(Formal.builder().name("v").type(new IdentifierType("Visitor")).build());
+                                        }}))
+                                        .type(new IntegerType())
+                                        .returnExpression(new IntegerLiteral(1))
+                                        .build());
+                            }}))
+                            .build());
+                }}))
+                .build();
+
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        prog.accept(symbolTableVisitor);
+        TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor(symbolTableVisitor.getMainTable());
+
+        // ACT
+        prog.accept(typeVisitor);
+
+        // ASSERT
+        assertTrue(typeVisitor.getErrors().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should allow a subclass to be used as a superclass type on assign")
+    void shouldAllowASuperclassToBeUsedAsASuperClassTypeOnAssign() {
+        // ARRANGE
+        Program prog = Program.builder()
+                .mainClass(mockedMainClass())
+                .classes(new ClassDeclList(new ArrayList<>() {{
+                    add(ClassDeclSimple.builder()
+                            .className(new Identifier("Visitor"))
+                            .build());
+                    add(ClassDeclExtends.builder()
+                            .className(new Identifier("MyVisitorExtends"))
+                            .parent(new Identifier("Visitor"))
+                            .build());
+                    add(ClassDeclSimple.builder()
+                            .className(new Identifier("Caller"))
+                            .methods(new MethodDeclList(new ArrayList<>() {{
+                                add(MethodDecl.builder()
+                                        .identifier("accept")
+                                        .varDecls(new VarDeclList(new ArrayList<>() {{
+                                            add(VarDecl.builder().name("v").type(new IdentifierType("Visitor")).build());
+                                        }}))
+                                        .statements(new StatementList(new ArrayList<>() {{
+                                            add(Assign.builder()
+                                                    .identifier(new Identifier("v"))
+                                                    .value(new NewObject(new Identifier("MyVisitorExtends")))
+                                                    .build());
+                                        }}))
+                                        .type(new IntegerType())
+                                        .returnExpression(new IntegerLiteral(1))
+                                        .build());
+                            }}))
+                            .build());
+                }}))
+                .build();
+
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        prog.accept(symbolTableVisitor);
+        TypeCheckingVisitor typeVisitor = new TypeCheckingVisitor(symbolTableVisitor.getMainTable());
+
+        // ACT
+        prog.accept(typeVisitor);
+
+        // ASSERT
+        assertTrue(typeVisitor.getErrors().isEmpty());
     }
 }

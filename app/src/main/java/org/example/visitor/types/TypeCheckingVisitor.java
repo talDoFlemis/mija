@@ -100,13 +100,14 @@ public class TypeCheckingVisitor implements Visitor<Type> {
         for (var arg : args) {
             Type argType = arg.accept(this);
             Type expectedType = expectedValues.next();
-            if (!(argType.equals(expectedType))) {
+            if (!checkIfTypeMatchWithInheritance(argType, expectedType) && !(argType.equals(expectedType))) {
                 addError("Type mismatch in params on method " + tmpMethodTable.getMethodName() + ", expected " + expectedType.toString() + " found " + argType);
             }
         }
 
         return tmpMethodTable.getMethodReturnType();
     }
+
 
     public Type visit(IdentifierExpression i) {
         Type type = getTypeFromEntireClassContextInsideAMethod(i.getId());
@@ -268,7 +269,7 @@ public class TypeCheckingVisitor implements Visitor<Type> {
             return null;
         }
 
-        if (!(typeToEvaluate.equals(expectedType))) {
+        if (!checkIfTypeMatchWithInheritance(typeToEvaluate, expectedType) && !(typeToEvaluate.equals(expectedType))) {
             addError("Type mismatch in assignment, expected " + expectedType + " found " + typeToEvaluate);
         }
 
@@ -301,7 +302,7 @@ public class TypeCheckingVisitor implements Visitor<Type> {
         c.getMethods().getMethodDecls().forEach(method -> method.accept(this));
 
         currentClassTable = null;
-        return new IdentifierType(c.getClassName().getS());
+        return null;
     }
 
     public Type visit(ClassDeclExtends c) {
@@ -425,6 +426,20 @@ public class TypeCheckingVisitor implements Visitor<Type> {
         checkIfIntegerType("Right Hand Expression of " + name + " ", rheType);
 
         return false;
+    }
+
+    private boolean checkIfTypeMatchWithInheritance(Type argType, Type expectedType) {
+        while (argType instanceof IdentifierType type && !argType.equals(expectedType)) {
+            ClassTable classTable = mainTable.getMap().get(type.getS());
+            String parentClassName = classTable.getParent() == null ? null : classTable.getParent().getClassName();
+            argType = new IdentifierType(parentClassName);
+        }
+
+        if (!(argType instanceof IdentifierType)) {
+            return false;
+        }
+
+        return true;
     }
 
     private void addError(String message) {
