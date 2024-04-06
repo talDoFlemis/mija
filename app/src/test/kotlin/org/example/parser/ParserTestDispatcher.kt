@@ -2,6 +2,10 @@ package org.example.parser
 
 import kotlinx.coroutines.runBlocking
 import org.example.programs.Programs
+import org.example.visitor.symbols.SymbolTableVisitor
+import org.example.visitor.types.TypeCheckingVisitor
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 
@@ -25,4 +29,27 @@ interface ParserTestDispatcher<Parser: ParserStrategy, Program: Programs.IProgra
                 assert(result)
             }
         }
+
+    @Test
+    fun `Should check the semantic`() =
+            runBlocking {
+                useParser {
+                    // Arrange
+                    val stream = program.inputStream
+                    val result = getProgram(stream)
+                    val program = result.get()
+                    val symbolVisitor = SymbolTableVisitor()
+
+
+                    // Act
+                    program.accept(symbolVisitor)
+                    val typeVisitor = TypeCheckingVisitor(symbolVisitor.mainTable)
+                    program.accept(typeVisitor)
+
+                    // Assert
+                    assertFalse(result.isEmpty)
+                    assertTrue(symbolVisitor.errors.isEmpty())
+                    assertTrue(typeVisitor.errors.isEmpty())
+                }
+            }
 }
