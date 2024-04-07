@@ -27,6 +27,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1-Beta")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     implementation("io.arrow-kt:arrow-core:1.2.1")
+
+    testImplementation("io.mockk:mockk:1.12.0")
 }
 
 tasks {
