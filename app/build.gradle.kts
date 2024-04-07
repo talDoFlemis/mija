@@ -28,7 +28,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     implementation("io.arrow-kt:arrow-core:1.2.1")
 
-    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("io.mockk:mockk:1.13.10")
     testImplementation("org.assertj:assertj-core:3.25.1")
 }
 

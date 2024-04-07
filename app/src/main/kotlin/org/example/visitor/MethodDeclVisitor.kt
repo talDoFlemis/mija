@@ -8,20 +8,20 @@ import org.example.ast.FormalList
 import org.example.ast.MethodDecl
 import org.example.ast.MethodDeclList
 import org.example.visitor.*
+import org.example.visitor.SymbolVisitor.Companion.dispatch
 
 
-
-
-object FormalsListVisitor : SymbolVisitor<FormalList>() {
+object FormalsListVisitor : SymbolVisitor<FormalList> {
     override fun Table.visit(entity: FormalList): Either<Error, Table> =
         with(FormalsVisitor) {
             fold(
-                entity.formals.toList()
-            ) { visit(it) }
+                entity.formals.toList(),
+                ::dispatch
+            )
         }
 }
 
-object FormalsVisitor : SymbolVisitor<Formal>() {
+object FormalsVisitor : SymbolVisitor<Formal> {
     override fun Table.visit(entity: Formal): Either<Error, Table> = either {
         ensure(!contains(entity.name)) {
             Error("FormalsVisitor: Formals must have unique names")
@@ -36,16 +36,17 @@ object FormalsVisitor : SymbolVisitor<Formal>() {
     }
 }
 
-object MethodDeclListVisitor : SymbolVisitor<MethodDeclList>() {
+object MethodDeclListVisitor : SymbolVisitor<MethodDeclList> {
     override fun Table.visit(entity: MethodDeclList): Either<Error, Table> =
         with(MethodDeclVisitor) {
             fold(
-                entity.methodDecls.toList()
-            ) { this@visit.visit(it) }
+                entity.methodDecls.toList(),
+                ::dispatch
+            )
         }
 }
 
-object MethodDeclVisitor : SymbolVisitor<MethodDecl>() {
+object MethodDeclVisitor : SymbolVisitor<MethodDecl> {
     override fun Table.visit(entity: MethodDecl): Either<Error, Table> = either {
         ensure(!contains(entity.identifier)) {
             Error("MethodDeclVisitor: MethodDecl must have a unique name")
@@ -54,12 +55,8 @@ object MethodDeclVisitor : SymbolVisitor<MethodDecl>() {
         Table(
             MethodData(
                 name = entity.identifier,
-                args = with(FormalsListVisitor) {
-                    visit(entity.formals)
-                }.bind(),
-                locals = with(VarDeclListVisitor) {
-                    visit(entity.varDecls)
-                }.bind()
+                args = dispatch(entity.formals).bind(),
+                locals = dispatch(entity.varDecls).bind()
             )
         )
     }

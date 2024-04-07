@@ -6,7 +6,7 @@ import arrow.core.raise.ensure
 import org.example.ast.VarDecl
 import org.example.ast.VarDeclList
 
-object VarDeclListVisitor : SymbolVisitor<VarDeclList>() {
+object VarDeclListVisitor : SymbolVisitor<VarDeclList> {
     override fun Table.visit(entity: VarDeclList): Either<Error, Table> =
         with(VarDeclVisitor) {
             fold(
@@ -15,7 +15,7 @@ object VarDeclListVisitor : SymbolVisitor<VarDeclList>() {
         }
 }
 
-object VarDeclVisitor : SymbolVisitor<VarDecl>() {
+object VarDeclVisitor : SymbolVisitor<VarDecl> {
     override fun Table.visit(entity: VarDecl): Either<Error, Table> = either {
         ensure(!contains(entity.name)) {
             Error("VarDeclVisitor: VarDecl must have a unique name")
