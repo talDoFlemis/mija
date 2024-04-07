@@ -12,8 +12,8 @@ import org.example.visitor.TypeVisitor;
 @Builder
 @AllArgsConstructor
 public class Program extends Node {
-    private MainClass mainClass;
-    private ClassDeclList classes;
+    public MainClass mainClass;
+    public ClassDeclList classes;
 
     @Override
     public void accept(ASTVisitor v) {

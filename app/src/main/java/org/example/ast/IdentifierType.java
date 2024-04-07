@@ -10,7 +10,7 @@ import org.example.visitor.TypeVisitor;
 @Data
 @AllArgsConstructor
 public class IdentifierType extends Type {
-    private String s;
+    public String s;
 
     @Override
     public void accept(ASTVisitor v) {

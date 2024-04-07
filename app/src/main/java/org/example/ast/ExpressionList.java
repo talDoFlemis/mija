@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExpressionList {
-    private ArrayList<Expression> list = new ArrayList<>();
+    public ArrayList<Expression> list = new ArrayList<>();
 
     public void addExpression(Expression expression) {
         list.add(expression);

@@ -14,7 +14,7 @@ import org.example.visitor.TypeVisitor;
 public class MainClass extends Node {
     public Identifier className;
     public Identifier argsName;
-    private StatementList statements;
+    public StatementList statements;
 
     @Override
     public void accept(ASTVisitor v) {

@@ -1,5 +1,6 @@
 package org.example.ast;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.example.visitor.ASTVisitor;
 import org.example.visitor.TypeVisitor;

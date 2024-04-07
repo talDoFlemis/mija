@@ -1,9 +1,6 @@
 package org.example.ast;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import org.example.visitor.ASTVisitor;
 import org.example.visitor.TypeVisitor;
 
@@ -11,6 +8,7 @@ import org.example.visitor.TypeVisitor;
 @ToString
 @Data
 @AllArgsConstructor
+@Builder
 public class Identifier extends Expression {
     public String s;
     @Override

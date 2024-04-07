@@ -16,8 +16,8 @@ public class MethodDecl extends Node {
     public String identifier;
     public FormalList formals;
     public VarDeclList varDecls;
-    private StatementList statements;
-    private Expression returnExpression;
+    public StatementList statements;
+    public Expression returnExpression;
 
     @Override
     public void accept(ASTVisitor v) {

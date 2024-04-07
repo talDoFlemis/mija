@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @EqualsAndHashCode
 public class ClassDeclList {
     @Builder.Default
-    private ArrayList<ClassDecl> classDecls =  new ArrayList<>();
+    public ArrayList<ClassDecl> classDecls =  new ArrayList<>();
 
     public void addClassDecl(ClassDecl classDecl) {
         classDecls.add(classDecl);
