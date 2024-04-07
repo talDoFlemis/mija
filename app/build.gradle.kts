@@ -25,10 +25,13 @@ dependencies {
     antlr("org.antlr:antlr4:4.7.1")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1-Beta")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    implementation("io.arrow-kt:arrow-core:1.2.1")
 }
 
 tasks {
     compileJavacc {
+        dependsOn(compileKotlin)
         inputDirectory = file("src/main/javacc")
         outputDirectory = file(layout.buildDirectory.dir("generated/javacc"))
     }
@@ -43,6 +46,9 @@ sourceSets {
     main {
         java {
             srcDir(file(layout.buildDirectory.dir("generated/javacc")))
+        }
+        kotlin {
+            srcDir("src/main/kotlin")
         }
     }
 }

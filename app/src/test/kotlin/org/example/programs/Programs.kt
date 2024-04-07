@@ -20,12 +20,6 @@ class Programs {
             assertDoesNotThrow {
                 assert(program.isNotBlank())
             }
-
-        @Test
-        fun `Should find and read the program (debug)`(): Unit =
-            assertDoesNotThrow {
-                println(program)
-            }
     }
 
     data object Factorial : IProgram {
