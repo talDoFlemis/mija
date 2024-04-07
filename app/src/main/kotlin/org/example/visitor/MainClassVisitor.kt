@@ -3,6 +3,8 @@ package org.example.visitor
 import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensure
+import org.example.ast.IntegerLiteral
+import org.example.ast.IntegerType
 import org.example.ast.MainClass
 
 object MainClassVisitor : SymbolVisitor<MainClass> {
@@ -24,10 +26,12 @@ object MainClassVisitor : SymbolVisitor<MainClass> {
                         args = Table(
                             ParamData(
                                 name = entity.argsName.s,
-                                type = "String[]"
+                                type = IntegerType()
                             )
                         ),
-                        locals = Table()
+                        varDeclList = Table(
+
+                        ),
                     )
                 )
             )

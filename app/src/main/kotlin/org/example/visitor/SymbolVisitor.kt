@@ -4,7 +4,9 @@ import arrow.core.*
 import org.example.ast.*
 import org.example.ast2.org.example.visitor.FormalsListVisitor
 import org.example.ast2.org.example.visitor.FormalsVisitor
+import org.example.ast2.org.example.visitor.MethodDeclListVisitor
 import org.example.ast2.org.example.visitor.MethodDeclVisitor
+import org.example.visitor.ClassDeclListVisitor.visit
 
 interface ASTVisitor : Visitor<Unit>
 
@@ -25,19 +27,19 @@ data class ClassData(
 
 data class ParamData(
     override val name: String,
-    val type: String
+    val type: Type
 ) : Scope
 
 data class MethodData(
     override val name: String,
     val args: Table,
-    val locals: Table,
+    val varDeclList: Table,
     val returnType: String? = null,
 ) : Scope
 
 data class FormalData(
     override val name: String,
-    val type: String
+    val type: Type
 ) : Scope
 
 data class Table(private val map: Map<String, Scope>) {
@@ -66,9 +68,12 @@ interface SymbolVisitor<T> {
         fun <T> dispatch(entity: T, table: Table = Table()): Either<Error, Table> =
             when (entity) {
                 is MainClass -> MainClassVisitor.run { table.visit(entity) }
-                is ClassDecl -> ClassDeclVisitor.run { table.visit(entity) }
+                is ClassDeclSimple -> ClassDeclVisitor.ClassDeclSimpleVisitor.run { table.visit(entity) }
+                is ClassDeclExtends -> ClassDeclVisitor.ClassDeclExtendsVisitor.run { table.visit(entity) }
                 is VarDecl -> VarDeclVisitor.run { table.visit(entity) }
+                is VarDeclList -> VarDeclListVisitor.run { table.visit(entity) }
                 is MethodDecl -> MethodDeclVisitor.run { table.visit(entity) }
+                is MethodDeclList -> MethodDeclListVisitor.run { table.visit(entity) }
                 is FormalList -> FormalsListVisitor.run { table.visit(entity) }
                 is Formal -> FormalsVisitor.run { table.visit(entity) }
                 is Program -> ProgramVisitor.run { table.visit(entity) }

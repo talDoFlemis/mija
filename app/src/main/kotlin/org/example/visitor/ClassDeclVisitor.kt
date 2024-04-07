@@ -11,7 +11,7 @@ object ClassDeclListVisitor : SymbolVisitor<ClassDeclList> {
     override fun Table.visit(entity: ClassDeclList): Either<Error, Table> =
         ClassDeclVisitor.fold(
             entity.classDecls.toList()
-        ) { visit(entity) }
+        ) { dispatch(it) }
 }
 
 object ClassDeclVisitor : SymbolVisitor<ClassDecl> {
@@ -29,10 +29,8 @@ object ClassDeclVisitor : SymbolVisitor<ClassDecl> {
             this@visit + Table(
                 ClassData(
                     name = extractName(entity),
-                    fields = dispatch(entity.fields, table = this@visit).bind(),
-                    methods = with(MethodDeclListVisitor) {
-                        visit(entity.methods).bind()
-                    }
+                    fields = dispatch(entity.fields).bind(),
+                    methods = dispatch(entity.methods).bind()
                 )
             )
         }
@@ -43,12 +41,8 @@ object ClassDeclVisitor : SymbolVisitor<ClassDecl> {
             this@visit + Table(
                 ClassData(
                     name = extractName(entity),
-                    fields = with(VarDeclListVisitor) {
-                        visit(entity.fields).bind()
-                    },
-                    methods = with(MethodDeclListVisitor) {
-                        visit(entity.methods).bind()
-                    }
+                    fields = dispatch(entity.fields).bind(),
+                    methods = dispatch(entity.methods).bind()
                 )
             )
         }
@@ -61,19 +55,7 @@ object ClassDeclVisitor : SymbolVisitor<ClassDecl> {
             Error("ClassDeclVisitor: ClassDecl must have a unique name")
         }
 
-        val newTable = when (entity) {
-            is ClassDeclSimple ->
-                with(ClassDeclSimpleVisitor) {
-                    visit(entity).bind()
-                }
-            is ClassDeclExtends ->
-                with(ClassDeclExtendsVisitor) {
-                    visit(entity).bind()
-                }
-            else -> throw IllegalArgumentException(
-                "ClassDeclVisitor: ClassDecl must be either ClassDeclSimple or ClassDeclExtends"
-            )
-        }
+        val newTable = dispatch(entity, table = this@visit).bind()
 
         this@visit + newTable
     }

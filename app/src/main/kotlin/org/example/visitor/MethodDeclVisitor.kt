@@ -30,7 +30,7 @@ object FormalsVisitor : SymbolVisitor<Formal> {
         Table(
             FormalData(
                 name = entity.name,
-                type = entity.type.toString()
+                type = entity.type
             )
         )
     }
@@ -56,7 +56,7 @@ object MethodDeclVisitor : SymbolVisitor<MethodDecl> {
             MethodData(
                 name = entity.identifier,
                 args = dispatch(entity.formals).bind(),
-                locals = dispatch(entity.varDecls).bind()
+                varDeclList = dispatch(entity.varDecls).bind()
             )
         )
     }

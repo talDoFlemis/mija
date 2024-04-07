@@ -8,6 +8,59 @@ import org.example.ast.*
 import org.example.visitor.SymbolVisitor.Companion.dispatch
 import org.junit.jupiter.api.Test
 
+//class ClassDeclVisitorTest {
+//    fun tearDown() {
+//        unmockkAll()
+//    }
+//
+//
+//    @Test
+//    fun `should visit class decl`(): Unit = ClassDeclVisitor.run {
+//        // Arrange
+//        val table = Table()
+//        val classDecl = ClassDecl.builder()
+//            .className(Identifier.builder().s("Main").build())
+//            .varDecls(VarDeclList.builder().build())
+//            .methodDecls(MethodDeclList.builder().build())
+//            .build()
+//        val expectedTable = Table(
+//            ClassData(
+//                name = "Main"
+//            )
+//        )
+//
+//        // Act
+//        val result = table.visit(classDecl)
+//
+//        // Assert
+//        assertThat(result).isEqualTo(expectedTable.right())
+//    }
+//
+//    @Test
+//    fun `should visit class decl with error`(): Unit = ClassDeclVisitor.run {
+//        // Arrange
+//        val table = Table()
+//        val classDecl = ClassDecl.builder()
+//            .className(Identifier.builder().s("Main").build())
+//            .varDecls(VarDeclList.builder().build())
+//            .methodDecls(MethodDeclList.builder().build())
+//            .build()
+//        val expectedTable = Table(
+//            ClassData(
+//                name = "Main"
+//            )
+//        )
+//        val expectedError = Error("ClassDeclVisitor: ClassDecl must have a unique name")
+//
+//        // Act
+//        val result = table.visit(classDecl)
+//
+//        // Assert
+//        assertThat(result).isEqualTo(expectedTable.right())
+//    }
+//
+//}
+
 class ProgramVisitorTest {
     fun tearDown() {
         unmockkAll()

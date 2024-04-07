@@ -23,7 +23,7 @@ object VarDeclVisitor : SymbolVisitor<VarDecl> {
 
          this@visit + FormalData(
             name = entity.name,
-            type = entity.type.toString()
+            type = entity.type
         )
     }
 }

@@ -6,6 +6,7 @@ import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import org.assertj.core.api.Assertions
 import org.example.ast.Identifier
+import org.example.ast.IntegerType
 import org.example.ast.MainClass
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -66,16 +67,16 @@ class MainClassVisitorTest {
                         args = Table(
                             ParamData(
                                 name = "args",
-                                type = "String[]"
+                                type = IntegerType()
                             )
                         ),
-                        locals = Table(),
+                        varDeclList = Table(),
                         returnType = null
                     )
                 )
             )
         val defaultMainTable = Table(
-        Companion.defaultClassData
-    )
+            defaultClassData
+        )
     }
 }
