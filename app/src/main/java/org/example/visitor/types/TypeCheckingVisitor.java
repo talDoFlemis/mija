@@ -436,7 +436,11 @@ public class TypeCheckingVisitor implements Visitor<Type>, SemanticAnalysisStrat
     private boolean checkIfTypeMatchWithInheritance(Type argType, Type expectedType) {
         while (argType instanceof IdentifierType type && !argType.equals(expectedType)) {
             ClassTable classTable = mainTable.getMap().get(type.getS());
-            String parentClassName = classTable.getParent() == null ? null : classTable.getParent().getClassName();
+            if (classTable == null || classTable.getParent() == null) {
+                return false;
+            }
+
+            String parentClassName = classTable.getParent().getClassName();
             argType = new IdentifierType(parentClassName);
         }
 
