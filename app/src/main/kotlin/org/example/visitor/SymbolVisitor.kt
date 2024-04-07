@@ -58,7 +58,12 @@ data class Table(private val map: Map<String, Scope>) {
 value class Error(val message: String)
 
 abstract class SymbolVisitor<T> {
-    var table : Table = Table()
-    abstract fun visit(entity: T): Either<Error, Table>
+    fun fold(entityList: List<T>, f: (T) -> Either<Error, Table>): Either<Error, Table> =
+        entityList.fold(Table().right()) {
+            acc: Either<Error, Table>, entity -> f(entity)
+                .flatMap { table -> acc.map { it + table } }
+        }
+
+    abstract fun Table.visit(entity: T): Either<Error, Table>
 }
 

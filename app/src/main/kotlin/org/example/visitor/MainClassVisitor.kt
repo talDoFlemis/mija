@@ -5,9 +5,9 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import org.example.ast.MainClass
 
-class MainClassVisitor : SymbolVisitor<MainClass>() {
-    override fun visit(entity: MainClass): Either<Error, Table> = either {
-        ensure(!table.contains(entity.className.s)) {
+object MainClassVisitor : SymbolVisitor<MainClass>() {
+    override fun Table.visit(entity: MainClass): Either<Error, Table> = either {
+        ensure(!contains(entity.className.s)) {
             Error("MainClassVisitor: MainClass must have a unique name")
         }
 
