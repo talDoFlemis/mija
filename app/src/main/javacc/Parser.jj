@@ -1,9 +1,12 @@
 options {
+    STATIC = false;
+    JAVA_UNICODE_ESCAPE = true;
 }
 
 PARSER_BEGIN(Parser)
 
 package org.example.javacc;
+import org.example.ast.*;import javax.swing.plaf.nimbus.State;
 
 public class Parser {
 }
@@ -79,338 +82,533 @@ TOKEN: {
 | <BANG: "!">
 }
 
-void Program(): {}
+Program Program(): {
+    MainClass mainClass;
+    ClassDecl classDecl;
+    ClassDeclList list = new ClassDeclList();
+}
 {
-    MainClass()
-    (ObjectDecl())*
+    mainClass = MainClass()
+    (
+        classDecl = ClassDecl()
+        {list.addClassDecl(classDecl);}
+    )*
     <EOF>
+    {return new Program(mainClass, list);}
 }
 
 /* Entry Point */
-void MainClass(): {}
+MainClass MainClass(): {
+    Identifier id;
+    Identifier argsName;
+    Statement stmt;
+    StatementList stmts = new StatementList();
+}
 {
     <CLASS>
-    Identifier()
+    id = Identifier()
     <LSQUIRLY> <PUBLIC> <STATIC> <VOID> <MAIN> <LPAREN> <STRING> <LBRACKET> <RBRACKET>
-    Identifier()
+    argsName = Identifier()
     <RPAREN> <LSQUIRLY>
-    Statement()
+    stmt = Statement()
+    {stmts.addStatement(stmt);}
+    (
+        stmt = Statement()
+        {stmts.addStatement(stmt);}
+    )*
     <RSQUIRLY> <RSQUIRLY>
+    {return new MainClass(id, argsName, stmts);}
 }
 
-void ObjectDecl(): {}
+ClassDecl ClassDecl(): {
+    ClassDecl classDecl;
+}
 {
-    LOOKAHEAD(3) ClassDecl()
-|   ClassExtendsDecl()
+    (
+        LOOKAHEAD(<CLASS> Identifier() <EXTENDS>) classDecl = ClassExtendsDecl()
+    |   classDecl = ClassDeclSimple()
+    )
+    {return classDecl;}
 }
 
-void ClassDecl(): {}
+ClassDecl ClassDeclSimple(): {
+    Identifier id;
+    VarDecl var;
+    VarDeclList vars = new VarDeclList();
+    MethodDecl method;
+    MethodDeclList methods = new MethodDeclList();
+}
 {
     <CLASS>
-    Identifier()
+    id = Identifier()
     <LSQUIRLY>
-    (VarDecl())*
-    (MethodDecl())*
+    (
+        var = VarDecl()
+        {vars.addVarDecl(var);}
+    )*
+    (
+        method = MethodDecl()
+        {methods.addMethodDecl(method);}
+    )*
     <RSQUIRLY>
+    {return new ClassDeclSimple(id, vars, methods);}
 }
 
-void ClassExtendsDecl(): {}
+ClassDecl ClassExtendsDecl(): {
+    Identifier id;
+    Identifier parent;
+    VarDecl var;
+    VarDeclList vars = new VarDeclList();
+    MethodDecl method;
+    MethodDeclList methods = new MethodDeclList();
+}
 {
     <CLASS>
-    Identifier()
+    id = Identifier()
     <EXTENDS>
-    Identifier()
+    parent = Identifier()
     <LSQUIRLY>
-    (VarDecl())*
-    (MethodDecl())*
+    (
+        var = VarDecl()
+        {vars.addVarDecl(var);}
+    )*
+    (
+        method = MethodDecl()
+        {methods.addMethodDecl(method);}
+    )*
     <RSQUIRLY>
+    {return new ClassDeclExtends(id, parent, vars, methods);}
 }
 
-void IntegerArrayType(): {}
+Type Type(): {}
 {
     <INT_ARRAY>
+    {return new IntArrayType();}
+|   <INT>
+    {return new IntegerType();}
+|   <BOOLEAN>
+    {return new BooleanType();}
+|   <IDENTIFIER>
+    {return new IdentifierType(token.image);}
 }
 
-void IntegerType(): {}
+Formal Formal(): {
+    Formal.FormalBuilder builder = Formal.builder();
+    Type type;
+}
 {
-    <INT>
+    type = Type()
+    {builder.type(type);}
+    <IDENTIFIER>
+    {builder.name(token.image);}
+    {return builder.build();}
 }
 
-void BooleanType(): {}
-{
-    <BOOLEAN>
-}
-
-void Type(): {}
-{
-    IntegerArrayType()
-|   IntegerType()
-|   BooleanType()
-|   Identifier()
-}
-
-void Formal(): {}
-{
-    Type()
-    Identifier()
-}
-
-void FormalRest(): {}
+Formal FormalRest(): {}
 {
     <COMMA>
-    Formal()
+    {return Formal();}
 }
 
-void FormalList(): {}
+FormalList FormalList(): {
+    Formal form;
+    FormalList list = new FormalList();
+}
 {
-    Formal()
+    form = Formal()
+    {list.addFormal(form);}
     (
-        FormalRest()
+        form = FormalRest()
+        {list.addFormal(form);}
     )*
+    {return list;}
 }
 
-void VarDecl(): {}
+VarDecl VarDecl(): {
+    VarDecl.VarDeclBuilder builder = VarDecl.builder();
+    Type type;
+}
 {
-    Type()
-    Identifier()
+    type = Type()
+    {builder.type(type);}
+    <IDENTIFIER>
+    {builder.name(token.image);}
     <SEMICOLON>
+    {return builder.build();}
 }
 
-void MethodDecl(): {}
+MethodDecl MethodDecl(): {
+    Type returnType;
+    String id;
+    FormalList parameters = new FormalList();
+    VarDecl var;
+    VarDeclList vars = new VarDeclList();
+    Statement stmt;
+    StatementList stmts = new StatementList();
+    Expression returnExpr;
+}
 {
     <PUBLIC>
-    Type()
-    Identifier()
+    returnType = Type()
+    <IDENTIFIER>
+    {id = token.image;}
     <LPAREN>
-    (
-        FormalList()
-    )?
+    (parameters = FormalList())?
     <RPAREN>
     <LSQUIRLY>
-    (LOOKAHEAD(2) VarDecl())*
-    (Statement())*
+    (LOOKAHEAD(2)
+        var = VarDecl()
+        {vars.addVarDecl(var);}
+    )*
+    (
+        stmt = Statement()
+        {stmts.addStatement(stmt);}
+    )*
     <RETURN>
-    Expression()
+    returnExpr = Expression()
     <SEMICOLON> <RSQUIRLY>
+    {return new MethodDecl(returnType, id, parameters, vars, stmts, returnExpr);}
 }
 
-void Identifier(): {}
+Identifier Identifier(): {}
 {
     <IDENTIFIER>
+    {return new Identifier(token.image);}
 }
 
-void Expression(): {}
+Expression Expression(): {
+    Expression lhe;
+    Expression rhe;
+}
 {
-    LOOKAHEAD(Clause() <AND>) AndExpression()
-  | LOOKAHEAD(PrimaryExpression() <LT>) LTExpression()
-  | LOOKAHEAD(PrimaryExpression() <PLUS>) PlusExpression()
-  | LOOKAHEAD(PrimaryExpression() <MINUS>) MinusExpression()
-  | LOOKAHEAD(PrimaryExpression() <STAR>) StarExpression()
-  | LOOKAHEAD(PrimaryExpression() <LBRACKET>) Lookup()
-  | LOOKAHEAD(PrimaryExpression() <DOT> <LENGTH>) LengthMethod()
-  | LOOKAHEAD(PrimaryExpression() <DOT> Identifier() <LPAREN>) CallExpression()
-  | Clause()
+    lhe = RelationalLevelPrecedence()
+    (
+        <AND>
+        rhe = RelationalLevelPrecedence()
+        {lhe = new And(lhe, rhe);}
+    )*
+    {return lhe;}
 }
 
-void ExpressionRest(): {}
+Expression RelationalLevelPrecedence(): {
+    Expression lhe;
+    Expression rhe;
+}
+{
+    lhe = SumLevelPrecedence()
+    (
+        <LT>
+        rhe = SumLevelPrecedence()
+        {lhe = new LessThan(lhe, rhe);}
+    )*
+    {return lhe;}
+}
+
+Expression SumLevelPrecedence(): {
+    Expression lhe;
+    Expression rhe;
+}
+{
+    lhe = ProductLevelPrecedence()
+    (
+        <PLUS>
+        rhe = ProductLevelPrecedence()
+        {lhe = new Plus(lhe, rhe);}
+    |
+        <MINUS>
+        rhe = ProductLevelPrecedence()
+        {lhe = new Minus(lhe, rhe);}
+    )*
+    {return lhe;}
+}
+
+Expression ProductLevelPrecedence(): {
+    Expression lhe;
+    Expression rhe;
+}
+{
+    lhe = PrefixLevelPrecedence()
+    (
+        <STAR>
+        rhe = PrefixLevelPrecedence()
+        {lhe = new Times(lhe, rhe);}
+    )*
+    {return lhe;}
+}
+
+Expression PrefixLevelPrecedence(): {
+    Expression expr;
+}
+{
+    (
+        <BANG>
+        expr = CallLevelPrecedence()
+        {expr = new Not(expr);}
+    |
+        expr = CallLevelPrecedence()
+    )
+    {return expr;}
+}
+
+Expression CallLevelPrecedence(): {
+    Expression expr;
+}
+{
+    (
+        LOOKAHEAD(PrimaryExpression() <LBRACKET>)
+        expr = Lookup()
+    |
+        LOOKAHEAD(PrimaryExpression() <DOT> <LENGTH>)
+        expr = LengthMethod()
+    |
+        LOOKAHEAD(PrimaryExpression() <DOT> Identifier() <LPAREN>)
+        expr = CallExpression()
+    |
+        expr = PrimaryExpression()
+    )
+    {return expr;}
+}
+
+Expression ExpressionRest(): {}
 {
     <COMMA>
-    Expression()
+    {return Expression();}
 }
 
-void ExpressionList(): {}
+ExpressionList ExpressionList(): {
+    Expression expr;
+    ExpressionList list = new ExpressionList();
+}
 {
-    Expression()
+    expr = Expression()
+    {list.addExpression(expr);}
     (
-        ExpressionRest()
+        expr = ExpressionRest()
+        {list.addExpression(expr);}
     )*
-}
-void AndExpression() :
-{}
-{
-  Clause()
-  <AND>
-  Clause()
+    {return list;}
 }
 
-void LTExpression() :
-{}
+ArrayLookup Lookup() :
 {
-  PrimaryExpression()
-  <LT>
-  PrimaryExpression()
+    ArrayLookup.ArrayLookupBuilder builder = ArrayLookup.builder();
 }
-
-void PlusExpression() :
-{}
 {
-  PrimaryExpression()
-  <PLUS>
-  PrimaryExpression()
-}
-
-void MinusExpression() :
-{}
-{
-  PrimaryExpression()
-  <MINUS>
-  PrimaryExpression()
-}
-
-void StarExpression() :
-{}
-{
-  PrimaryExpression()
-  <STAR>
-  PrimaryExpression()
-}
-
-void Lookup() :
-{}
-{
-  PrimaryExpression()
+  {builder.array(PrimaryExpression());}
   <LBRACKET>
-  PrimaryExpression()
+  {builder.idx(Expression());}
   <RBRACKET>
+  {return builder.build();}
 }
 
-void LengthMethod() :
-{}
+ArrayLength LengthMethod() :
 {
-  PrimaryExpression()
+    ArrayLength.ArrayLengthBuilder builder = ArrayLength.builder();
+    Expression expr;
+}
+{
+    expr = PrimaryExpression()
+  {builder.array(expr);}
   <DOT> <LENGTH>
+  {return builder.build();}
 }
 
-void CallExpression() :
-{}
+Call CallExpression() :
 {
-  PrimaryExpression()
+    Call.CallBuilder builder = Call.builder();
+    ExpressionList list;
+    Expression owner;
+    Identifier method;
+}
+{
+    owner = PrimaryExpression()
+  {builder.owner(owner);}
   <DOT>
-  Identifier()
+  method = Identifier()
+  {builder.method(method);}
   <LPAREN>
-  (ExpressionList())?
+  (
+     list = ExpressionList()
+     {builder.expressionList(list);}
+  )?
   <RPAREN>
+  {return builder.build();}
 }
 
-void Clause(): {}
+Expression PrimaryExpression(): {
+    Expression expr;
+}
 {
-    NotExpression()
-  | PrimaryExpression()
+    expr = IntegerLiteral()
+    {return expr;}
+|   expr = TrueLiteral()
+    {return expr;}
+|   expr = FalseLiteral()
+    {return expr;}
+|   expr = ThisLiteral()
+    {return expr;}
+|   expr = IdentifierExpression()
+    {return expr;}
+|   LOOKAHEAD(3) expr = NewArray()
+    {return expr;}
+|   expr = NewObject()
+    {return expr;}
+|   expr = ParenthesizedExpression()
+    {return expr;}
 }
 
-void PrimaryExpression(): {}
+IdentifierExpression IdentifierExpression(): {}
 {
-    IntegerLiteral()
-|   TrueLiteral()
-|   FalseLiteral()
-|   ThisLiteral()
-|   Identifier()
-|   LOOKAHEAD(3) NewArray()
-|   NewObject()
-|   ParenthesizedExpression()
+    <IDENTIFIER>
+    {return new IdentifierExpression(token.image);}
 }
 
-void IntegerLiteral(): {}
+IntegerLiteral IntegerLiteral(): {}
 {
     <INTEGER_LITERAL>
+    {return new IntegerLiteral(Integer.parseInt(token.image));}
 }
 
-void TrueLiteral(): {}
+True TrueLiteral(): {}
 {
     <TRUE_LITERAL>
+    {return new True();}
 }
 
-void FalseLiteral(): {}
+False FalseLiteral(): {}
 {
     <FALSE_LITERAL>
+    {return new False();}
 }
 
-void ThisLiteral(): {}
+This ThisLiteral(): {}
 {
     <THIS>
+    {return new This();}
 }
 
-void NewObject(): {}
+NewObject NewObject(): {
+    NewObject.NewObjectBuilder builder = NewObject.builder();
+    Identifier id;
+}
 {
     <NEW>
-    Identifier()
+    id = Identifier()
+    {builder.identifier(id);}
     <LPAREN> <RPAREN>
+    {return builder.build();}
 }
 
-void NewArray(): {}
+Expression NewArray(): {
+   NewArray.NewArrayBuilder builder = NewArray.builder();
+   Expression size;
+}
 {
     <NEW> <INT> <LBRACKET>
-    Expression()
+    size = Expression()
+    {builder.size(size);}
     <RBRACKET>
+    {return builder.build();}
 }
 
-void NotExpression(): {}
-{
-    <BANG>
-    Expression()
+Expression ParenthesizedExpression(): {
+    Expression expr;
 }
-
-void ParenthesizedExpression(): {}
 {
     <LPAREN>
-    Expression()
+    expr = Expression()
     <RPAREN>
+    {return expr;}
 }
 
-void BlockStatement(): {}
+Statement BlockStatement(): {
+    StatementList list = new StatementList();
+    Statement stmt;
+}
 {
-    <LSQUIRLY> (Statement())* <RSQUIRLY>
+    <LSQUIRLY>
+    (
+       stmt = Statement()
+       {list.addStatement(stmt);}
+    )* <RSQUIRLY>
+    {return new Block(list);}
 }
 
-void IfStatement(): {}
+Statement IfStatement(): {
+    Expression condition;
+    Statement consequence;
+    Statement alternative;
+}
 {
     <IF> <LPAREN>
-    Expression()
+    condition = Expression()
     <RPAREN>
-    Statement()
+    consequence = Statement()
     <ELSE>
-    Statement()
+    alternative = Statement()
+    {return new If(condition, consequence, alternative);}
 }
 
-void WhileStatement(): {}
+Statement WhileStatement(): {
+    Expression condition;
+    Statement body;
+}
 {
     <WHILE> <LPAREN>
-    Expression()
+    condition = Expression()
     <RPAREN>
-    Statement()
+    body = Statement()
+    {return new While(condition, body);}
 }
 
-void SoutStatement(): {}
+Statement SoutStatement(): {
+    Expression expr;
+}
 {
     <SOUT> <LPAREN>
-    Expression()
+    expr = Expression()
     <RPAREN> <SEMICOLON>
+    {return new Sout(expr);}
 }
 
-void AssignStatement(): {}
+Statement AssignStatement(): {
+    Identifier id;
+    Expression expr;
+}
 {
-    Identifier()
+    id = Identifier()
     <EQ>
-    Expression()
+    expr = Expression()
     <SEMICOLON>
+    {return new Assign(id, expr);}
 }
 
-void ArrayAssignStatement(): {}
+Statement ArrayAssignStatement(): {
+    Identifier id;
+    Expression idx;
+    Expression expr;
+}
 {
-    Identifier()
+    id = Identifier()
     <LBRACKET>
-    Expression()
+    idx = Expression()
     <RBRACKET> <EQ>
-    Expression()
+    expr = Expression()
     <SEMICOLON>
+    {return new ArrayAssign(id, idx, expr);}
 }
 
-void Statement(): {}
+Statement Statement(): {
+    Statement stmt;
+}
 {
-    BlockStatement()
-|   IfStatement()
-|   WhileStatement()
-|   SoutStatement()
-|   LOOKAHEAD(2) AssignStatement()
-|   LOOKAHEAD(2) ArrayAssignStatement()
+    (
+        stmt = BlockStatement()
+    |   stmt = IfStatement()
+    |   stmt = WhileStatement()
+    |   stmt = SoutStatement()
+    |   LOOKAHEAD(2) stmt = AssignStatement()
+    |   LOOKAHEAD(2) stmt = ArrayAssignStatement()
+    )
+    {return stmt;}
 }

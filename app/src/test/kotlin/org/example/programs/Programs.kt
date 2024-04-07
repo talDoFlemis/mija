@@ -11,21 +11,16 @@ class Programs {
 
         val inputStream: InputStream get() = javaClass.getResourceAsStream(path)!!
 
-        val program: String get() = inputStream
-            .reader()
-            .use(InputStreamReader::readText)
+        val program: String
+            get() = inputStream
+                    .reader()
+                    .use(InputStreamReader::readText)
 
         @Test
         fun `Should find and read the program`(): Unit =
-            assertDoesNotThrow {
-                assert(program.isNotBlank())
-            }
-
-        @Test
-        fun `Should find and read the program (debug)`(): Unit =
-            assertDoesNotThrow {
-                println(program)
-            }
+                assertDoesNotThrow {
+                    assert(program.isNotBlank())
+                }
     }
 
     data object Factorial : IProgram {
