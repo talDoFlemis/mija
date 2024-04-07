@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - Mija</title>
+        <title>Table of Symbols - Mija</title>
 
 
         <!-- Custom HTML head -->
@@ -12,31 +12,31 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="theme/catppuccin.css">
+        <link rel="stylesheet" href="../theme/catppuccin.css">
 
     </head>
     <body class="sidebar-visible no-js">
     <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "";
+            var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "mocha" : "latte";
         </script>
 
@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html" class="active">Introduction</a></li><li class="chapter-item expanded "><a href="Parser.html"><strong aria-hidden="true">1.</strong> Parser</a></li><li class="chapter-item expanded "><a href="Ast.html"><strong aria-hidden="true">2.</strong> AST</a></li><li class="chapter-item expanded "><a href="SemanticAnalysis.html"><strong aria-hidden="true">3.</strong> Semantic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Visitors/SymbolTable.html"><strong aria-hidden="true">3.1.</strong> Table of Symbols</a></li><li class="chapter-item expanded "><a href="Visitors/TypeChecking.html"><strong aria-hidden="true">3.2.</strong> Type Checking</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">Introduction</a></li><li class="chapter-item expanded "><a href="../Parser.html"><strong aria-hidden="true">1.</strong> Parser</a></li><li class="chapter-item expanded "><a href="../Ast.html"><strong aria-hidden="true">2.</strong> AST</a></li><li class="chapter-item expanded "><a href="../SemanticAnalysis.html"><strong aria-hidden="true">3.</strong> Semantic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Visitors/SymbolTable.html" class="active"><strong aria-hidden="true">3.1.</strong> Table of Symbols</a></li><li class="chapter-item expanded "><a href="../Visitors/TypeChecking.html"><strong aria-hidden="true">3.2.</strong> Type Checking</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -147,7 +147,7 @@
                     <h1 class="menu-title">Mija</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://github.com/taldoflemis/mija" title="Git repository" aria-label="Git repository">
@@ -179,22 +179,144 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
-<p><img src="https://img.shields.io/github/actions/workflow/status/taldoflemis/mija/gradle.yml" alt="Build Status" />
-<img src="https://img.shields.io/github/issues/taldoflemis/mija" alt="Issues" />
-<img src="https://img.shields.io/github/issues-pr/taldoflemis/mija" alt="Pull requests" /></p>
-<p>Greetings, fellow developers and enthusiasts! Here, amidst the digital expanse, we present to you the culmination of an ambitious endeavor: a MiniJava compiler meticulously crafted in Java, tailored for the MIPS32 architecture.</p>
-<p>Inspired by the timeless wisdom encapsulated within "Modern Compiler Implementation in Java" by Andrew W. Appel and fortified by the comprehensive resources provided by Cambridge University Press, this repository stands as a testament to our commitment to excellence in compiler construction.</p>
-<p>Within these virtual walls, you'll discover a treasure trove of code, documentation, and insights meticulously assembled to guide you through the intricacies of compiler development. From lexical analysis to MIPS32 code generation, every line of code, every algorithmic decision is informed by the principles expounded in our esteemed references.</p>
-<p>Whether you're a seasoned compiler architect seeking to hone your craft or an aspiring enthusiast eager to delve into the arcane arts of compiler construction, this repository offers a sanctuary for exploration, learning, and collaboration.</p>
-<p>So, come forth, fellow travelers, and embark on a journey where MiniJava programs transcend mere abstraction to find tangible expression on the MIPS32 architecture. Welcome to the MiniJava Compiler for MIPS32 Repository—where theory meets practice, and innovation knows no bounds!</p>
+                        <h1 id="table-of-symbols"><a class="header" href="#table-of-symbols">Table of Symbols</a></h1>
+<ul>
+<li><a href="#table-of-symbols">Table of Symbols</a>
+<ul>
+<li><a href="#overview">Overview</a>
+<ul>
+<li><a href="#imperative-symbol-table">Imperative Symbol Table</a></li>
+<li><a href="#functional-symbol-table">Functional Symbol Table</a></li>
+<li><a href="#symbols">Symbols</a></li>
+</ul>
+</li>
+<li><a href="#details-of-implementation">Details of Implementation</a>
+<ul>
+<li><a href="#maintable">MainTable</a></li>
+<li><a href="#classtable">ClassTable</a></li>
+<li><a href="#methodtable">MethodTable</a></li>
+<li><a href="#exceptions">Exceptions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>This table of symbols is a part of the semantic analysis phase of the compiler. It is responsible for building a symbol
+table that keeps track of the names and types of variables and functions in the program. The symbol table is used by
+other parts of the compiler, such as the <a href="TypeChecking.html">type checker</a> and code generator, to ensure that the program
+is well-formed and to generate correct code.</p>
+<pre><code class="language-java">
+// Implementation of the SymbolTableVisitor
+public class SymbolTableVisitor implements Visitor&lt;Void&gt; {
+    private MainTable mainTable = new MainTable();
+    private ClassTable currentClassTable = null;
+    private MethodTable currentMethodTable = null;
+    private final ArrayList&lt;SymbolTableException&gt; errors = new ArrayList&lt;&gt;();
+    private final boolean ignoreExtends = false;
 
+    public Void visit(And a) {
+        return null;
+    }
+
+    public Void visit(BooleanType b) {
+        return null;
+    }
+
+    { ...}
+}
+</code></pre>
+<h3 id="imperative-symbol-table"><a class="header" href="#imperative-symbol-table">Imperative Symbol Table</a></h3>
+<p>The imperative symbol table is built using mutable data structures, such as maps and lists. It is updated in place as
+the compiler traverses the AST, adding new symbols and checking for errors.</p>
+<p><em>Is the one we are using in our implementation.</em></p>
+<h3 id="functional-symbol-table"><a class="header" href="#functional-symbol-table">Functional Symbol Table</a></h3>
+<p>The functional symbol table is built using immutable data structures, such as trees and lists. It is updated by creating
+new copies of the symbol table with the new symbols added. This approach is more functional and can make it easier to
+reason about the symbol table, but it can be less efficient than the imperative approach.</p>
+<h3 id="symbols"><a class="header" href="#symbols">Symbols</a></h3>
+<p>A symbol is a name that is associated with a type. In the symbol table, symbols are used to represent variables,
+functions, classes, and other entities in the program. Each symbol has a name and a type, which is used to determine how
+the symbol can be used in the program.</p>
+<div align="end">
+  <a  href="#">
+    ⬆️
+  </a>
+</div>
+<h2 id="details-of-implementation"><a class="header" href="#details-of-implementation">Details of Implementation</a></h2>
+<h3 id="maintable"><a class="header" href="#maintable">MainTable</a></h3>
+<p>The main table is the root of the symbol table. It contains a map of class names to class tables.</p>
+<pre><code class="language-java">public class MainTable {
+    HashMap&lt;String, ClassTable&gt; map = new HashMap&lt;&gt;();
+}
+</code></pre>
+<div align="end">
+  <a  href="#">
+    ⬆️
+  </a>
+</div>
+<h3 id="classtable"><a class="header" href="#classtable">ClassTable</a></h3>
+<p>The class table contains a map of field names to types and a map of method names to method tables. It also contains a
+reference to the parent class table, if any.</p>
+<p><em>In SymbolTableVisitor we have a currentClassTable to keep track of the current class we are in.</em></p>
+<pre><code class="language-java">public class ClassTable {
+    private String className;
+    private ClassTable parent;
+    HashMap&lt;String, Type&gt; fieldsContext = new HashMap&lt;&gt;();
+    HashMap&lt;String, MethodTable&gt; methodsContext = new HashMap&lt;&gt;();
+}
+</code></pre>
+<div align="end">
+  <a  href="#">
+    ⬆️
+  </a>
+</div>
+<h3 id="methodtable"><a class="header" href="#methodtable">MethodTable</a></h3>
+<p>The method table contains a map of parameter names to types and a map of local variable names to types. It also contains
+a reference to the parent class table.</p>
+<p><em>In SymbolTableVisitor we have a currentMethodTable to keep track of the current method we are in.</em></p>
+<pre><code class="language-java">public class MethodTable {
+    private String methodName;
+    private Type methodReturnType;
+    private ClassTable classParent;
+    LinkedHashMap&lt;String, Type&gt; paramsContext = new LinkedHashMap&lt;&gt;();
+    HashMap&lt;String, Type&gt; localsContext = new HashMap&lt;&gt;();
+}
+</code></pre>
+<div align="end">
+  <a  href="#">
+    ⬆️
+  </a>
+</div>
+<h3 id="exceptions"><a class="header" href="#exceptions">Exceptions</a></h3>
+<p>The SymbolTableException is a custom exception that is thrown when an error occurs during the building of the symbol
+table.</p>
+<p>The SymbolTableVisitor don't throw exceptions, but it keeps track of them in a list of SymbolTableExceptions.</p>
+<pre><code class="language-java">public class SymbolTableException extends RuntimeException {
+    public SymbolTableException(String errorMessage) {
+        super(errorMessage);
+    }
+
+    public SymbolTableException(String errorMessage, Throwable err) {
+        super(errorMessage, err);
+    }
+}
+</code></pre>
+<hr />
+<div align="end">
+  <a  href="#">
+    Return to top
+  </a>
+</div>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../SemanticAnalysis.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
-                            <a rel="next prefetch" href="Parser.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../Visitors/TypeChecking.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -204,8 +326,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../SemanticAnalysis.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
-                    <a rel="next prefetch" href="Parser.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../Visitors/TypeChecking.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -220,17 +345,17 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="mermaid.min.js"></script>
-        <script src="mermaid-init.js"></script>
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
 
 
     </div>

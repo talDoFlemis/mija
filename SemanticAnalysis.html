@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - Mija</title>
-        <base href="/">
+        <title>Semantic Analysis - Mija</title>
 
 
         <!-- Custom HTML head -->
@@ -90,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded "><a href="Parser.html"><strong aria-hidden="true">1.</strong> Parser</a></li><li class="chapter-item expanded "><a href="Ast.html"><strong aria-hidden="true">2.</strong> AST</a></li><li class="chapter-item expanded "><a href="SemanticAnalysis.html"><strong aria-hidden="true">3.</strong> Semantic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Visitors/SymbolTable.html"><strong aria-hidden="true">3.1.</strong> Table of Symbols</a></li><li class="chapter-item expanded "><a href="Visitors/TypeChecking.html"><strong aria-hidden="true">3.2.</strong> Type Checking</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded "><a href="Parser.html"><strong aria-hidden="true">1.</strong> Parser</a></li><li class="chapter-item expanded "><a href="Ast.html"><strong aria-hidden="true">2.</strong> AST</a></li><li class="chapter-item expanded "><a href="SemanticAnalysis.html" class="active"><strong aria-hidden="true">3.</strong> Semantic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Visitors/SymbolTable.html"><strong aria-hidden="true">3.1.</strong> Table of Symbols</a></li><li class="chapter-item expanded "><a href="Visitors/TypeChecking.html"><strong aria-hidden="true">3.2.</strong> Type Checking</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -180,14 +179,31 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
-
+                        <h1 id="semantic-analysis"><a class="header" href="#semantic-analysis">Semantic Analysis</a></h1>
+<blockquote>
+<p><strong>se-man-tic</strong>: of or relating to meaning in language</p>
+<div align="end">Webster’s Dictionary</div>
+</blockquote>
+<p>The semantic analysis phase of a compiler connects variable definitions to
+their uses, checks that each expression has a correct type, and translates the
+abstract syntax into a simpler representation suitable for generating machine
+code.</p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: left"><strong>Contents</strong></th></tr></thead><tbody>
+<tr><td style="text-align: left"><a href="Visitors/SymbolTable.html">Table of Symbols</a></td></tr>
+<tr><td style="text-align: left"><a href="Visitors/TypeChecking.html">Type Checking</a></td></tr>
+</tbody></table>
+</div>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="Ast.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="Visitors/SymbolTable.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -195,7 +211,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="Ast.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="Visitors/SymbolTable.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

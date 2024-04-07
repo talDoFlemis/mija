@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded "><a href="Parser.html"><strong aria-hidden="true">1.</strong> Parser</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded "><a href="Parser.html"><strong aria-hidden="true">1.</strong> Parser</a></li><li class="chapter-item expanded "><a href="Ast.html"><strong aria-hidden="true">2.</strong> AST</a></li><li class="chapter-item expanded "><a href="SemanticAnalysis.html"><strong aria-hidden="true">3.</strong> Semantic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Visitors/SymbolTable.html"><strong aria-hidden="true">3.1.</strong> Table of Symbols</a></li><li class="chapter-item expanded "><a href="Visitors/TypeChecking.html"><strong aria-hidden="true">3.2.</strong> Type Checking</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -190,7 +190,12 @@
 <p>Whether you're a seasoned compiler architect seeking to hone your craft or an aspiring enthusiast eager to delve into the arcane arts of compiler construction, this repository offers a sanctuary for exploration, learning, and collaboration.</p>
 <p>So, come forth, fellow travelers, and embark on a journey where MiniJava programs transcend mere abstraction to find tangible expression on the MIPS32 architecture. Welcome to the MiniJava Compiler for MIPS32 Repository—where theory meets practice, and innovation knows no bounds!</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="parser"><a class="header" href="#parser">Parser</a></h1>
-<p>A parser is a critical component of a compiler, responsible for analyzing the grammatical structure of a program's source code and transforming it into a format understandable to the compiler. In the context of the mini Java to MIPS32 compiler, the parser plays the pivotal role of interpreting the syntactic constructs of mini Java language, such as statements, expressions, and control flow structures, and translating them into an intermediate form that can be further processed by the compiler. Key points of the parser include recognizing and interpreting tokens, applying defined grammar rules for mini Java, and detecting and reporting syntactic errors in the source code.</p>
+<p>A parser is a critical component of a compiler, responsible for analyzing the grammatical structure of a program's
+source code and transforming it into a format understandable to the compiler. In the context of the mini Java to MIPS32
+compiler, the parser plays the pivotal role of interpreting the syntactic constructs of mini Java language, such as
+statements, expressions, and control flow structures, and translating them into an intermediate form that can be further
+processed by the compiler. Key points of the parser include recognizing and interpreting tokens, applying defined
+grammar rules for mini Java, and detecting and reporting syntactic errors in the source code.</p>
 <ul>
 <li><a href="Parser.html#parser">Parser</a>
 <ul>
@@ -211,7 +216,9 @@
 </li>
 </ul>
 <h2 id="tokens"><a class="header" href="#tokens">Tokens</a></h2>
-<p>Tokens are fundamental units of a programming language, representing various syntactic elements within the code. In the context of the mini Java to MIPS32 compiler, tokens are categorized into different types, each serving a distinct purpose in the parsing process.</p>
+<p>Tokens are fundamental units of a programming language, representing various syntactic elements within the code. In the
+context of the mini Java to MIPS32 compiler, tokens are categorized into different types, each serving a distinct
+purpose in the parsing process.</p>
 <h3 id="punctuation"><a class="header" href="#punctuation">Punctuation</a></h3>
 <p>Punctuation tokens consist of symbols used for structuring code and delimiting expressions.</p>
 <div class="table-wrapper"><table><thead><tr><th>Type</th><th>Examples</th><th></th><th>Type</th><th>Examples</th></tr></thead><tbody>
@@ -244,7 +251,9 @@
 </tbody></table>
 </div>
 <h3 id="literals"><a class="header" href="#literals">Literals</a></h3>
-<p>Literals represent constant values in the code, providing specific data to be processed or manipulated by the program. In the context of the mini Java to MIPS32 compiler, literals are categorized into different types, each representing a distinct category of constant values.</p>
+<p>Literals represent constant values in the code, providing specific data to be processed or manipulated by the program.
+In the context of the mini Java to MIPS32 compiler, literals are categorized into different types, each representing a
+distinct category of constant values.</p>
 <div class="table-wrapper"><table><thead><tr><th>Type</th><th>Examples</th></tr></thead><tbody>
 <tr><td><code>TRUE_LITERAL</code></td><td><code>true</code></td></tr>
 <tr><td><code>FALSE_LITERAL</code></td><td><code>false</code></td></tr>
@@ -253,7 +262,8 @@
 </tbody></table>
 </div>
 <h3 id="operators"><a class="header" href="#operators">Operators</a></h3>
-<p>Operators are symbols used to perform operations on variables and values in a programming language. In the mini Java to MIPS32 compiler, operators are classified into different types, each representing a specific operation or manipulation.</p>
+<p>Operators are symbols used to perform operations on variables and values in a programming language. In the mini Java to
+MIPS32 compiler, operators are classified into different types, each representing a specific operation or manipulation.</p>
 <div class="table-wrapper"><table><thead><tr><th>Type</th><th>Examples</th></tr></thead><tbody>
 <tr><td><code>EQ</code></td><td><code>=</code></td></tr>
 <tr><td><code>AND</code></td><td><code>&amp;&amp;</code></td></tr>
@@ -263,31 +273,49 @@
 <tr><td><code>STAR</code></td><td><code>*</code></td></tr>
 <tr><td><code>BANG</code></td><td><code>!</code></td></tr>
 </tbody></table>
+</div><div align="end">
+  <a  href="Parser.html#">
+    ⬆️
+  </a>
 </div>
 <h2 id="statements"><a class="header" href="#statements">Statements</a></h2>
-<p>Statements are fundamental components of a program that perform specific actions or control the flow of execution. In the mini Java to MIPS32 compiler, various types of statements are supported, each serving a unique purpose:</p>
+<p>Statements are fundamental components of a program that perform specific actions or control the flow of execution. In
+the mini Java to MIPS32 compiler, various types of statements are supported, each serving a unique purpose:</p>
 <ul>
 <li>
-<p><strong>Block Statement</strong>: Represents a block of statements enclosed within curly braces <code>{}</code>. This allows for the grouping of multiple statements together.</p>
+<p><strong>Block Statement</strong>: Represents a block of statements enclosed within curly braces <code>{}</code>. This allows for the grouping
+of multiple statements together.</p>
 </li>
 <li>
-<p><strong>Conditional Statement (if-else)</strong>: Executes one of two statements based on the evaluation of a specified expression within the <code>if</code> condition. If the expression evaluates to true, the first statement is executed; otherwise, the second statement is executed.</p>
+<p><strong>Conditional Statement (if-else)</strong>: Executes one of two statements based on the evaluation of a specified expression
+within the <code>if</code> condition. If the expression evaluates to true, the first statement is executed; otherwise, the second
+statement is executed.</p>
 </li>
 <li>
-<p><strong>Loop Statement (while)</strong>: Repeatedly executes a statement as long as a specified expression within the <code>while</code> condition evaluates to true.</p>
+<p><strong>Loop Statement (while)</strong>: Repeatedly executes a statement as long as a specified expression within the <code>while</code>
+condition evaluates to true.</p>
 </li>
 <li>
 <p><strong>Print Statement</strong>: Outputs the result of an evaluated expression to the standard output using <code>System.out.println</code>.</p>
 </li>
 <li>
-<p><strong>Assignment Statement</strong>: Assigns the value of an evaluated expression to a variable identified by an identifier (<code>id = Exp</code>).</p>
+<p><strong>Assignment Statement</strong>: Assigns the value of an evaluated expression to a variable identified by an
+identifier (<code>id = Exp</code>).</p>
 </li>
 <li>
-<p><strong>Array Assignment Statement</strong>: Assigns the value of an evaluated expression to a specific index of an array identified by another expression (<code>id[Exp] = Exp</code>).</p>
+<p><strong>Array Assignment Statement</strong>: Assigns the value of an evaluated expression to a specific index of an array
+identified by another expression (<code>id[Exp] = Exp</code>).</p>
 </li>
 </ul>
+<div align="end">
+  <a  href="Parser.html#">
+    ⬆️
+  </a>
+</div>
 <h2 id="expressions"><a class="header" href="#expressions">Expressions</a></h2>
-<p>Expressions represent computations or values within a program, often involving operators, literals, variables, and method calls. In the mini Java to MIPS32 compiler, various types of expressions are supported, each serving a specific purpose in defining program behavior:</p>
+<p>Expressions represent computations or values within a program, often involving operators, literals, variables, and
+method calls. In the mini Java to MIPS32 compiler, various types of expressions are supported, each serving a specific
+purpose in defining program behavior:</p>
 <ul>
 <li>
 <p><strong>Binary Operation</strong>: Represents an operation performed between two expressions, denoted as <code>Exp op Exp</code>.</p>
@@ -299,7 +327,8 @@
 <p><strong>Array Length</strong>: Retrieves the length of an array using the <code>length</code> property, indicated as <code>Exp . length</code>.</p>
 </li>
 <li>
-<p><strong>Method Invocation</strong>: Calls a method on an object, specified as <code>Exp . id ( ExpList )</code>, where <code>id</code> represents the method name and <code>ExpList</code> denotes the list of arguments passed to the method.</p>
+<p><strong>Method Invocation</strong>: Calls a method on an object, specified as <code>Exp . id ( ExpList )</code>, where <code>id</code> represents the
+method name and <code>ExpList</code> denotes the list of arguments passed to the method.</p>
 </li>
 <li>
 <p><strong>Literals</strong>:</p>
@@ -326,12 +355,21 @@
 <p><strong>Parenthesized Expression</strong>: Encloses an expression within parentheses to control evaluation order, as in <code>(Exp)</code>.</p>
 </li>
 <li>
-<p><strong>Expression List</strong>: Represents a list of expressions used as arguments in a method call or array initialization. It is defined as <code>Exp ExpRest*</code>, where <code>ExpRest</code> allows for additional expressions separated by commas.</p>
+<p><strong>Expression List</strong>: Represents a list of expressions used as arguments in a method call or array initialization. It
+is defined as <code>Exp ExpRest*</code>, where <code>ExpRest</code> allows for additional expressions separated by commas.</p>
 </li>
 </ul>
-<p>These expressions enable the creation of complex computations and interactions within mini Java programs, facilitating their translation into MIPS32 instructions.</p>
+<p>These expressions enable the creation of complex computations and interactions within mini Java programs, facilitating
+their translation into MIPS32 instructions.</p>
+<div align="end">
+  <a  href="Parser.html#">
+    ⬆️
+  </a>
+</div>
 <h2 id="usability"><a class="header" href="#usability">Usability</a></h2>
-<p>In the mini Java to MIPS32 compiler, the usability of the language constructs is defined by the grammar rules and structural conventions used in the code. Here are the key components that contribute to the usability of mini Java programs:</p>
+<p>In the mini Java to MIPS32 compiler, the usability of the language constructs is defined by the grammar rules and
+structural conventions used in the code. Here are the key components that contribute to the usability of mini Java
+programs:</p>
 <ul>
 <li>
 <p><strong>Start Symbol (Program)</strong>:</p>
@@ -349,7 +387,8 @@
     }
 }
 </code></pre>
-This structure specifies the class containing the <code>main</code> method, which serves as the entry point for program execution.</li>
+This structure specifies the class containing the <code>main</code> method, which serves as the entry point for program
+execution.</li>
 </ul>
 </li>
 <li>
@@ -388,11 +427,17 @@ This structure defines the signature, parameters, and body of a method.</li>
 <li>
 <p><strong>Formal Parameters (FormalList)</strong>:</p>
 <ul>
-<li>Formal parameters are specified as a list of data types and identifiers, with optional additional parameters defined by <code>FormalRest</code>.</li>
+<li>Formal parameters are specified as a list of data types and identifiers, with optional additional parameters
+defined by <code>FormalRest</code>.</li>
 </ul>
 </li>
 </ul>
 <p>These conventions ensure consistency and readability in mini Java code, enhancing its usability and maintainability.</p>
+<div align="end">
+  <a  href="Parser.html#">
+    ⬆️
+  </a>
+</div>
 <h2 id="example"><a class="header" href="#example">Example</a></h2>
 <pre><code class="language-java">class Factorial {
     public static void main(String[] a) {
@@ -425,7 +470,293 @@ second --&gt;|&quot;`**a-e**, **g-z**, **0-9**`&quot;| fourth
 third --&gt;|&quot;`**0-9**, **a-z**`&quot;| fourth
 fourth --&gt;|&quot;`**0-9**, **a-z**`&quot;| fourth
 </pre>
+<hr />
+<div align="end">
+  <a  href="Parser.html#">
+    Return to top
+  </a>
+</div>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="abstract-syntax-tree"><a class="header" href="#abstract-syntax-tree">Abstract Syntax Tree</a></h1>
+<ul>
+<li><a href="Ast.html#abstract-syntax-tree">Abstract Syntax Tree</a>
+<ul>
+<li><a href="Ast.html#Overview">Overview</a></li>
+<li><a href="Ast.html#nodes">Nodes</a></li>
+<li><a href="Ast.html#visitors">Visitors</a>
+<ul>
+<li><a href="Ast.html#orthogonal-directions-of-modularity">Orthogonal directions of modularity.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>The abstract syntax tree (AST) is a tree representation of the source code. It is used to represent the structure of
+the code in a way that is easy to manipulate and analyze. The AST is created by the parser, which reads the source
+code and generates a tree of nodes that represent the different parts of the code.</p>
+<pre class="mermaid">flowchart TD
+    A[Program] --&gt; B[ClassDecl]
+    A --&gt; C[MainClass]
+    C --&gt; Sout[System.out.println]
+    Sout --&gt; Hello[&quot;Hello, World!&quot;]
+    B --&gt; E[VarDecl]
+    B --&gt; F[MethodDecl]
+    F --&gt; J[Statement]
+    J --&gt; K[Exp]
+</pre>
+<div align="end">
+  <a  href="Ast.html#">
+    ⬆️
+  </a>
+</div>
+<h2 id="nodes"><a class="header" href="#nodes">Nodes</a></h2>
+<p>The nodes of the AST represent the different elements of the source code, such as statements, expressions, and
+declarations. Each node has a specific type and contains information about the code it represents. For example, a
+node representing an assignment statement might contain information about the variable being assigned to and the
+value being assigned.</p>
+<pre><code class="language-java">// Abstract base class for all AST nodes
+public abstract class Node {
+    public abstract &lt;T&gt; T accept(Visitor&lt;T&gt; v);
+}
+</code></pre>
+<pre><code class="language-java">// Example of a node representing an assignment statement
+public class Assign extends Statement {
+    private Identifier identifier;
+    private Expression value;
 
+    @Override
+    public &lt;T&gt; T accept(Visitor&lt;T&gt; v) {
+        return v.visit(this);
+    }
+}
+</code></pre>
+<p><em>Generic Type <code>T</code> is used to allow the visitor to return different types of values depending on the operation being</em></p>
+<div align="end">
+  <a  href="Ast.html#">
+    ⬆️
+  </a>
+</div>
+<h2 id="visitors"><a class="header" href="#visitors">Visitors</a></h2>
+<p>Each node in the AST has an <code>accept</code> method that takes a visitor as an argument. The visitor is an interface that
+defines methods for each type of node in the AST. When the <code>accept</code> method is called on a node, it calls the
+appropriate method on the visitor, passing itself as an argument. This allows the visitor to perform operations on
+the node and its children.</p>
+<pre><code class="language-java">// Visitor interface
+public interface Visitor&lt;T&gt; {
+    T visit(Assign assign);
+    T visit(Identifier identifier);
+    T visit(Expression expression);
+    { ... }
+}
+</code></pre>
+<div align="end">
+  <a  href="Ast.html#">
+    ⬆️
+  </a>
+</div>
+<h3 id="orthogonal-directions-of-modularity"><a class="header" href="#orthogonal-directions-of-modularity">Orthogonal directions of modularity.</a></h3>
+<p>The visitor pattern allows for orthogonal directions of modularity. This means that the code that defines the nodes
+of the AST is separate from the code that defines the operations that can be performed on the nodes. This separation
+makes it easy to add new operations to the AST without modifying the existing code.</p>
+<p>Examples of operations that can be performed on the AST include <a href="Visitors/TypeChecking.html"><strong>type checking</strong></a>,
+<a href="Visitors/SymbolTable.html"><strong>table of symbols</strong></a> and <a href=""><strong>mermaid printer</strong></a>, code generation, and optimization(<strong>like llvm</strong>).</p>
+<hr />
+<div align="end">
+  <a  href="Ast.html#">
+    Return to top
+  </a>
+</div>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="semantic-analysis"><a class="header" href="#semantic-analysis">Semantic Analysis</a></h1>
+<blockquote>
+<p><strong>se-man-tic</strong>: of or relating to meaning in language</p>
+<div align="end">Webster’s Dictionary</div>
+</blockquote>
+<p>The semantic analysis phase of a compiler connects variable definitions to
+their uses, checks that each expression has a correct type, and translates the
+abstract syntax into a simpler representation suitable for generating machine
+code.</p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: left"><strong>Contents</strong></th></tr></thead><tbody>
+<tr><td style="text-align: left"><a href="Visitors/SymbolTable.html">Table of Symbols</a></td></tr>
+<tr><td style="text-align: left"><a href="Visitors/TypeChecking.html">Type Checking</a></td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="table-of-symbols"><a class="header" href="#table-of-symbols">Table of Symbols</a></h1>
+<ul>
+<li><a href="Visitors/SymbolTable.html#table-of-symbols">Table of Symbols</a>
+<ul>
+<li><a href="Visitors/SymbolTable.html#overview">Overview</a>
+<ul>
+<li><a href="Visitors/SymbolTable.html#imperative-symbol-table">Imperative Symbol Table</a></li>
+<li><a href="Visitors/SymbolTable.html#functional-symbol-table">Functional Symbol Table</a></li>
+<li><a href="Visitors/SymbolTable.html#symbols">Symbols</a></li>
+</ul>
+</li>
+<li><a href="Visitors/SymbolTable.html#details-of-implementation">Details of Implementation</a>
+<ul>
+<li><a href="Visitors/SymbolTable.html#maintable">MainTable</a></li>
+<li><a href="Visitors/SymbolTable.html#classtable">ClassTable</a></li>
+<li><a href="Visitors/SymbolTable.html#methodtable">MethodTable</a></li>
+<li><a href="Visitors/SymbolTable.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="overview-1"><a class="header" href="#overview-1">Overview</a></h2>
+<p>This table of symbols is a part of the semantic analysis phase of the compiler. It is responsible for building a symbol
+table that keeps track of the names and types of variables and functions in the program. The symbol table is used by
+other parts of the compiler, such as the <a href="Visitors/TypeChecking.html">type checker</a> and code generator, to ensure that the program
+is well-formed and to generate correct code.</p>
+<pre><code class="language-java">
+// Implementation of the SymbolTableVisitor
+public class SymbolTableVisitor implements Visitor&lt;Void&gt; {
+    private MainTable mainTable = new MainTable();
+    private ClassTable currentClassTable = null;
+    private MethodTable currentMethodTable = null;
+    private final ArrayList&lt;SymbolTableException&gt; errors = new ArrayList&lt;&gt;();
+    private final boolean ignoreExtends = false;
+
+    public Void visit(And a) {
+        return null;
+    }
+
+    public Void visit(BooleanType b) {
+        return null;
+    }
+
+    { ...}
+}
+</code></pre>
+<h3 id="imperative-symbol-table"><a class="header" href="#imperative-symbol-table">Imperative Symbol Table</a></h3>
+<p>The imperative symbol table is built using mutable data structures, such as maps and lists. It is updated in place as
+the compiler traverses the AST, adding new symbols and checking for errors.</p>
+<p><em>Is the one we are using in our implementation.</em></p>
+<h3 id="functional-symbol-table"><a class="header" href="#functional-symbol-table">Functional Symbol Table</a></h3>
+<p>The functional symbol table is built using immutable data structures, such as trees and lists. It is updated by creating
+new copies of the symbol table with the new symbols added. This approach is more functional and can make it easier to
+reason about the symbol table, but it can be less efficient than the imperative approach.</p>
+<h3 id="symbols"><a class="header" href="#symbols">Symbols</a></h3>
+<p>A symbol is a name that is associated with a type. In the symbol table, symbols are used to represent variables,
+functions, classes, and other entities in the program. Each symbol has a name and a type, which is used to determine how
+the symbol can be used in the program.</p>
+<div align="end">
+  <a  href="Visitors/SymbolTable.html#">
+    ⬆️
+  </a>
+</div>
+<h2 id="details-of-implementation"><a class="header" href="#details-of-implementation">Details of Implementation</a></h2>
+<h3 id="maintable"><a class="header" href="#maintable">MainTable</a></h3>
+<p>The main table is the root of the symbol table. It contains a map of class names to class tables.</p>
+<pre><code class="language-java">public class MainTable {
+    HashMap&lt;String, ClassTable&gt; map = new HashMap&lt;&gt;();
+}
+</code></pre>
+<div align="end">
+  <a  href="Visitors/SymbolTable.html#">
+    ⬆️
+  </a>
+</div>
+<h3 id="classtable"><a class="header" href="#classtable">ClassTable</a></h3>
+<p>The class table contains a map of field names to types and a map of method names to method tables. It also contains a
+reference to the parent class table, if any.</p>
+<p><em>In SymbolTableVisitor we have a currentClassTable to keep track of the current class we are in.</em></p>
+<pre><code class="language-java">public class ClassTable {
+    private String className;
+    private ClassTable parent;
+    HashMap&lt;String, Type&gt; fieldsContext = new HashMap&lt;&gt;();
+    HashMap&lt;String, MethodTable&gt; methodsContext = new HashMap&lt;&gt;();
+}
+</code></pre>
+<div align="end">
+  <a  href="Visitors/SymbolTable.html#">
+    ⬆️
+  </a>
+</div>
+<h3 id="methodtable"><a class="header" href="#methodtable">MethodTable</a></h3>
+<p>The method table contains a map of parameter names to types and a map of local variable names to types. It also contains
+a reference to the parent class table.</p>
+<p><em>In SymbolTableVisitor we have a currentMethodTable to keep track of the current method we are in.</em></p>
+<pre><code class="language-java">public class MethodTable {
+    private String methodName;
+    private Type methodReturnType;
+    private ClassTable classParent;
+    LinkedHashMap&lt;String, Type&gt; paramsContext = new LinkedHashMap&lt;&gt;();
+    HashMap&lt;String, Type&gt; localsContext = new HashMap&lt;&gt;();
+}
+</code></pre>
+<div align="end">
+  <a  href="Visitors/SymbolTable.html#">
+    ⬆️
+  </a>
+</div>
+<h3 id="exceptions"><a class="header" href="#exceptions">Exceptions</a></h3>
+<p>The SymbolTableException is a custom exception that is thrown when an error occurs during the building of the symbol
+table.</p>
+<p>The SymbolTableVisitor don't throw exceptions, but it keeps track of them in a list of SymbolTableExceptions.</p>
+<pre><code class="language-java">public class SymbolTableException extends RuntimeException {
+    public SymbolTableException(String errorMessage) {
+        super(errorMessage);
+    }
+
+    public SymbolTableException(String errorMessage, Throwable err) {
+        super(errorMessage, err);
+    }
+}
+</code></pre>
+<hr />
+<div align="end">
+  <a  href="Visitors/SymbolTable.html#">
+    Return to top
+  </a>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="type-checking"><a class="header" href="#type-checking">Type Checking</a></h1>
+<ul>
+<li><a href="Visitors/TypeChecking.html#type-checking">Type Checking</a>
+<ul>
+<li><a href="Visitors/TypeChecking.html#overview">Overview</a></li>
+<li><a href="Visitors/TypeChecking.html#type-checking-in-ast">Type Checking in AST</a></li>
+<li><a href="Visitors/TypeChecking.html#type-checking-visitor">Type Checking Visitor</a></li>
+<li><a href="Visitors/TypeChecking.html#error-handling">Error Handling</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="overview-2"><a class="header" href="#overview-2">Overview</a></h2>
+<p>Type checking is a process of verifying and enforcing the constraints of types in a program. The type checking process
+can be performed at compile-time or run-time. Type checking is a fundamental part of the compiler or interpreter. It
+helps to catch bugs at the early stages of development and ensures that the program is well-typed.</p>
+<h2 id="type-checking-in-ast"><a class="header" href="#type-checking-in-ast">Type Checking in AST</a></h2>
+<p>Type checking in AST is a process of verifying and enforcing the constraints of types in the AST nodes. The type
+checking process can be performed at compile-time or run-time. Type checking in AST can be implemented using the visitor
+pattern. The type checking visitor traverses the AST and performs type checking on the AST nodes.</p>
+<h2 id="type-checking-visitor"><a class="header" href="#type-checking-visitor">Type Checking Visitor</a></h2>
+<p>In our compiler, we have implemented a type checking visitor that traverses the AST and performs type checking on the
+AST nodes. The type checking visitor is implemented as a subclass of the AST visitor. The type checking visitor
+implements the visit methods for each AST node type. The visit methods perform type checking on the AST nodes.</p>
+<p>The class TypeCheckingVisitor implements <code>Visitor&lt;Type&gt;</code> and SemanticAnalysisStrategy</p>
+<pre><code class="language-java">// T is the return type of the visitor, which is Type in this case
+public interface Visitor&lt;T&gt; {
+    T visit(And a);
+
+    T visit(BooleanType b);
+
+    { ...}
+}
+
+// SemanticAnalysisStrategy is an interface that defines a method
+// to check the semantics of a program
+public interface SemanticAnalysisStrategy {
+    boolean isSemanticsOk(Program program);
+
+    void isSemanticsOkOrThrow(Program program) throws SemanticAnalysisException;
+}
+</code></pre>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<p>When the type-checker detects a type error or an undeclared identifier, it should print an error message and continue –
+because the programmer would like to be told of all the errors in the program.</p>
+<hr />
+<div align="end">
+  <a  href="Visitors/TypeChecking.html#">
+    Return to top
+  </a>
+</div>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

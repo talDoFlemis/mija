@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded "><a href="Parser.html" class="active"><strong aria-hidden="true">1.</strong> Parser</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded "><a href="Parser.html" class="active"><strong aria-hidden="true">1.</strong> Parser</a></li><li class="chapter-item expanded "><a href="Ast.html"><strong aria-hidden="true">2.</strong> AST</a></li><li class="chapter-item expanded "><a href="SemanticAnalysis.html"><strong aria-hidden="true">3.</strong> Semantic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Visitors/SymbolTable.html"><strong aria-hidden="true">3.1.</strong> Table of Symbols</a></li><li class="chapter-item expanded "><a href="Visitors/TypeChecking.html"><strong aria-hidden="true">3.2.</strong> Type Checking</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -180,7 +180,12 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="parser"><a class="header" href="#parser">Parser</a></h1>
-<p>A parser is a critical component of a compiler, responsible for analyzing the grammatical structure of a program's source code and transforming it into a format understandable to the compiler. In the context of the mini Java to MIPS32 compiler, the parser plays the pivotal role of interpreting the syntactic constructs of mini Java language, such as statements, expressions, and control flow structures, and translating them into an intermediate form that can be further processed by the compiler. Key points of the parser include recognizing and interpreting tokens, applying defined grammar rules for mini Java, and detecting and reporting syntactic errors in the source code.</p>
+<p>A parser is a critical component of a compiler, responsible for analyzing the grammatical structure of a program's
+source code and transforming it into a format understandable to the compiler. In the context of the mini Java to MIPS32
+compiler, the parser plays the pivotal role of interpreting the syntactic constructs of mini Java language, such as
+statements, expressions, and control flow structures, and translating them into an intermediate form that can be further
+processed by the compiler. Key points of the parser include recognizing and interpreting tokens, applying defined
+grammar rules for mini Java, and detecting and reporting syntactic errors in the source code.</p>
 <ul>
 <li><a href="#parser">Parser</a>
 <ul>
@@ -201,7 +206,9 @@
 </li>
 </ul>
 <h2 id="tokens"><a class="header" href="#tokens">Tokens</a></h2>
-<p>Tokens are fundamental units of a programming language, representing various syntactic elements within the code. In the context of the mini Java to MIPS32 compiler, tokens are categorized into different types, each serving a distinct purpose in the parsing process.</p>
+<p>Tokens are fundamental units of a programming language, representing various syntactic elements within the code. In the
+context of the mini Java to MIPS32 compiler, tokens are categorized into different types, each serving a distinct
+purpose in the parsing process.</p>
 <h3 id="punctuation"><a class="header" href="#punctuation">Punctuation</a></h3>
 <p>Punctuation tokens consist of symbols used for structuring code and delimiting expressions.</p>
 <div class="table-wrapper"><table><thead><tr><th>Type</th><th>Examples</th><th></th><th>Type</th><th>Examples</th></tr></thead><tbody>
@@ -234,7 +241,9 @@
 </tbody></table>
 </div>
 <h3 id="literals"><a class="header" href="#literals">Literals</a></h3>
-<p>Literals represent constant values in the code, providing specific data to be processed or manipulated by the program. In the context of the mini Java to MIPS32 compiler, literals are categorized into different types, each representing a distinct category of constant values.</p>
+<p>Literals represent constant values in the code, providing specific data to be processed or manipulated by the program.
+In the context of the mini Java to MIPS32 compiler, literals are categorized into different types, each representing a
+distinct category of constant values.</p>
 <div class="table-wrapper"><table><thead><tr><th>Type</th><th>Examples</th></tr></thead><tbody>
 <tr><td><code>TRUE_LITERAL</code></td><td><code>true</code></td></tr>
 <tr><td><code>FALSE_LITERAL</code></td><td><code>false</code></td></tr>
@@ -243,7 +252,8 @@
 </tbody></table>
 </div>
 <h3 id="operators"><a class="header" href="#operators">Operators</a></h3>
-<p>Operators are symbols used to perform operations on variables and values in a programming language. In the mini Java to MIPS32 compiler, operators are classified into different types, each representing a specific operation or manipulation.</p>
+<p>Operators are symbols used to perform operations on variables and values in a programming language. In the mini Java to
+MIPS32 compiler, operators are classified into different types, each representing a specific operation or manipulation.</p>
 <div class="table-wrapper"><table><thead><tr><th>Type</th><th>Examples</th></tr></thead><tbody>
 <tr><td><code>EQ</code></td><td><code>=</code></td></tr>
 <tr><td><code>AND</code></td><td><code>&amp;&amp;</code></td></tr>
@@ -253,31 +263,49 @@
 <tr><td><code>STAR</code></td><td><code>*</code></td></tr>
 <tr><td><code>BANG</code></td><td><code>!</code></td></tr>
 </tbody></table>
+</div><div align="end">
+  <a  href="#">
+    ⬆️
+  </a>
 </div>
 <h2 id="statements"><a class="header" href="#statements">Statements</a></h2>
-<p>Statements are fundamental components of a program that perform specific actions or control the flow of execution. In the mini Java to MIPS32 compiler, various types of statements are supported, each serving a unique purpose:</p>
+<p>Statements are fundamental components of a program that perform specific actions or control the flow of execution. In
+the mini Java to MIPS32 compiler, various types of statements are supported, each serving a unique purpose:</p>
 <ul>
 <li>
-<p><strong>Block Statement</strong>: Represents a block of statements enclosed within curly braces <code>{}</code>. This allows for the grouping of multiple statements together.</p>
+<p><strong>Block Statement</strong>: Represents a block of statements enclosed within curly braces <code>{}</code>. This allows for the grouping
+of multiple statements together.</p>
 </li>
 <li>
-<p><strong>Conditional Statement (if-else)</strong>: Executes one of two statements based on the evaluation of a specified expression within the <code>if</code> condition. If the expression evaluates to true, the first statement is executed; otherwise, the second statement is executed.</p>
+<p><strong>Conditional Statement (if-else)</strong>: Executes one of two statements based on the evaluation of a specified expression
+within the <code>if</code> condition. If the expression evaluates to true, the first statement is executed; otherwise, the second
+statement is executed.</p>
 </li>
 <li>
-<p><strong>Loop Statement (while)</strong>: Repeatedly executes a statement as long as a specified expression within the <code>while</code> condition evaluates to true.</p>
+<p><strong>Loop Statement (while)</strong>: Repeatedly executes a statement as long as a specified expression within the <code>while</code>
+condition evaluates to true.</p>
 </li>
 <li>
 <p><strong>Print Statement</strong>: Outputs the result of an evaluated expression to the standard output using <code>System.out.println</code>.</p>
 </li>
 <li>
-<p><strong>Assignment Statement</strong>: Assigns the value of an evaluated expression to a variable identified by an identifier (<code>id = Exp</code>).</p>
+<p><strong>Assignment Statement</strong>: Assigns the value of an evaluated expression to a variable identified by an
+identifier (<code>id = Exp</code>).</p>
 </li>
 <li>
-<p><strong>Array Assignment Statement</strong>: Assigns the value of an evaluated expression to a specific index of an array identified by another expression (<code>id[Exp] = Exp</code>).</p>
+<p><strong>Array Assignment Statement</strong>: Assigns the value of an evaluated expression to a specific index of an array
+identified by another expression (<code>id[Exp] = Exp</code>).</p>
 </li>
 </ul>
+<div align="end">
+  <a  href="#">
+    ⬆️
+  </a>
+</div>
 <h2 id="expressions"><a class="header" href="#expressions">Expressions</a></h2>
-<p>Expressions represent computations or values within a program, often involving operators, literals, variables, and method calls. In the mini Java to MIPS32 compiler, various types of expressions are supported, each serving a specific purpose in defining program behavior:</p>
+<p>Expressions represent computations or values within a program, often involving operators, literals, variables, and
+method calls. In the mini Java to MIPS32 compiler, various types of expressions are supported, each serving a specific
+purpose in defining program behavior:</p>
 <ul>
 <li>
 <p><strong>Binary Operation</strong>: Represents an operation performed between two expressions, denoted as <code>Exp op Exp</code>.</p>
@@ -289,7 +317,8 @@
 <p><strong>Array Length</strong>: Retrieves the length of an array using the <code>length</code> property, indicated as <code>Exp . length</code>.</p>
 </li>
 <li>
-<p><strong>Method Invocation</strong>: Calls a method on an object, specified as <code>Exp . id ( ExpList )</code>, where <code>id</code> represents the method name and <code>ExpList</code> denotes the list of arguments passed to the method.</p>
+<p><strong>Method Invocation</strong>: Calls a method on an object, specified as <code>Exp . id ( ExpList )</code>, where <code>id</code> represents the
+method name and <code>ExpList</code> denotes the list of arguments passed to the method.</p>
 </li>
 <li>
 <p><strong>Literals</strong>:</p>
@@ -316,12 +345,21 @@
 <p><strong>Parenthesized Expression</strong>: Encloses an expression within parentheses to control evaluation order, as in <code>(Exp)</code>.</p>
 </li>
 <li>
-<p><strong>Expression List</strong>: Represents a list of expressions used as arguments in a method call or array initialization. It is defined as <code>Exp ExpRest*</code>, where <code>ExpRest</code> allows for additional expressions separated by commas.</p>
+<p><strong>Expression List</strong>: Represents a list of expressions used as arguments in a method call or array initialization. It
+is defined as <code>Exp ExpRest*</code>, where <code>ExpRest</code> allows for additional expressions separated by commas.</p>
 </li>
 </ul>
-<p>These expressions enable the creation of complex computations and interactions within mini Java programs, facilitating their translation into MIPS32 instructions.</p>
+<p>These expressions enable the creation of complex computations and interactions within mini Java programs, facilitating
+their translation into MIPS32 instructions.</p>
+<div align="end">
+  <a  href="#">
+    ⬆️
+  </a>
+</div>
 <h2 id="usability"><a class="header" href="#usability">Usability</a></h2>
-<p>In the mini Java to MIPS32 compiler, the usability of the language constructs is defined by the grammar rules and structural conventions used in the code. Here are the key components that contribute to the usability of mini Java programs:</p>
+<p>In the mini Java to MIPS32 compiler, the usability of the language constructs is defined by the grammar rules and
+structural conventions used in the code. Here are the key components that contribute to the usability of mini Java
+programs:</p>
 <ul>
 <li>
 <p><strong>Start Symbol (Program)</strong>:</p>
@@ -339,7 +377,8 @@
     }
 }
 </code></pre>
-This structure specifies the class containing the <code>main</code> method, which serves as the entry point for program execution.</li>
+This structure specifies the class containing the <code>main</code> method, which serves as the entry point for program
+execution.</li>
 </ul>
 </li>
 <li>
@@ -378,11 +417,17 @@ This structure defines the signature, parameters, and body of a method.</li>
 <li>
 <p><strong>Formal Parameters (FormalList)</strong>:</p>
 <ul>
-<li>Formal parameters are specified as a list of data types and identifiers, with optional additional parameters defined by <code>FormalRest</code>.</li>
+<li>Formal parameters are specified as a list of data types and identifiers, with optional additional parameters
+defined by <code>FormalRest</code>.</li>
 </ul>
 </li>
 </ul>
 <p>These conventions ensure consistency and readability in mini Java code, enhancing its usability and maintainability.</p>
+<div align="end">
+  <a  href="#">
+    ⬆️
+  </a>
+</div>
 <h2 id="example"><a class="header" href="#example">Example</a></h2>
 <pre><code class="language-java">class Factorial {
     public static void main(String[] a) {
@@ -415,6 +460,12 @@ second --&gt;|&quot;`**a-e**, **g-z**, **0-9**`&quot;| fourth
 third --&gt;|&quot;`**0-9**, **a-z**`&quot;| fourth
 fourth --&gt;|&quot;`**0-9**, **a-z**`&quot;| fourth
 </pre>
+<hr />
+<div align="end">
+  <a  href="#">
+    Return to top
+  </a>
+</div>
 
                     </main>
 
@@ -424,6 +475,9 @@ fourth --&gt;|&quot;`**0-9**, **a-z**`&quot;| fourth
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
+                            <a rel="next prefetch" href="Ast.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -435,6 +489,9 @@ fourth --&gt;|&quot;`**0-9**, **a-z**`&quot;| fourth
                         <i class="fa fa-angle-left"></i>
                     </a>
 
+                    <a rel="next prefetch" href="Ast.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

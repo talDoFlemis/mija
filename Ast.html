@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - Mija</title>
-        <base href="/">
+        <title>AST - Mija</title>
 
 
         <!-- Custom HTML head -->
@@ -90,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded "><a href="Parser.html"><strong aria-hidden="true">1.</strong> Parser</a></li><li class="chapter-item expanded "><a href="Ast.html"><strong aria-hidden="true">2.</strong> AST</a></li><li class="chapter-item expanded "><a href="SemanticAnalysis.html"><strong aria-hidden="true">3.</strong> Semantic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Visitors/SymbolTable.html"><strong aria-hidden="true">3.1.</strong> Table of Symbols</a></li><li class="chapter-item expanded "><a href="Visitors/TypeChecking.html"><strong aria-hidden="true">3.2.</strong> Type Checking</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded "><a href="Parser.html"><strong aria-hidden="true">1.</strong> Parser</a></li><li class="chapter-item expanded "><a href="Ast.html" class="active"><strong aria-hidden="true">2.</strong> AST</a></li><li class="chapter-item expanded "><a href="SemanticAnalysis.html"><strong aria-hidden="true">3.</strong> Semantic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Visitors/SymbolTable.html"><strong aria-hidden="true">3.1.</strong> Table of Symbols</a></li><li class="chapter-item expanded "><a href="Visitors/TypeChecking.html"><strong aria-hidden="true">3.2.</strong> Type Checking</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -180,14 +179,108 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="abstract-syntax-tree"><a class="header" href="#abstract-syntax-tree">Abstract Syntax Tree</a></h1>
+<ul>
+<li><a href="#abstract-syntax-tree">Abstract Syntax Tree</a>
+<ul>
+<li><a href="#Overview">Overview</a></li>
+<li><a href="#nodes">Nodes</a></li>
+<li><a href="#visitors">Visitors</a>
+<ul>
+<li><a href="#orthogonal-directions-of-modularity">Orthogonal directions of modularity.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>The abstract syntax tree (AST) is a tree representation of the source code. It is used to represent the structure of
+the code in a way that is easy to manipulate and analyze. The AST is created by the parser, which reads the source
+code and generates a tree of nodes that represent the different parts of the code.</p>
+<pre class="mermaid">flowchart TD
+    A[Program] --&gt; B[ClassDecl]
+    A --&gt; C[MainClass]
+    C --&gt; Sout[System.out.println]
+    Sout --&gt; Hello[&quot;Hello, World!&quot;]
+    B --&gt; E[VarDecl]
+    B --&gt; F[MethodDecl]
+    F --&gt; J[Statement]
+    J --&gt; K[Exp]
+</pre>
+<div align="end">
+  <a  href="#">
+    ⬆️
+  </a>
+</div>
+<h2 id="nodes"><a class="header" href="#nodes">Nodes</a></h2>
+<p>The nodes of the AST represent the different elements of the source code, such as statements, expressions, and
+declarations. Each node has a specific type and contains information about the code it represents. For example, a
+node representing an assignment statement might contain information about the variable being assigned to and the
+value being assigned.</p>
+<pre><code class="language-java">// Abstract base class for all AST nodes
+public abstract class Node {
+    public abstract &lt;T&gt; T accept(Visitor&lt;T&gt; v);
+}
+</code></pre>
+<pre><code class="language-java">// Example of a node representing an assignment statement
+public class Assign extends Statement {
+    private Identifier identifier;
+    private Expression value;
+
+    @Override
+    public &lt;T&gt; T accept(Visitor&lt;T&gt; v) {
+        return v.visit(this);
+    }
+}
+</code></pre>
+<p><em>Generic Type <code>T</code> is used to allow the visitor to return different types of values depending on the operation being</em></p>
+<div align="end">
+  <a  href="#">
+    ⬆️
+  </a>
+</div>
+<h2 id="visitors"><a class="header" href="#visitors">Visitors</a></h2>
+<p>Each node in the AST has an <code>accept</code> method that takes a visitor as an argument. The visitor is an interface that
+defines methods for each type of node in the AST. When the <code>accept</code> method is called on a node, it calls the
+appropriate method on the visitor, passing itself as an argument. This allows the visitor to perform operations on
+the node and its children.</p>
+<pre><code class="language-java">// Visitor interface
+public interface Visitor&lt;T&gt; {
+    T visit(Assign assign);
+    T visit(Identifier identifier);
+    T visit(Expression expression);
+    { ... }
+}
+</code></pre>
+<div align="end">
+  <a  href="#">
+    ⬆️
+  </a>
+</div>
+<h3 id="orthogonal-directions-of-modularity"><a class="header" href="#orthogonal-directions-of-modularity">Orthogonal directions of modularity.</a></h3>
+<p>The visitor pattern allows for orthogonal directions of modularity. This means that the code that defines the nodes
+of the AST is separate from the code that defines the operations that can be performed on the nodes. This separation
+makes it easy to add new operations to the AST without modifying the existing code.</p>
+<p>Examples of operations that can be performed on the AST include <a href="Visitors/TypeChecking.html"><strong>type checking</strong></a>,
+<a href="Visitors/SymbolTable.html"><strong>table of symbols</strong></a> and <a href=""><strong>mermaid printer</strong></a>, code generation, and optimization(<strong>like llvm</strong>).</p>
+<hr />
+<div align="end">
+  <a  href="#">
+    Return to top
+  </a>
+</div>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="Parser.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="SemanticAnalysis.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -195,7 +288,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="Parser.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="SemanticAnalysis.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
