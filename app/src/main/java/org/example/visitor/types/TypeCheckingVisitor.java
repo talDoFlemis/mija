@@ -88,8 +88,12 @@ public class TypeCheckingVisitor implements Visitor<Type>, SemanticAnalysisStrat
 
         String tmpClassIdentifier = ((IdentifierType) object).getS();
         ClassTable tmpClassTable = mainTable.getMap().get(tmpClassIdentifier);
-        MethodTable tmpMethodTable = tmpClassTable.getMethodsContext().get(c.getMethod().getS());
+        if (tmpClassTable == null) {
+            addError("Class " + tmpClassIdentifier + " was not found");
+            return null;
+        }
 
+        MethodTable tmpMethodTable = tmpClassTable.getMethodsContext().get(c.getMethod().getS());
         if (tmpMethodTable == null) {
             addError("Method " + c.getMethod().getS() + " was not found in class" + tmpClassIdentifier);
             return null;
