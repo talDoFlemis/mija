@@ -1,4 +1,4 @@
-package org.example.parser;
+package org.example.mija;
 
 import org.example.ast.Program;
 
@@ -9,4 +9,6 @@ public interface ParserStrategy {
     Optional<Program> getProgram(InputStream stream);
 
     boolean isSyntaxOk(InputStream stream);
+
+    Program getProgramOrThrow(InputStream stream) throws LexicalOrSemanticAnalysisException;
 }

@@ -5,12 +5,14 @@ import lombok.extern.log4j.Log4j2;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.example.antlr.MiniJavaLexer;
 import org.example.antlr.MiniJavaParser;
 import org.example.ast.*;
+import org.example.mija.LexicalOrSemanticAnalysisException;
+import org.example.mija.ParserStrategy;
 
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
@@ -75,4 +77,33 @@ public class AntlrParser implements ParserStrategy {
         return status;
     }
 
+    public Program getProgramOrThrow(InputStream stream) throws LexicalOrSemanticAnalysisException {
+        log.info("Parsing program");
+
+        try {
+            var charStream = CharStreams.fromStream(stream);
+            var lexer = new MiniJavaLexer(charStream);
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(AntlrParserExceptionListener.INSTANCE);
+
+            var tokens = new CommonTokenStream(lexer);
+
+            var parser = new MiniJavaParser(tokens);
+
+            parser.removeErrorListeners();
+            parser.addErrorListener(AntlrParserExceptionListener.INSTANCE);
+
+            var gen = new ASTGenerator();
+            parser.addParseListener(gen);
+            assert parser.getNumberOfSyntaxErrors() == 0;
+            parser.goal();
+
+            return gen.getProgram();
+
+        } catch (IOException e) {
+            throw new LexicalOrSemanticAnalysisException("IO Exception", e);
+        } catch (Exception e) {
+            throw new LexicalOrSemanticAnalysisException("Error parsing program", e);
+        }
+    }
 }
