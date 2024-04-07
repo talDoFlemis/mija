@@ -4,11 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.example.ast.*;
+import org.example.mija.SemanticAnalysisException;
+import org.example.mija.SemanticAnalysisStrategy;
 import org.example.visitor.Visitor;
 import org.example.visitor.symbols.ClassTable;
 import org.example.visitor.symbols.MainTable;
 import org.example.visitor.symbols.MethodTable;
+import org.example.visitor.symbols.SymbolTableVisitor;
 
 import java.util.ArrayList;
 
@@ -16,7 +20,8 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @Builder
 @Data
-public class TypeCheckingVisitor implements Visitor<Type> {
+@Log4j2
+public class TypeCheckingVisitor implements Visitor<Type>, SemanticAnalysisStrategy {
     @Builder.Default
     private MainTable mainTable = new MainTable();
     @Builder.Default
@@ -444,5 +449,42 @@ public class TypeCheckingVisitor implements Visitor<Type> {
 
     private void addError(String message) {
         errors.add(new TypeCheckingException(message));
+    }
+
+    public boolean isSemanticsOk(Program program) {
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        program.accept(symbolTableVisitor);
+
+        if (!symbolTableVisitor.getErrors().isEmpty()) {
+            log.error("Symbol errors {}", symbolTableVisitor.getErrors());
+            return false;
+        }
+
+        mainTable = symbolTableVisitor.getMainTable();
+        program.accept(this);
+        if (!errors.isEmpty()) {
+            log.error("Type errors {}", errors);
+            return false;
+        }
+
+        return true;
+    }
+
+    public void isSemanticsOkOrThrow(Program program) throws SemanticAnalysisException {
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+        program.accept(symbolTableVisitor);
+
+        if (!symbolTableVisitor.getErrors().isEmpty()) {
+            log.error("Symbol errors {}", symbolTableVisitor.getErrors());
+            throw new SemanticAnalysisException("Symbol Exception");
+        }
+
+        mainTable = symbolTableVisitor.getMainTable();
+        program.accept(this);
+
+        if (!errors.isEmpty()) {
+            log.error("Type errors {}", errors);
+            throw new SemanticAnalysisException("Type Exception");
+        }
     }
 }
