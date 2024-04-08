@@ -5,10 +5,13 @@ import lombok.Builder;
 import lombok.extern.log4j.Log4j2;
 import org.example.ast.Program;
 import org.example.parser.JavaCCParser;
+import org.example.visitor.mermaid.MermaidASTPrinterVisitor;
 import org.example.visitor.types.TypeCheckingVisitor;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 @AllArgsConstructor
 @Builder
@@ -73,5 +76,21 @@ public class MijaCompiler {
         isSemanticallyOkOrThrow(program);
 
         // Intermediate code generation
+
+    }
+
+    public void mermaid(InputStream inputStream, OutputStream outputStream) throws LexicalOrSemanticAnalysisException, SemanticAnalysisException {
+        Program program = getAbstractSyntaxTreeFromStream(inputStream);
+        isSemanticallyOkOrThrow(program);
+
+        log.info("Generating mermaid file");
+        try {
+            MermaidASTPrinterVisitor visitor =
+                    new MermaidASTPrinterVisitor("app/src/main/java/org/example/visitor/mermaid/teste.md");
+            program.accept(visitor);
+        } catch (Exception e) {
+            log.error("Error while generating mermaid file");
+            throw e;
+        }
     }
 }

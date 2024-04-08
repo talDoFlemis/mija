@@ -13,13 +13,13 @@ import java.io.InputStream;
 @Log4j2
 public class App {
     public static void main(String[] args) throws FileNotFoundException {
-        InputStream inputStream = new FileInputStream("app/src/test/resources/programs/TreeVisitor.java");
+        InputStream inputStream = new FileInputStream("app/src/test/resources/programs/Factorial.java");
 
         MijaCompiler compiler = MijaCompiler.builder()
                 .parser(new AntlrParser())
                 .semanticAnalysis(new TypeCheckingVisitor())
                 .build();
 
-        compiler.compile(inputStream, System.out);
+        compiler.mermaid(inputStream, System.out);
     }
 }
