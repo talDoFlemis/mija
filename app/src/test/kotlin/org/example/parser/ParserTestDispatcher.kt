@@ -1,13 +1,13 @@
 package org.example.parser
 
 import kotlinx.coroutines.runBlocking
+import org.example.mija.ParserStrategy
 import org.example.programs.Programs
 import org.example.visitor.symbols.SymbolTableVisitor
 import org.example.visitor.types.TypeCheckingVisitor
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
 
 interface ParserTestDispatcher<Parser: ParserStrategy, Program: Programs.IProgram> {
     val program: Program

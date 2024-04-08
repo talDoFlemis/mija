@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.ast.*;
 import org.example.javacc.Parser;
+import org.example.mija.LexicalOrSemanticAnalysisException;
+import org.example.mija.ParserStrategy;
 
 
 @NoArgsConstructor
@@ -15,7 +17,7 @@ public class JavaCCParser implements ParserStrategy {
     private final Parser parser = new Parser(InputStream.nullInputStream());
 
     public Optional<Program> getProgram(InputStream stream) {
-        log.info("Parsing program");
+        log.debug("Parsing program");
 
         try {
             parser.ReInit(stream);
@@ -26,8 +28,19 @@ public class JavaCCParser implements ParserStrategy {
         }
     }
 
+    public Program getProgramOrThrow(InputStream stream) throws LexicalOrSemanticAnalysisException {
+        log.debug("Parsing program");
+
+        parser.ReInit(stream);
+        try {
+            return parser.Program();
+        } catch (Exception e) {
+            throw new LexicalOrSemanticAnalysisException("Error parsing program", e);
+        }
+    }
+
     public boolean isSyntaxOk(InputStream stream) {
-        log.info("Checking syntax");
+        log.debug("Checking syntax");
 
         boolean isOk = true;
         try {
