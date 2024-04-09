@@ -19,6 +19,7 @@ import java.util.Optional;
 @Log4j2
 @NoArgsConstructor
 public class AntlrParser implements ParserStrategy {
+    private final MiniJavaParser parser = new MiniJavaParser(null);
 
     public Optional<Program> getProgram(InputStream stream) {
         log.info("Parsing program");
@@ -31,8 +32,7 @@ public class AntlrParser implements ParserStrategy {
 
             var tokens = new CommonTokenStream(lexer);
 
-            var parser = new MiniJavaParser(tokens);
-
+            parser.setTokenStream(tokens);
             parser.removeErrorListeners();
             parser.addErrorListener(AntlrParserExceptionListener.INSTANCE);
 
@@ -60,11 +60,9 @@ public class AntlrParser implements ParserStrategy {
             lexer.addErrorListener(AntlrParserExceptionListener.INSTANCE);
 
             var tokens = new CommonTokenStream(lexer);
-
-            var parser = new MiniJavaParser(tokens);
+            parser.setTokenStream(tokens);
             parser.removeErrorListeners();
             parser.addErrorListener(AntlrParserExceptionListener.INSTANCE);
-
             parser.program();
         } catch (ParseCancellationException e) {
             log.error("Syntax error", e);
