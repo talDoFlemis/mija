@@ -6,6 +6,7 @@ import org.example.ast.*;
 import org.example.visitor.Visitor;
 
 import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 
 @NoArgsConstructor
@@ -19,8 +20,8 @@ public class MermaidASTPrinterVisitor implements Visitor<Void> {
     private boolean templateMermaid;
     private int count;
 
-    public MermaidASTPrinterVisitor(PrintStream output) {
-        printStream = output;
+    public MermaidASTPrinterVisitor(OutputStream output) {
+        printStream = (PrintStream) output;
         count = 0;
         templateMermaid = false;
     }

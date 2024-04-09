@@ -86,7 +86,7 @@ public class MijaCompiler {
         log.info("Generating mermaid file");
         try {
             MermaidASTPrinterVisitor visitor =
-                    new MermaidASTPrinterVisitor("app/src/main/java/org/example/visitor/mermaid/teste.md");
+                    new MermaidASTPrinterVisitor(outputStream);
             program.accept(visitor);
         } catch (Exception e) {
             log.error("Error while generating mermaid file");
