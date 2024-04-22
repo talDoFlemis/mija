@@ -1,7 +1,6 @@
 package org.example.frame;
 
-import org.example.irtree.Exp;
-import org.example.irtree.Stm;
+import org.example.irtree.ExpAbstract;
 import org.example.temp.Label;
 import org.example.temp.Temp;
 import org.example.temp.TempMap;
@@ -20,7 +19,7 @@ public abstract class Frame implements TempMap {
 
     public abstract int wordSize();
 
-    public abstract Exp externalCall(String func, List<Exp> args);
+    public abstract ExpAbstract externalCall(String func, List<ExpAbstract> args);
 
     public abstract Temp RV();
 
@@ -32,17 +31,20 @@ public abstract class Frame implements TempMap {
 
     public abstract String tempMap(Temp temp);
 
-    public abstract List<Assem.Instr> codegen(List<Stm> stms);
-
-    public abstract void procEntryExit1(List<Stm> body);
-
-    public abstract void procEntryExit2(List<Assem.Instr> body);
-
-    public abstract void procEntryExit3(List<Assem.Instr> body);
-
     public abstract Temp[] registers();
 
-    public abstract void spill(List<Assem.Instr> insns, Temp[] spills);
+    public abstract String programTail();
 
-    public abstract String programTail(); //append to end of target code
+
+    /*
+        public abstract List<Assem.Instr> codegen(List<Stm> stms);
+
+        public abstract void procEntryExit1(List<Stm> body);
+
+        public abstract void procEntryExit2(List<Assem.Instr> body);
+
+        public abstract void procEntryExit3(List<Assem.Instr> body);
+
+        public abstract void spill(List<Assem.Instr> insns, Temp[] spills);
+    */
 }

@@ -14,7 +14,7 @@ public class CJUMP extends Stm {
     public final static int EQ = 0, NE = 1, LT = 2, GT = 3, LE = 4, GE = 5,
             ULT = 6, ULE = 7, UGT = 8, UGE = 9;
     public int relop;
-    public Exp left, right;
+    public ExpAbstract left, right;
     public Label condTrue, condFalse;
 
 

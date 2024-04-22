@@ -10,14 +10,14 @@ import org.example.temp.Label;
 @Data
 @Builder
 @AllArgsConstructor
-public class NAME extends Exp {
+public class NAME extends ExpAbstract {
     public Label label;
 
     public ExpList kids() {
         return null;
     }
 
-    public Exp build(ExpList kids) {
+    public ExpAbstract build(ExpList kids) {
         return this;
     }
 }

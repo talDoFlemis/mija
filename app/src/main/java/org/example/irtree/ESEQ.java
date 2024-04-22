@@ -9,15 +9,15 @@ import lombok.EqualsAndHashCode;
 @Data
 @Builder
 @AllArgsConstructor
-public class ESEQ extends Exp {
+public class ESEQ extends ExpAbstract {
     public Stm stm;
-    public Exp exp;
+    public ExpAbstract exp;
 
     public ExpList kids() {
-        throw new Error("kids() not applicable to ESEQ");
+        throw new IRTreeException("kids() not applicable to ESEQ");
     }
 
-    public Exp build(ExpList kids) {
-        throw new Error("build() not applicable to ESEQ");
+    public ExpAbstract build(ExpList kids) {
+        throw new IRTreeException("build() not applicable to ESEQ");
     }
 }

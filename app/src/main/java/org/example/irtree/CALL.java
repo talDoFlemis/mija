@@ -9,15 +9,15 @@ import lombok.EqualsAndHashCode;
 @Data
 @Builder
 @AllArgsConstructor
-public class CALL extends Exp {
-    public Exp func;
+public class CALL extends ExpAbstract {
+    public ExpAbstract func;
     public ExpList args;
 
     public ExpList kids() {
         return new ExpList(func, args);
     }
 
-    public Exp build(ExpList kids) {
+    public ExpAbstract build(ExpList kids) {
         return new CALL(kids.head, kids.tail);
     }
 

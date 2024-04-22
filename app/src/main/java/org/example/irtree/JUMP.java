@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @Builder
 @AllArgsConstructor
 public class JUMP extends Stm {
-    public Exp exp;
+    public ExpAbstract exp;
     public LabelList targets;
 
     public JUMP(Label target) {

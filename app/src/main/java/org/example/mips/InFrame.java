@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import org.example.frame.Access;
 import org.example.irtree.BINOP;
 import org.example.irtree.CONST;
-import org.example.irtree.Exp;
+import org.example.irtree.ExpAbstract;
 import org.example.irtree.MEM;
 
 @EqualsAndHashCode(callSuper = false)
@@ -17,7 +17,7 @@ import org.example.irtree.MEM;
 public class InFrame extends Access {
     int offset;
 
-    public Exp exp(Exp fp) {
+    public ExpAbstract exp(ExpAbstract fp) {
         return new MEM
                 (new BINOP(BINOP.PLUS, fp, new CONST(offset)));
     }

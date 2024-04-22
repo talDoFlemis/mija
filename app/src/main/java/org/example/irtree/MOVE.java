@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 @Builder
 @AllArgsConstructor
 public class MOVE extends Stm {
-    public Exp dst, src;
+    public ExpAbstract dst, src;
 
     public ExpList kids() {
         if (dst instanceof MEM)

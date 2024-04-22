@@ -4,8 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.example.temp.TempMap;
 import org.example.temp.DefaultMap;
+import org.example.temp.TempMap;
+
 
 @EqualsAndHashCode(callSuper = false)
 @Data
@@ -92,7 +93,7 @@ public class SOUT {
                 say("UGE");
                 break;
             default:
-                throw new Error("Print.prStm.CJUMP");
+                throw new IRTreeException("Print.prStm.CJUMP");
         }
         sayln(",");
         prExp(s.left, d + 1);
@@ -102,7 +103,7 @@ public class SOUT {
         indent(d + 1);
         say(s.condTrue.toString());
         say(",");
-        say(s.condTrue.toString());
+        say(s.condFalse.toString());
         say(")");
     }
 
@@ -115,7 +116,7 @@ public class SOUT {
         say(")");
     }
 
-    void prStm(EXPSTM s, int d) {
+    void prStm(EXP s, int d) {
         indent(d);
         sayln("EXP(");
         prExp(s.exp, d + 1);
@@ -123,13 +124,20 @@ public class SOUT {
     }
 
     void prStm(Stm s, int d) {
-        if (s instanceof SEQ) prStm((SEQ) s, d);
-        else if (s instanceof LABEL) prStm((LABEL) s, d);
-        else if (s instanceof JUMP) prStm((JUMP) s, d);
-        else if (s instanceof CJUMP) prStm((CJUMP) s, d);
-        else if (s instanceof MOVE) prStm((MOVE) s, d);
-        else if (s instanceof EXPSTM) prStm((EXPSTM) s, d);
-        else throw new Error("Print.prStm");
+        if (s instanceof SEQ)
+            prStm((SEQ) s, d);
+        else if (s instanceof LABEL)
+            prStm((LABEL) s, d);
+        else if (s instanceof JUMP)
+            prStm((JUMP) s, d);
+        else if (s instanceof CJUMP)
+            prStm((CJUMP) s, d);
+        else if (s instanceof MOVE)
+            prStm((MOVE) s, d);
+        else if (s instanceof EXP)
+            prStm((EXP) s, d);
+        else
+            throw new IRTreeException("Print.prStm");
     }
 
     void prExp(BINOP e, int d) {
@@ -167,7 +175,7 @@ public class SOUT {
                 say("XOR");
                 break;
             default:
-                throw new Error("Print.prExp.BINOP");
+                throw new IRTreeException("Print.prExp.BINOP");
         }
         sayln(",");
         prExp(e.left, d + 1);
@@ -222,15 +230,27 @@ public class SOUT {
         say(")");
     }
 
-    void prExp(Exp e, int d) {
-        if (e instanceof BINOP) prExp((BINOP) e, d);
-        else if (e instanceof MEM) prExp((MEM) e, d);
-        else if (e instanceof TEMP) prExp((TEMP) e, d);
-        else if (e instanceof ESEQ) prExp((ESEQ) e, d);
-        else if (e instanceof NAME) prExp((NAME) e, d);
-        else if (e instanceof CONST) prExp((CONST) e, d);
-        else if (e instanceof CALL) prExp((CALL) e, d);
-        else throw new Error("Print.prExp");
+    void prExp(ExpAbstract e, int d) {
+        if (e instanceof BINOP) {
+            prExp((BINOP) e, d);
+        } else if (e instanceof MEM) {
+            prExp((MEM) e, d);
+        } else if (e instanceof TEMP) {
+            prExp((TEMP) e, d);
+        } else if (e instanceof ESEQ) {
+            prExp((ESEQ) e, d);
+        } else if (e instanceof NAME) {
+            prExp((NAME) e, d);
+        } else if (e instanceof CONST) {
+            prExp((CONST) e, d);
+        } else if (e instanceof CALL) {
+            prExp((CALL) e, d);
+        } else if (e == null) {
+            System.out.println();
+        } else {
+            System.out.println("IRTreeException AQ: " + e);
+            throw new IRTreeException("Print.prExp");
+        }
     }
 
     public void prStm(Stm s) {
@@ -238,7 +258,7 @@ public class SOUT {
         say("\n");
     }
 
-    public void prExp(Exp e) {
+    public void prExp(ExpAbstract e) {
         prExp(e, 0);
         say("\n");
     }

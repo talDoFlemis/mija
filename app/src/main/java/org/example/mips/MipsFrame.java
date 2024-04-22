@@ -3,12 +3,12 @@ package org.example.mips;
 import lombok.NoArgsConstructor;
 import org.example.frame.Access;
 import org.example.frame.Frame;
+import org.example.irtree.*;
 import org.example.temp.Label;
 import org.example.temp.Temp;
 
-import org.example.irtree.*;
-
 import java.util.*;
+
 
 @NoArgsConstructor
 public class MipsFrame extends Frame {
@@ -48,7 +48,7 @@ public class MipsFrame extends Frame {
     static final Temp FP = new Temp(); // virtual frame pointer (eliminated)
     private static final int wordSize = 4;
     // Register lists: must not overlap and must include every register that
-    // might show up in code
+    // might show up in
     private static final Temp[]
             // registers dedicated to special purposes
             specialRegs = {ZERO, AT, K0, K1, GP, SP},
@@ -60,17 +60,15 @@ public class MipsFrame extends Frame {
     callerSaves = {T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, V0, V1};
     private static final Label badPtr = new Label("BADPTR");
     private static final Label badSub = new Label("BADSUB");
-    private static final
-    HashMap<Temp, String> tempMap = new HashMap<>(32);
-    private static final HashMap<String, Integer> functions
-            = new HashMap<>();
-    private static final HashMap<String, Label> labels = new HashMap<>();
-    private static final boolean spilling = true;
+    private static final HashMap<Temp, String> tempMap = new HashMap<>(32);
     // Registers defined by a call
     static Temp[] calldefs = {};
+    private static final HashMap<String, Integer> functions = new HashMap<String, Integer>();
+    private static final HashMap<String, Label> labels = new HashMap<>();
     // Registers live on return
     private static Temp[] returnSink = {};
     private static Temp[] registers = {};
+    private static final boolean spilling = true;
 
     static {
         tempMap.put(ZERO, "$0");
@@ -111,7 +109,7 @@ public class MipsFrame extends Frame {
     private int offset = 0;
     private List<Access> actuals;
 
-    static {
+    {
         LinkedList<Temp> l = new LinkedList<>();
         l.add(V0);
         addAll(l, specialRegs);
@@ -119,7 +117,7 @@ public class MipsFrame extends Frame {
         returnSink = l.toArray(returnSink);
     }
 
-    static {
+    {
         LinkedList<Temp> l = new LinkedList<>();
         l.add(RA);
         addAll(l, argRegs);
@@ -127,8 +125,8 @@ public class MipsFrame extends Frame {
         calldefs = l.toArray(calldefs);
     }
 
-    static {
-        LinkedList<Temp> l = new LinkedList<>();
+    {
+        LinkedList<Temp> l = new LinkedList<Temp>();
         addAll(l, callerSaves);
         addAll(l, calleeSaves);
         addAll(l, argRegs);
@@ -174,7 +172,7 @@ public class MipsFrame extends Frame {
     }
 
     private static <R> void addAll(java.util.Collection<R> c, R[] a) {
-        Collections.addAll(c, a);
+        c.addAll(Arrays.asList(a));
     }
 
     private static Stm SEQ(Stm left, Stm right) {
@@ -185,7 +183,7 @@ public class MipsFrame extends Frame {
         return new SEQ(left, right);
     }
 
-    private static MOVE MOVE(Exp d, Exp s) {
+    private static MOVE MOVE(ExpAbstract d, ExpAbstract s) {
         return new MOVE(d, s);
     }
 
@@ -193,12 +191,8 @@ public class MipsFrame extends Frame {
         return new TEMP(t);
     }
 
-    private static Assem.Instr OPER(String a, Temp[] d, Temp[] s) {
-        return new Assem.OPER(a, d, s, null);
-    }
-
-    //Mini Java Library will be appended to end of
-    //program
+    // Mini Java Library will be appended to end of
+    // program
     public String programTail() {
 
         return
@@ -237,7 +231,8 @@ public class MipsFrame extends Frame {
     }
 
     public Frame newFrame(String name, List<Boolean> formals) {
-        if (this.name != null) name = this.name + "." + name;
+        if (this.name != null)
+            name = this.name + "." + name;
         return new MipsFrame(name, formals);
     }
 
@@ -262,7 +257,8 @@ public class MipsFrame extends Frame {
         return V0;
     }
 
-    public Exp externalCall(String s, List<Exp> args) {
+    public ExpAbstract externalCall(String s, List<ExpAbstract> args) {
+
         String func = s.intern();
         Label l = labels.get(func);
         if (l == null) {
@@ -270,7 +266,13 @@ public class MipsFrame extends Frame {
             labels.put(func, l);
         }
         args.addFirst(new CONST(0));
-        return new CALL(new NAME(l), args);
+
+        ExpList auxiliar_exp2_list = null;
+
+        for (ExpAbstract arg : args) {
+            auxiliar_exp2_list = new ExpList(arg, auxiliar_exp2_list);
+        }
+        return new CALL(new NAME(l), auxiliar_exp2_list);
     }
 
     public String string(Label lab, String string) {
@@ -302,15 +304,13 @@ public class MipsFrame extends Frame {
                     break;
                 default:
                     if (c < ' ' || c > '~') {
-                        int v = c;
-                        lit.append("\\").append((v >> 6) & 7).append((v >> 3) & 7).append(v & 7);
+                        lit.append("\\").append((c >> 6) & 7).append((c >> 3) & 7).append(c & 7);
                     } else
                         lit.append(c);
                     break;
             }
         }
-        return "\t.data\n\t.word " + length + "\n" + lab.toString()
-                + ":\t.asciiz\t\"" + lit + "\"";
+        return "\t.data\n\t.word " + length + "\n" + lab.toString() + ":\t.asciiz\t\"" + lit + "\"";
     }
 
     public Label badPtr() {
@@ -325,16 +325,11 @@ public class MipsFrame extends Frame {
         return tempMap.get(temp);
     }
 
-    public List<Assem.Instr> codegen(List<Stm> stms) {
-        List<Assem.Instr> insns = new java.util.LinkedList<Assem.Instr>();
-        Codegen cg = new Codegen(this, insns.listIterator());
-        for (Stm stm : stms) stm.accept(cg);
-        return insns;
+    public Temp[] calldefs() {
+        return calldefs;
     }
 
-    private void assignFormals(Iterator<Access> formals,
-                  Iterator<Access> actuals,
-                  List<Stm> body) {
+    private void assignFormals(Iterator<Access> formals, Iterator<Access> actuals, List<Stm> body) {
         if (!formals.hasNext() || !actuals.hasNext())
             return;
         Access formal = formals.next();
@@ -357,70 +352,8 @@ public class MipsFrame extends Frame {
         assignCallees(0, body);
     }
 
-    public void procEntryExit2(List<Assem.Instr> body) {
-        body.add(OPER("#\treturn", null, returnSink));
-    }
-
-    public void procEntryExit3(List<Assem.Instr> body) {
-        int frameSize = maxArgOffset - offset;
-        ListIterator<Assem.Instr> cursor = body.listIterator();
-        cursor.add(OPER("\t.text", null, null));
-        cursor.add(OPER(name + ":", null, null));
-        cursor.add(OPER(name + "_framesize=" + frameSize, null, null));
-        if (frameSize != 0) {
-            cursor.add(OPER("\tsubu $sp " + name + "_framesize",
-                    new Temp[]{SP}, new Temp[]{SP}));
-            body.add(OPER("\taddu $sp " + name + "_framesize",
-                    new Temp[]{SP}, new Temp[]{SP}));
-        }
-        body.add(OPER("\tj $ra", null, new Temp[]{RA}));
-    }
-
     public Temp[] registers() {
         return registers;
     }
 
-    // set spilling to true when the spill method is implemented
-    public void spill(List<Assem.Instr> insns, Temp[] spills) {
-        if (spills != null) {
-            if (!spilling) {
-                for (int s = 0; s < spills.length; s++)
-                    System.err.println("Need to spill " + spills[s]);
-                throw new Error("Spilling unimplemented");
-            } else for (int s = 0; s < spills.length; s++) {
-                Exp exp = allocLocal(true).exp(TEMP(FP));
-                for (ListIterator<Assem.Instr> i = insns.listIterator();
-                     i.hasNext(); ) {
-                    Assem.Instr insn = i.next();
-                    Temp[] use = insn.use;
-                    if (use != null)
-                        for (int u = 0; u < use.length; u++) {
-                            if (use[u] == spills[s]) {
-                                Temp t = new Temp();
-                                t.spillTemp = true;
-                                Tree.Stm stm = MOVE(TEMP(t), exp);
-                                i.previous();
-                                stm.accept(new Codegen(this, i));
-                                if (insn != i.next())
-                                    throw new Error();
-                                insn.replaceUse(spills[s], t);
-                                break;
-                            }
-                        }
-                    Temp[] def = insn.def;
-                    if (def != null)
-                        for (int d = 0; d < def.length; d++) {
-                            if (def[d] == spills[s]) {
-                                Temp t = new Temp();
-                                t.spillTemp = true;
-                                insn.replaceDef(spills[s], t);
-                                Stm stm = MOVE(exp, TEMP(t));
-                                stm.accept(new Codegen(this, i));
-                                break;
-                            }
-                        }
-                }
-            }
-        }
-    }
 }
