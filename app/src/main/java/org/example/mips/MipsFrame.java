@@ -1,5 +1,7 @@
 package org.example.mips;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.frame.Access;
 import org.example.frame.Frame;
@@ -9,10 +11,12 @@ import org.example.temp.Temp;
 
 import java.util.*;
 
-
+@EqualsAndHashCode(callSuper = true)
+@Data
 @NoArgsConstructor
 public class MipsFrame extends Frame {
 
+    // Registradores de MIPS
     static final Temp ZERO = new Temp(); // zero reg
     static final Temp AT = new Temp(); // reserved for assembler
     static final Temp V0 = new Temp(); // function result
@@ -21,7 +25,7 @@ public class MipsFrame extends Frame {
     static final Temp A1 = new Temp(); // argument2
     static final Temp A2 = new Temp(); // argument3
     static final Temp A3 = new Temp(); // argument4
-    static final Temp T0 = new Temp(); // caller-saved
+    static final Temp T0 = new Temp(); // caller-saved: T0 .. T7
     static final Temp T1 = new Temp();
     static final Temp T2 = new Temp();
     static final Temp T3 = new Temp();
@@ -29,7 +33,7 @@ public class MipsFrame extends Frame {
     static final Temp T5 = new Temp();
     static final Temp T6 = new Temp();
     static final Temp T7 = new Temp();
-    static final Temp S0 = new Temp(); // callee-saved
+    static final Temp S0 = new Temp(); // callee-saved: S0 .. S7
     static final Temp S1 = new Temp();
     static final Temp S2 = new Temp();
     static final Temp S3 = new Temp();
@@ -38,32 +42,28 @@ public class MipsFrame extends Frame {
     static final Temp S6 = new Temp();
     static final Temp S7 = new Temp();
     static final Temp T8 = new Temp(); // caller-saved
-    static final Temp T9 = new Temp();
+    static final Temp T9 = new Temp(); // callee-saved
     static final Temp K0 = new Temp(); // reserved for OS kernel
     static final Temp K1 = new Temp(); // reserved for OS kernel
     static final Temp GP = new Temp(); // pointer to global area
     static final Temp SP = new Temp(); // stack pointer
     static final Temp S8 = new Temp(); // callee-save (frame pointer)
-    static final Temp RA = new Temp(); // return address
     static final Temp FP = new Temp(); // virtual frame pointer (eliminated)
+    static final Temp RA = new Temp(); // return address
     private static final int wordSize = 4;
     // Register lists: must not overlap and must include every register that
     // might show up in
     private static final Temp[]
-            // registers dedicated to special purposes
             specialRegs = {ZERO, AT, K0, K1, GP, SP},
-    // registers to pass outgoing arguments
-    argRegs = {A0, A1, A2, A3},
-    // registers that a callee must preserve for its caller
-    calleeSaves = {RA, S0, S1, S2, S3, S4, S5, S6, S7, S8},
-    // registers that a callee may use without preserving
-    callerSaves = {T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, V0, V1};
+            argRegs = {A0, A1, A2, A3},
+            calleeSaves = {RA, S0, S1, S2, S3, S4, S5, S6, S7, S8},
+            callerSaves = {T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, V0, V1};
     private static final Label badPtr = new Label("BADPTR");
     private static final Label badSub = new Label("BADSUB");
     private static final HashMap<Temp, String> tempMap = new HashMap<>(32);
     // Registers defined by a call
     static Temp[] calldefs = {};
-    private static final HashMap<String, Integer> functions = new HashMap<String, Integer>();
+    private static final HashMap<String, Integer> functions = new HashMap<>();
     private static final HashMap<String, Label> labels = new HashMap<>();
     // Registers live on return
     private static Temp[] returnSink = {};
@@ -109,7 +109,7 @@ public class MipsFrame extends Frame {
     private int offset = 0;
     private List<Access> actuals;
 
-    {
+    static {
         LinkedList<Temp> l = new LinkedList<>();
         l.add(V0);
         addAll(l, specialRegs);
@@ -117,7 +117,7 @@ public class MipsFrame extends Frame {
         returnSink = l.toArray(returnSink);
     }
 
-    {
+    static {
         LinkedList<Temp> l = new LinkedList<>();
         l.add(RA);
         addAll(l, argRegs);
@@ -125,8 +125,8 @@ public class MipsFrame extends Frame {
         calldefs = l.toArray(calldefs);
     }
 
-    {
-        LinkedList<Temp> l = new LinkedList<Temp>();
+    static {
+        LinkedList<Temp> l = new LinkedList<>();
         addAll(l, callerSaves);
         addAll(l, calleeSaves);
         addAll(l, argRegs);
@@ -345,11 +345,6 @@ public class MipsFrame extends Frame {
         assignCallees(i + 1, body);
         body.addFirst(MOVE(a.exp(TEMP(FP)), TEMP(calleeSaves[i])));
         body.add(MOVE(TEMP(calleeSaves[i]), a.exp(TEMP(FP))));
-    }
-
-    public void procEntryExit1(List<Stm> body) {
-        assignFormals(formals.iterator(), actuals.iterator(), body);
-        assignCallees(0, body);
     }
 
     public Temp[] registers() {
