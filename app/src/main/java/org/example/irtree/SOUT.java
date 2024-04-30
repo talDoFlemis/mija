@@ -15,11 +15,11 @@ import org.example.temp.TempMap;
 public class SOUT {
 
     java.io.PrintStream out;
-    TempMap tmap;
+    TempMap tempMap;
 
     public SOUT(java.io.PrintStream o) {
         out = o;
-        tmap = new DefaultMap();
+        tempMap = new DefaultMap();
     }
 
     void indent(int d) {
@@ -194,7 +194,7 @@ public class SOUT {
     void prExp(TEMP e, int d) {
         indent(d);
         say("TEMP ");
-        say(tmap.tempMap(e.temp));
+        say(tempMap.tempMap(e.temp));
     }
 
     void prExp(ESEQ e, int d) {

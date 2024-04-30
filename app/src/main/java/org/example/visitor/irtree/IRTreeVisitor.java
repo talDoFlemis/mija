@@ -96,7 +96,6 @@ public class IRTreeVisitor implements Visitor<Exp> {
         for (int i = size - 1; i >= 0; i--)
             expList = new ExpList(c.getExpressionList().getList().get(i).accept(this).unEx(), expList);
         expList = new ExpList(c.getOwner().accept(this).unEx(), expList);
-
         if (c.getOwner() instanceof Call) {
             classTable1 = this.currentClassTable;
 
@@ -107,19 +106,11 @@ public class IRTreeVisitor implements Visitor<Exp> {
         }
 
         if (c.getOwner() instanceof IdentifierExpression idExp) {
-            idExp.getId();
-
-            if (this.currentMethodTable.getLocalsContext().get(idExp.getId()) instanceof IdentifierType) {
-                var type = this.currentMethodTable.getLocalsContext().get(idExp.getId());
-                var idType = (IdentifierType) type;
+            if (this.currentMethodTable.getLocalsContext().get(idExp.getId()) instanceof IdentifierType idType) {
                 classSymbol = idType.getS();
-            } else if (this.currentMethodTable.getParamsContext().get(idExp.getId()) instanceof IdentifierType) {
-                var type = this.currentMethodTable.getParamsContext().get(idExp.getId());
-                var idType = (IdentifierType) type;
+            } else if (this.currentMethodTable.getParamsContext().get(idExp.getId()) instanceof IdentifierType idType) {
                 classSymbol = idType.getS();
-            } else if (this.currentClassTable.getFieldsContext().get(idExp.getId()) instanceof IdentifierType) {
-                var type = this.currentClassTable.getFieldsContext().get(idExp.getId());
-                var idType = (IdentifierType) type;
+            } else if (this.currentClassTable.getFieldsContext().get(idExp.getId()) instanceof IdentifierType idType) {
                 classSymbol = idType.getS();
             }
         }
@@ -374,6 +365,7 @@ public class IRTreeVisitor implements Visitor<Exp> {
         this.currentClassTable = this.mainTable.getMap().get(m.getClassName().toString());
         this.frame = this.frame.newFrame("main", escapeList);
 
+        // ajeitar aqui
         var stm = m.getStatements().getStatements().getFirst().accept(this);
         var stmList = new ArrayList<Stm>();
         Stm stmBody = new EXP(stm.unEx());

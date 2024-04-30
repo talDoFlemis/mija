@@ -8,7 +8,6 @@ import org.example.irtree.Stm;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Data
 @Log4j2
 public class ProcFrag extends Frag {
