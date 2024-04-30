@@ -12,11 +12,11 @@ import lombok.EqualsAndHashCode;
 public class MEM extends ExpAbstract {
     public ExpAbstract exp;
 
-    public ExpList kids() {
+    public ExpList children() {
         return new ExpList(exp, null);
     }
 
-    public ExpAbstract build(ExpList kids) {
-        return new MEM(kids.head);
+    public ExpAbstract build(ExpList children) {
+        return new MEM(children.head);
     }
 }

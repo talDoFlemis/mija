@@ -13,11 +13,11 @@ import org.example.temp.Label;
 public class NAME extends ExpAbstract {
     public Label label;
 
-    public ExpList kids() {
+    public ExpList children() {
         return null;
     }
 
-    public ExpAbstract build(ExpList kids) {
+    public ExpAbstract build(ExpList children) {
         return this;
     }
 }

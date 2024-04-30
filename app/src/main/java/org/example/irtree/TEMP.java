@@ -14,11 +14,11 @@ import lombok.EqualsAndHashCode;
 public class TEMP extends ExpAbstract {
     public Temp temp;
 
-    public ExpList kids() {
+    public ExpList children() {
         return null;
     }
 
-    public ExpAbstract build(ExpList kids) {
+    public ExpAbstract build(ExpList children) {
         return this;
     }
 }

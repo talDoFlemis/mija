@@ -12,11 +12,11 @@ public class BINOP extends ExpAbstract {
     public int binop;
     public ExpAbstract left, right;
 
-    public ExpList kids() {
+    public ExpList children() {
         return new ExpList(left, new ExpList(right, null));
     }
 
-    public ExpAbstract build(ExpList kids) {
-        return new BINOP(binop, kids.head, kids.tail.head);
+    public ExpAbstract build(ExpList children) {
+        return new BINOP(binop, children.head, children.tail.head);
     }
 }

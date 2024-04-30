@@ -12,11 +12,11 @@ import lombok.EqualsAndHashCode;
 public class CONST extends ExpAbstract {
     public int value;
 
-    public ExpList kids() {
+    public ExpList children() {
         return null;
     }
 
-    public ExpAbstract build(ExpList kids) {
+    public ExpAbstract build(ExpList children) {
         return this;
     }
 }
