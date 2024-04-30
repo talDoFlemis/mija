@@ -351,4 +351,8 @@ public class MipsFrame extends Frame {
         return registers;
     }
 
+    public void procEntryExit1(List<Stm> body) {
+        assignFormals(formals.iterator(), actuals.iterator(), body);
+        assignCallees(0, body);
+    }
 }

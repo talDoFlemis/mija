@@ -1,6 +1,7 @@
 package org.example.frame;
 
 import org.example.irtree.ExpAbstract;
+import org.example.irtree.Stm;
 import org.example.temp.Label;
 import org.example.temp.Temp;
 import org.example.temp.TempMap;
@@ -35,11 +36,11 @@ public abstract class Frame implements TempMap {
 
     public abstract String programTail();
 
+    public abstract void procEntryExit1(List<Stm> body);
 
     /*
         public abstract List<Assem.Instr> codegen(List<Stm> stms);
 
-        public abstract void procEntryExit1(List<Stm> body);
 
         public abstract void procEntryExit2(List<Assem.Instr> body);
 
