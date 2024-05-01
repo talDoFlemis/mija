@@ -47,10 +47,13 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var lheExpr = a.getLhe().accept(this);
         var rheExpr = a.getRhe().accept(this);
 
-        var binop = new BINOP(BINOP.AND, lheExpr.unEx(), rheExpr.unEx());
-        addExp(binop);
+        var andBinop = BINOP.builder()
+                .binop(BINOP.AND)
+                .left(lheExpr.unEx()).right(rheExpr.unEx())
+                .build();
 
-        return new Exp(binop);
+        addExp(andBinop);
+        return new Exp(andBinop);
     }
 
     public Exp visit(BooleanType b) {
@@ -60,25 +63,31 @@ public class IRTreeVisitor implements Visitor<Exp> {
     public Exp visit(Not n) {
         var exp = n.getE().accept(this);
 
-        this.addExp(new BINOP(BINOP.MINUS, new CONST(1), exp.unEx()));
-        return new Exp(new BINOP(BINOP.MINUS, new CONST(1), exp.unEx()));
+        var notBinop = BINOP.builder()
+                .binop(BINOP.MINUS)
+                .left(new CONST(1)).right(exp.unEx())
+                .build();
+        addExp(notBinop);
+        return new Exp(notBinop);
     }
 
     public Exp visit(True t) {
-        this.addExp(new CONST(1));
-        return new Exp(new CONST(1));
+        var constExpr = CONST.builder().value(1).build();
+        addExp(constExpr);
+        return new Exp(constExpr);
     }
 
     public Exp visit(False f) {
-        this.addExp(new CONST(0));
-        return new Exp(new CONST(0));
+        var constExpr = CONST.builder().value(0).build();
+        addExp(constExpr);
+        return new Exp(constExpr);
     }
 
     public Exp visit(Identifier i) {
-        var allocLocal = this.frame.allocLocal(false);
-
-        this.addExp(allocLocal.exp(new TEMP(this.frame.FP())));
-        return new Exp(allocLocal.exp(new TEMP(this.frame.FP())));
+        var allocLocal = frame.allocLocal(false);
+        var tempReg = allocLocal.exp(new TEMP(frame.FP()));
+        addExp(tempReg);
+        return new Exp(tempReg);
     }
 
     public Exp visit(Call c) {
@@ -90,46 +99,51 @@ public class IRTreeVisitor implements Visitor<Exp> {
         int size = c.getExpressionList().getList().size();
 
         for (int i = size - 1; i >= 0; i--) {
-            expList = new ExpList(c.getExpressionList().getList().get(i).accept(this).unEx(), expList);
+            var expr = c.getExpressionList().getList().get(i).accept(this);
+            expList = new ExpList(expr.unEx(), expList);
         }
 
         expList = new ExpList(c.getOwner().accept(this).unEx(), expList);
 
         if (c.getOwner() instanceof Call) {
-            tmpClassTable = this.currentClassTable;
+            tmpClassTable = currentClassTable;
 
             tmpMethodTable = tmpClassTable.getMethodsContext().get(c.getMethod().getS());
 
-            tmpClassTable = this.mainTable.getMap().get(tmpMethodTable.getClassParent().getClassName());
+            tmpClassTable = mainTable.getMap().get(tmpMethodTable.getClassParent().getClassName());
         }
 
         if (c.getOwner() instanceof IdentifierExpression idExp) {
-            if (this.currentMethodTable.getLocalsContext().get(idExp.getId()) instanceof IdentifierType idType) {
+            if (currentMethodTable.getLocalsContext().get(idExp.getId()) instanceof IdentifierType idType) {
                 tmpClassSymbol = idType.getS();
-            } else if (this.currentMethodTable.getParamsContext().get(idExp.getId()) instanceof IdentifierType idType) {
+            } else if (currentMethodTable.getParamsContext().get(idExp.getId()) instanceof IdentifierType idType)
                 tmpClassSymbol = idType.getS();
-            } else if (this.currentClassTable.getFieldsContext().get(idExp.getId()) instanceof IdentifierType idType) {
+            else if (currentClassTable.getFieldsContext().get(idExp.getId()) instanceof IdentifierType idType) {
                 tmpClassSymbol = idType.getS();
             }
         }
 
         if (c.getOwner() instanceof NewObject idNewObject) {
-            tmpClassTable = this.mainTable.getMap().get(idNewObject.getIdentifier().getS());
+            tmpClassTable = mainTable.getMap().get(idNewObject.getIdentifier().getS());
         }
-        if (c.getOwner() instanceof This) tmpClassTable = this.currentClassTable;
+        if (c.getOwner() instanceof This) tmpClassTable = currentClassTable;
         if (tmpClassTable != null) tmpClassSymbol = tmpClassTable.getClassName();
 
         var label = new Label(tmpClassSymbol + "." + c.getMethod().getS());
 
-        this.addExp(new CALL(new NAME(label), expList));
-        return new Exp(new CALL(new NAME(label), expList));
+        var callExpr = CALL.builder()
+                .func(new NAME(label))
+                .args(expList)
+                .build();
+        addExp(callExpr);
+        return new Exp(callExpr);
     }
 
     public Exp visit(IdentifierExpression i) {
-        var allocLocal = this.frame.allocLocal(false);
-
-        this.addExp(allocLocal.exp(new TEMP(this.frame.FP())));
-        return new Exp(allocLocal.exp(new TEMP(this.frame.FP())));
+        var allocLocal = frame.allocLocal(false);
+        var tempReg = allocLocal.exp(new TEMP(frame.FP()));
+        addExp(tempReg);
+        return new Exp(tempReg);
     }
 
     public Exp visit(IdentifierType i) {
@@ -138,48 +152,45 @@ public class IRTreeVisitor implements Visitor<Exp> {
 
     public Exp visit(NewObject n) {
         currentClassTable = mainTable.getMap().get(n.getIdentifier().getS());
-        int sizeOfHash = this.mainTable.getMap().get(n.getIdentifier().getS()).getFieldsContext().size();
+        int sizeOfFields = mainTable.getMap().get(n.getIdentifier().getS()).getFieldsContext().size();
 
         var parametersList = new LinkedList<ExpAbstract>();
-        parametersList.add(new BINOP(BINOP.MUL, new CONST(sizeOfHash + 1), new CONST(this.frame.wordSize())));
+        parametersList.add(new BINOP(BINOP.MUL, new CONST(sizeOfFields + 1), new CONST(frame.wordSize())));
 
-        this.addExp(this.frame.externalCall("malloc", parametersList));
-        return new Exp(this.frame.externalCall("malloc", parametersList));
+        var externalCall = frame.externalCall("malloc", parametersList);
+        addExp(externalCall);
+        return new Exp(externalCall);
     }
 
     public Exp visit(This t) {
-        this.addExp(new MEM(new TEMP(this.frame.FP())));
-        return new Exp(new MEM(new TEMP(this.frame.FP())));
+        var tempAllocation = MEM.builder()
+                .exp(new TEMP(frame.FP()))
+                .build();
+        addExp(tempAllocation);
+        return new Exp(tempAllocation);
     }
 
     public Exp visit(ArrayLookup a) {
         var idx = a.getIdx().accept(this);
         var array = a.getArray().accept(this);
 
-        this.addExp(new MEM(
-                new BINOP(
-                        BINOP.PLUS,
-                        array.unEx(),
-                        new BINOP(
-                                BINOP.MUL,
-                                idx.unEx(),
-                                new CONST(this.frame.wordSize())
-                        )
-                )
-        ));
-        return new Exp(
-                new MEM(
-                        new BINOP(
-                                BINOP.PLUS,
-                                array.unEx(),
-                                new BINOP(
-                                        BINOP.MUL,
-                                        idx.unEx(),
-                                        new CONST(this.frame.wordSize())
+        var arrayLoopUp = MEM.builder()
+                .exp(
+                        BINOP.builder()
+                                .binop(BINOP.PLUS)
+                                .left(array.unEx())
+                                .right(
+                                        BINOP.builder()
+                                                .binop(BINOP.MUL)
+                                                .left(idx.unEx())
+                                                .right(new CONST(frame.wordSize()))
+                                                .build()
                                 )
-                        )
+                                .build()
                 )
-        );
+                .build();
+        addExp(arrayLoopUp);
+        return new Exp(arrayLoopUp);
     }
 
     public Exp visit(ArrayAssign a) {
@@ -188,59 +199,90 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var val = a.getValue().accept(this);
 
         // TODO: See if this shit goes down because first element is array size my dude
-        var offset = new BINOP(BINOP.MUL, idx.unEx(), new CONST(this.frame.wordSize()));
-        var pointer = new BINOP(BINOP.PLUS, id.unEx(), offset);
+        var offset = BINOP.builder()
+                .binop(BINOP.MUL)
+                .left(idx.unEx())
+                .right(new CONST(frame.wordSize()))
+                .build();
+        var pointer = BINOP.builder()
+                .binop(BINOP.PLUS)
+                .left(BINOP.builder()
+                        .binop(BINOP.PLUS)
+                        .left(id.unEx()).right(new CONST(1))
+                        .build()
+                )
+                .right(offset)
+                .build();
 
         var move = new MOVE(new MEM(pointer), val.unEx());
 
-        this.addExp(new ESEQ(move, new CONST(0)));
-
-        return new Exp(new ESEQ(move, new CONST(0)));
+        var arrayAssign = ESEQ.builder()
+                .stm(move)
+                .exp(new CONST(0))
+                .build();
+        addExp(arrayAssign);
+        return new Exp(arrayAssign);
     }
 
     public Exp visit(ArrayLength a) {
         var pointer = a.getArray().accept(this);
 
-        this.addExp(new MEM(pointer.unEx()));
-
-        return new Exp(new MEM(pointer.unEx()));
+        var tempAlloc = MEM.builder()
+                .exp(pointer.unEx())
+                .build();
+        addExp(tempAlloc);
+        return new Exp(tempAlloc);
     }
 
     public Exp visit(Plus p) {
         var lheExpr = p.getLhe().accept(this);
         var rheExpr = p.getRhe().accept(this);
 
-        this.addExp(new BINOP(BINOP.PLUS, lheExpr.unEx(), rheExpr.unEx()));
-        return new Exp(new BINOP(BINOP.PLUS, lheExpr.unEx(), rheExpr.unEx()));
+        var plusBinop = BINOP.builder()
+                .binop(BINOP.PLUS)
+                .left(lheExpr.unEx())
+                .right(rheExpr.unEx())
+                .build();
+        addExp(plusBinop);
+        return new Exp(plusBinop);
     }
 
     public Exp visit(Minus m) {
         var lheExpr = m.getLhe().accept(this);
         var rheExpr = m.getRhe().accept(this);
 
-        this.addExp(new BINOP(BINOP.MINUS, lheExpr.unEx(), rheExpr.unEx()));
-        return new Exp(new BINOP(BINOP.MINUS, lheExpr.unEx(), rheExpr.unEx()));
+        var minusBinop = BINOP.builder()
+                .binop(BINOP.MINUS)
+                .left(lheExpr.unEx())
+                .right(rheExpr.unEx())
+                .build();
+        addExp(minusBinop);
+        return new Exp(minusBinop);
     }
 
     public Exp visit(Times t) {
         var lheExpr = t.getLhe().accept(this);
         var rheExpr = t.getRhe().accept(this);
 
-        this.addExp(new BINOP(BINOP.MUL, lheExpr.unEx(), rheExpr.unEx()));
-        return new Exp(new BINOP(BINOP.MUL, lheExpr.unEx(), rheExpr.unEx()));
+        var timeBinop = BINOP.builder()
+                .binop(BINOP.MUL)
+                .left(lheExpr.unEx())
+                .right(rheExpr.unEx())
+                .build();
+        addExp(timeBinop);
+        return new Exp(timeBinop);
     }
 
     public Exp visit(IntegerLiteral i) {
-        this.addExp(new CONST(i.getValue()));
-        return new Exp(new CONST(i.getValue()));
+        var integerValue = CONST.builder().value(i.getValue()).build();
+        addExp(integerValue);
+        return new Exp(integerValue);
     }
 
-    @Override
     public Exp visit(IntegerType i) {
         return null;
     }
 
-    @Override
     public Exp visit(IntArrayType i) {
         return null;
     }
@@ -249,8 +291,13 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var lheExpr = l.getLhe().accept(this);
         var rheExpr = l.getRhe().accept(this);
 
-        this.addExp(new BINOP(BINOP.MINUS, lheExpr.unEx(), rheExpr.unEx()));
-        return new Exp(new BINOP(BINOP.MINUS, lheExpr.unEx(), rheExpr.unEx()));
+        var lessThanBinop = BINOP.builder()
+                .binop(BINOP.MINUS)
+                .left(lheExpr.unEx())
+                .right(rheExpr.unEx())
+                .build();
+        addExp(lessThanBinop);
+        return new Exp(lessThanBinop);
     }
 
     public Exp visit(NewArray n) {
@@ -261,13 +308,14 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var exp = new BINOP(
                 BINOP.MUL,
                 new BINOP(BINOP.PLUS, newArraySize.unEx(), new CONST(1)),
-                new CONST(this.frame.wordSize())
+                new CONST(frame.wordSize())
         );
 
         parametersList.add(exp);
 
-        this.addExp(this.frame.externalCall("initArray", parametersList));
-        return new Exp(this.frame.externalCall("initArray", parametersList));
+        var arrayAlloc = frame.externalCall("initArray", parametersList);
+        addExp(arrayAlloc);
+        return new Exp(arrayAlloc);
     }
 
     public Exp visit(While w) {
@@ -282,13 +330,34 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var jump = new JUMP(endLabel);
         var bodyJump = new SEQ(bodyStm, jump);
 
-        //TODO: Se der ruim, é culpa do EQ
-        var cjump = new CJUMP(CJUMP.EQ, cond, new CONST(1), bodyLabel, endLabel);
+        // LessThan: uses Minus in your implementation BINOP
+        var cjump = CJUMP.builder()
+                .relop(CJUMP.GT)
+                .left(cond)
+                .right(new CONST(1))
+                .condTrue(bodyLabel)
+                .condFalse(endLabel)
+                .build();
 
-        var whileStatement = new SEQ(new SEQ(new SEQ(new LABEL(loopLabel), cjump), bodyJump), new LABEL(endLabel));
+        var whileStatement = SEQ.builder()
+                .left(
+                        SEQ.builder()
+                                .left(
+                                        SEQ.builder()
+                                                .left(new LABEL(loopLabel))
+                                                .right(cjump)
+                                                .build()
+                                )
+                                .right(bodyJump)
+                                .build()
+                )
+                .right(new LABEL(endLabel))
+                .build();
 
-        this.addExp(new ESEQ(whileStatement, null));
-        return new Exp(new ESEQ(whileStatement, null));
+
+        var whileEseq = new ESEQ(whileStatement, null);
+        addExp(whileEseq);
+        return new Exp(whileEseq);
     }
 
     public Exp visit(If i) {
@@ -304,24 +373,20 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var elseStatement = new SEQ(stm2, new LABEL(falseLabel));
         var seqIfStatement = new SEQ(thenStatement, elseStatement);
 
-        var cjumpIf = new CJUMP(CJUMP.EQ, new CONST(1), exp.unEx(), trueLabel, falseLabel);
+        var cjumpIf = CJUMP.builder()
+                .relop(CJUMP.EQ)
+                .left(new CONST(1))
+                .right(exp.unEx())
+                .condTrue(trueLabel)
+                .condFalse(falseLabel)
+                .build();
 
         var condition = new SEQ(new LABEL(endLabel), cjumpIf);
         var seq = new SEQ(condition, seqIfStatement);
 
-        this.addExp(
-                new ESEQ(
-                        new SEQ(seq, new LABEL(endLabel)),
-                        null
-                )
-        );
-
-        return new Exp(
-                new ESEQ(
-                        new SEQ(seq, new LABEL(endLabel)),
-                        null
-                )
-        );
+        var ifEseq = new ESEQ(new SEQ(seq, new LABEL(endLabel)), null);
+        addExp(ifEseq);
+        return new Exp(ifEseq);
     }
 
     public Exp visit(Assign a) {
@@ -330,8 +395,9 @@ public class IRTreeVisitor implements Visitor<Exp> {
 
         var move = new MOVE(id.unEx(), value.unEx());
 
-        this.addExp(new ESEQ(move, new CONST(0)));
-        return new Exp(new ESEQ(move, new CONST(0)));
+        var assignEseq = new ESEQ(move, new CONST(0));
+        addExp(assignEseq);
+        return new Exp(assignEseq);
     }
 
     public Exp visit(Sout s) {
@@ -339,9 +405,8 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var exp = s.getExpression().accept(this);
         argsList.add(exp.unEx());
 
-        var call = this.frame.externalCall("print", argsList);
-
-        this.addExp(call);
+        var call = frame.externalCall("print", argsList);
+        addExp(call);
         return new Exp(call);
     }
 
@@ -355,7 +420,7 @@ public class IRTreeVisitor implements Visitor<Exp> {
             expBlock = new ESEQ(new SEQ(new EXP(expBlock), expr), new CONST(0));
         }
 
-        this.addExp(expBlock);
+        addExp(expBlock);
         return new Exp(expBlock);
     }
 
@@ -363,15 +428,18 @@ public class IRTreeVisitor implements Visitor<Exp> {
         currentClassTable = mainTable.getMap().get(m.getClassName().getS());
         currentMethodTable = currentClassTable.getMethodsContext().get("main");
 
+        Stm stmBody = null;
+        var stmList = new ArrayList<Stm>();
         var escapeList = new ArrayList<Boolean>();
         escapeList.add(false);
         frame = frame.newFrame("main", escapeList);
 
-
-        var stm = m.getStatements().getStatements().getFirst().accept(this);
-        var stmList = new ArrayList<Stm>();
-        Stm stmBody = new EXP(stm.unEx());
-        stmList.add(stmBody);
+        var size = m.getStatements().getStatements().size();
+        for (int i = size-1; i >= 0; i--) {
+            var stm = m.getStatements().getStatements().get(i).accept(this);
+            stmBody = new EXP(stm.unEx());
+            stmList.add(stmBody);
+        }
 
         frame.procEntryExit1(stmList);
         frag.setNext(new ProcFrag(stmBody, frame));
@@ -421,11 +489,13 @@ public class IRTreeVisitor implements Visitor<Exp> {
         int sizeFormals = m.getFormals().getFormals().size();
         int sizeStatement = m.getStatements().getStatements().size();
 
-        for (int i = 0; i <= sizeFormals; i++) escapeList.add(false);
+        for (int i = 0; i <= sizeFormals; i++) {
+            escapeList.add(false);
+        }
 
 
-        this.frame = this.frame.newFrame(
-                this.currentClassTable.getClassName() + "$" + this.currentMethodTable.getMethodName(),
+        frame = frame.newFrame(
+                currentClassTable.getClassName() + "$" + currentMethodTable.getMethodName(),
                 escapeList
         );
 
@@ -443,10 +513,9 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var stmList = new ArrayList<Stm>();
         stmList.add(stmBody);
 
-        this.frame.procEntryExit1(stmList);
-
-        this.frag.setNext(new ProcFrag(stmBody, this.frame));
-        this.frag = this.frag.getNext();
+        frame.procEntryExit1(stmList);
+        frag.setNext(new ProcFrag(stmBody, frame));
+        frag = frag.getNext();
 
 
         currentMethodTable = null;
@@ -458,11 +527,11 @@ public class IRTreeVisitor implements Visitor<Exp> {
     }
 
     public Exp visit(Formal f) {
-        this.frame.allocLocal(false);
+        frame.allocLocal(false);
         return null;
     }
 
     public void addExp(ExpAbstract exp) {
-        this.listExp.add(exp);
+        listExp.add(exp);
     }
 }
