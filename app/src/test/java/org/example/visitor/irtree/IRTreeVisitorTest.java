@@ -145,11 +145,10 @@ class IRTreeVisitorTest {
                 .build();
         SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
         prog.accept(symbolTableVisitor);
+
         IRTreeVisitor irTreeVisitor = new IRTreeVisitor(symbolTableVisitor.getMainTable(), new MipsFrame());
 
         // ACT
-        var teste = CONST.builder().value(1).build();
-
         prog.accept(irTreeVisitor);
 
         // ASSERT
@@ -185,5 +184,9 @@ class IRTreeVisitorTest {
             }
         }
         fail();
+    }
+
+    void shouldParseBinaryOperatation() {
+
     }
 }

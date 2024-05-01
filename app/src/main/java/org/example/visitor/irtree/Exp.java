@@ -11,7 +11,6 @@ import org.example.irtree.ExpAbstract;
 @AllArgsConstructor
 @Builder
 @Data
-@Log4j2
 public class Exp {
 
     public ExpAbstract exp;

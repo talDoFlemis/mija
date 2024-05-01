@@ -24,7 +24,6 @@ import java.util.List;
 @Data
 @Log4j2
 public class IRTreeVisitor implements Visitor<Exp> {
-
     private Frame frame;
     private Frag frag;
     private Frag initialFrag;
@@ -48,9 +47,10 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var lheExpr = a.getLhe().accept(this);
         var rheExpr = a.getRhe().accept(this);
 
-        this.addExp(new BINOP(BINOP.AND, lheExpr.unEx(), rheExpr.unEx()));
+        var binop = new BINOP(BINOP.AND, lheExpr.unEx(), rheExpr.unEx());
+        addExp(binop);
 
-        return new Exp(new BINOP(BINOP.AND, lheExpr.unEx(), rheExpr.unEx()));
+        return new Exp(binop);
     }
 
     public Exp visit(BooleanType b) {
@@ -82,24 +82,25 @@ public class IRTreeVisitor implements Visitor<Exp> {
     }
 
     public Exp visit(Call c) {
-        ClassTable tmpClassTable1 = null, tmpClassTable2 = null;
+        ClassTable tmpClassTable = null;
         MethodTable tmpMethodTable = null;
         String tmpClassSymbol = null;
         ExpList expList = null;
 
-        int size;
-        size = c.getExpressionList().getList().size();
+        int size = c.getExpressionList().getList().size();
 
-        for (int i = size - 1; i >= 0; i--)
+        for (int i = size - 1; i >= 0; i--) {
             expList = new ExpList(c.getExpressionList().getList().get(i).accept(this).unEx(), expList);
+        }
+
         expList = new ExpList(c.getOwner().accept(this).unEx(), expList);
+
         if (c.getOwner() instanceof Call) {
-            tmpClassTable1 = this.currentClassTable;
+            tmpClassTable = this.currentClassTable;
 
-            tmpClassTable2 = this.mainTable.getMap().get(tmpClassTable1.getClassName());
-            tmpMethodTable = tmpClassTable2.getMethodsContext().get(c.getMethod().getS());
+            tmpMethodTable = tmpClassTable.getMethodsContext().get(c.getMethod().getS());
 
-            tmpClassTable1 = this.mainTable.getMap().get(tmpMethodTable.getClassParent().getClassName());
+            tmpClassTable = this.mainTable.getMap().get(tmpMethodTable.getClassParent().getClassName());
         }
 
         if (c.getOwner() instanceof IdentifierExpression idExp) {
@@ -113,10 +114,10 @@ public class IRTreeVisitor implements Visitor<Exp> {
         }
 
         if (c.getOwner() instanceof NewObject idNewObject) {
-            tmpClassTable1 = this.mainTable.getMap().get(idNewObject.getIdentifier().getS());
+            tmpClassTable = this.mainTable.getMap().get(idNewObject.getIdentifier().getS());
         }
-        if (c.getOwner() instanceof This) tmpClassTable1 = this.currentClassTable;
-        if (tmpClassTable1 != null) tmpClassSymbol = tmpClassTable1.getClassName();
+        if (c.getOwner() instanceof This) tmpClassTable = this.currentClassTable;
+        if (tmpClassTable != null) tmpClassSymbol = tmpClassTable.getClassName();
 
         var label = new Label(tmpClassSymbol + "." + c.getMethod().getS());
 
@@ -186,10 +187,11 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var idx = a.getIndex().accept(this);
         var val = a.getValue().accept(this);
 
-        var mul = new BINOP(BINOP.MUL, idx.unEx(), new CONST(this.frame.wordSize()));
-        var plus = new BINOP(BINOP.PLUS, id.unEx(), mul);
+        // TODO: See if this shit goes down because first element is array size my dude
+        var offset = new BINOP(BINOP.MUL, idx.unEx(), new CONST(this.frame.wordSize()));
+        var pointer = new BINOP(BINOP.PLUS, id.unEx(), offset);
 
-        var move = new MOVE(new MEM(plus), val.unEx());
+        var move = new MOVE(new MEM(pointer), val.unEx());
 
         this.addExp(new ESEQ(move, new CONST(0)));
 
@@ -197,11 +199,11 @@ public class IRTreeVisitor implements Visitor<Exp> {
     }
 
     public Exp visit(ArrayLength a) {
-        var array = a.getArray().accept(this);
+        var pointer = a.getArray().accept(this);
 
-        this.addExp(new MEM(array.unEx()));
+        this.addExp(new MEM(pointer.unEx()));
 
-        return new Exp(new MEM(array.unEx()));
+        return new Exp(new MEM(pointer.unEx()));
     }
 
     public Exp visit(Plus p) {
@@ -255,6 +257,7 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var newArraySize = n.getSize().accept(this);
         var parametersList = new LinkedList<ExpAbstract>();
 
+        // mem size to alloc
         var exp = new BINOP(
                 BINOP.MUL,
                 new BINOP(BINOP.PLUS, newArraySize.unEx(), new CONST(1)),
@@ -279,12 +282,13 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var jump = new JUMP(endLabel);
         var bodyJump = new SEQ(bodyStm, jump);
 
-        var cjump = new CJUMP(CJUMP.GT, cond, new CONST(1), bodyLabel, endLabel);
+        //TODO: Se der ruim, é culpa do EQ
+        var cjump = new CJUMP(CJUMP.EQ, cond, new CONST(1), bodyLabel, endLabel);
 
-        var whileSeq = new SEQ(new SEQ(new SEQ(new LABEL(loopLabel), cjump), bodyJump), new LABEL(endLabel));
+        var whileStatement = new SEQ(new SEQ(new SEQ(new LABEL(loopLabel), cjump), bodyJump), new LABEL(endLabel));
 
-        this.addExp(new ESEQ(whileSeq, null));
-        return new Exp(new ESEQ(whileSeq, null));
+        this.addExp(new ESEQ(whileStatement, null));
+        return new Exp(new ESEQ(whileStatement, null));
     }
 
     public Exp visit(If i) {
