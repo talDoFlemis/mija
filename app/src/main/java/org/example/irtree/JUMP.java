@@ -1,11 +1,11 @@
 package org.example.irtree;
 
-import org.example.temp.Label;
-import org.example.temp.LabelList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.example.temp.Label;
+import org.example.temp.LabelList;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
@@ -19,11 +19,11 @@ public class JUMP extends Stm {
         this(new NAME(target), new LabelList(target, null));
     }
 
-    public ExpList kids() {
+    public ExpList children() {
         return new ExpList(exp, null);
     }
 
-    public Stm build(ExpList kids) {
-        return new JUMP(kids.head, targets);
+    public Stm build(ExpList children) {
+        return new JUMP(children.head, targets);
     }
 }

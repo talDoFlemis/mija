@@ -1,6 +1,6 @@
 package org.example.mija;
 
-public class SemanticAnalysisException extends RuntimeException{
+public class SemanticAnalysisException extends RuntimeException {
     public SemanticAnalysisException(String message) {
         super(message);
     }

@@ -448,11 +448,7 @@ public class TypeCheckingVisitor implements Visitor<Type>, SemanticAnalysisStrat
             argType = new IdentifierType(parentClassName);
         }
 
-        if (!(argType instanceof IdentifierType)) {
-            return false;
-        }
-
-        return true;
+        return argType instanceof IdentifierType;
     }
 
     private void addError(String message) {

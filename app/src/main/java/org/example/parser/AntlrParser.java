@@ -7,10 +7,9 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.example.antlr.MiniJavaLexer;
 import org.example.antlr.MiniJavaParser;
-import org.example.ast.*;
+import org.example.ast.Program;
 import org.example.mija.LexicalOrSemanticAnalysisException;
 import org.example.mija.ParserStrategy;
-
 
 import java.io.IOException;
 import java.io.InputStream;

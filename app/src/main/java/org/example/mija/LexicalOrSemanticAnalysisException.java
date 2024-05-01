@@ -1,6 +1,6 @@
 package org.example.mija;
 
-public class LexicalOrSemanticAnalysisException extends RuntimeException{
+public class LexicalOrSemanticAnalysisException extends RuntimeException {
     public LexicalOrSemanticAnalysisException(String message) {
         super(message);
     }

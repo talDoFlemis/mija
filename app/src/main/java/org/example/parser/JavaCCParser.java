@@ -1,14 +1,14 @@
 package org.example.parser;
 
-import java.io.InputStream;
-import java.util.Optional;
-
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.ast.*;
 import org.example.javacc.Parser;
 import org.example.mija.LexicalOrSemanticAnalysisException;
 import org.example.mija.ParserStrategy;
+
+import java.io.InputStream;
+import java.util.Optional;
 
 
 @NoArgsConstructor

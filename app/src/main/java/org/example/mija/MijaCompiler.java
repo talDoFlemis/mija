@@ -4,14 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.log4j.Log4j2;
 import org.example.ast.Program;
+import org.example.mips.MipsFrame;
 import org.example.parser.JavaCCParser;
+import org.example.visitor.irtree.IRTreeVisitor;
 import org.example.visitor.mermaid.MermaidASTPrinterVisitor;
 import org.example.visitor.types.TypeCheckingVisitor;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 
 @AllArgsConstructor
 @Builder
@@ -48,7 +48,7 @@ public class MijaCompiler {
 
     public boolean isSemanticallyOk(Program program) {
         log.debug("Checking semantics");
-        var ok =  semanticAnalysis.isSemanticsOk(program);
+        var ok = semanticAnalysis.isSemanticsOk(program);
 
         if (ok) {
             log.info("Semantics is correct");
@@ -76,6 +76,11 @@ public class MijaCompiler {
         isSemanticallyOkOrThrow(program);
 
         // Intermediate code generation
+        var frame = new MipsFrame();
+        var irTree = new IRTreeVisitor(semanticAnalysis.getMainTable(), frame);
+        program.accept(irTree);
+
+        log.info(irTree.getListExp());
 
     }
 

@@ -12,11 +12,11 @@ import lombok.EqualsAndHashCode;
 public class EXP extends Stm {
     public ExpAbstract exp;
 
-    public ExpList kids() {
+    public ExpList children() {
         return new ExpList(exp, null);
     }
 
-    public Stm build(ExpList kids) {
-        return new EXP(kids.head);
+    public Stm build(ExpList children) {
+        return new EXP(children.head);
     }
 }

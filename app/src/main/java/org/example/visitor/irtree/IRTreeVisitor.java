@@ -29,9 +29,12 @@ public class IRTreeVisitor implements Visitor<Exp> {
     private Frag frag;
     private Frag initialFrag;
     private List<ExpAbstract> listExp;
-    private MainTable mainTable;
-    private ClassTable currentClassTable;
-    private MethodTable currentMethodTable;
+    @Builder.Default
+    private MainTable mainTable = new MainTable();
+    @Builder.Default
+    private ClassTable currentClassTable = null;
+    @Builder.Default
+    private MethodTable currentMethodTable = null;
 
     public IRTreeVisitor(MainTable mainTable, Frame frame) {
         this.mainTable = mainTable;
@@ -41,22 +44,16 @@ public class IRTreeVisitor implements Visitor<Exp> {
         this.listExp = new ArrayList<>();
     }
 
-    public void addExp(ExpAbstract exp) {
-        this.listExp.add(exp);
-    }
-
     public Exp visit(And a) {
-        var expLhe = a.getLhe().accept(this);
-        var expRhe = a.getRhe().accept(this);
+        var lheExpr = a.getLhe().accept(this);
+        var rheExpr = a.getRhe().accept(this);
 
-        this.addExp(new BINOP(BINOP.AND, expLhe.unEx(), expRhe.unEx()));
+        this.addExp(new BINOP(BINOP.AND, lheExpr.unEx(), rheExpr.unEx()));
 
-        return new Exp(new BINOP(BINOP.AND, expLhe.unEx(), expRhe.unEx()));
+        return new Exp(new BINOP(BINOP.AND, lheExpr.unEx(), rheExpr.unEx()));
     }
 
-    @Override
     public Exp visit(BooleanType b) {
-        // dont
         return null;
     }
 
@@ -85,9 +82,9 @@ public class IRTreeVisitor implements Visitor<Exp> {
     }
 
     public Exp visit(Call c) {
-        ClassTable classTable1 = null, classTable2 = null;
-        MethodTable methodTable = null;
-        String classSymbol = null;
+        ClassTable tmpClassTable1 = null, tmpClassTable2 = null;
+        MethodTable tmpMethodTable = null;
+        String tmpClassSymbol = null;
         ExpList expList = null;
 
         int size;
@@ -97,31 +94,31 @@ public class IRTreeVisitor implements Visitor<Exp> {
             expList = new ExpList(c.getExpressionList().getList().get(i).accept(this).unEx(), expList);
         expList = new ExpList(c.getOwner().accept(this).unEx(), expList);
         if (c.getOwner() instanceof Call) {
-            classTable1 = this.currentClassTable;
+            tmpClassTable1 = this.currentClassTable;
 
-            classTable2 = this.mainTable.getMap().get(classTable1.getClassName());
-            methodTable = classTable2.getMethodsContext().get(c.getMethod().toString());
+            tmpClassTable2 = this.mainTable.getMap().get(tmpClassTable1.getClassName());
+            tmpMethodTable = tmpClassTable2.getMethodsContext().get(c.getMethod().getS());
 
-            classTable1 = this.mainTable.getMap().get(methodTable.getClassParent().getClassName());
+            tmpClassTable1 = this.mainTable.getMap().get(tmpMethodTable.getClassParent().getClassName());
         }
 
         if (c.getOwner() instanceof IdentifierExpression idExp) {
             if (this.currentMethodTable.getLocalsContext().get(idExp.getId()) instanceof IdentifierType idType) {
-                classSymbol = idType.getS();
+                tmpClassSymbol = idType.getS();
             } else if (this.currentMethodTable.getParamsContext().get(idExp.getId()) instanceof IdentifierType idType) {
-                classSymbol = idType.getS();
+                tmpClassSymbol = idType.getS();
             } else if (this.currentClassTable.getFieldsContext().get(idExp.getId()) instanceof IdentifierType idType) {
-                classSymbol = idType.getS();
+                tmpClassSymbol = idType.getS();
             }
         }
 
         if (c.getOwner() instanceof NewObject idNewObject) {
-            classTable1 = this.mainTable.getMap().get(idNewObject.getIdentifier().toString());
+            tmpClassTable1 = this.mainTable.getMap().get(idNewObject.getIdentifier().getS());
         }
-        if (c.getOwner() instanceof This) classTable1 = this.currentClassTable;
-        if (classTable1 != null) classSymbol = classTable1.getClassName();
+        if (c.getOwner() instanceof This) tmpClassTable1 = this.currentClassTable;
+        if (tmpClassTable1 != null) tmpClassSymbol = tmpClassTable1.getClassName();
 
-        var label = new Label(classSymbol + "." + c.getMethod().toString());
+        var label = new Label(tmpClassSymbol + "." + c.getMethod().getS());
 
         this.addExp(new CALL(new NAME(label), expList));
         return new Exp(new CALL(new NAME(label), expList));
@@ -134,13 +131,13 @@ public class IRTreeVisitor implements Visitor<Exp> {
         return new Exp(allocLocal.exp(new TEMP(this.frame.FP())));
     }
 
-    @Override
     public Exp visit(IdentifierType i) {
         return null;
     }
 
     public Exp visit(NewObject n) {
-        int sizeOfHash = this.mainTable.getMap().get(n.getIdentifier().toString()).getFieldsContext().size();
+        currentClassTable = mainTable.getMap().get(n.getIdentifier().getS());
+        int sizeOfHash = this.mainTable.getMap().get(n.getIdentifier().getS()).getFieldsContext().size();
 
         var parametersList = new LinkedList<ExpAbstract>();
         parametersList.add(new BINOP(BINOP.MUL, new CONST(sizeOfHash + 1), new CONST(this.frame.wordSize())));
@@ -208,27 +205,27 @@ public class IRTreeVisitor implements Visitor<Exp> {
     }
 
     public Exp visit(Plus p) {
-        var expLhe = p.getLhe().accept(this);
-        var expRhe = p.getRhe().accept(this);
+        var lheExpr = p.getLhe().accept(this);
+        var rheExpr = p.getRhe().accept(this);
 
-        this.addExp(new BINOP(BINOP.PLUS, expLhe.unEx(), expRhe.unEx()));
-        return new Exp(new BINOP(BINOP.PLUS, expLhe.unEx(), expRhe.unEx()));
+        this.addExp(new BINOP(BINOP.PLUS, lheExpr.unEx(), rheExpr.unEx()));
+        return new Exp(new BINOP(BINOP.PLUS, lheExpr.unEx(), rheExpr.unEx()));
     }
 
     public Exp visit(Minus m) {
-        var expLhe = m.getLhe().accept(this);
-        var expRhe = m.getRhe().accept(this);
+        var lheExpr = m.getLhe().accept(this);
+        var rheExpr = m.getRhe().accept(this);
 
-        this.addExp(new BINOP(BINOP.MINUS, expLhe.unEx(), expRhe.unEx()));
-        return new Exp(new BINOP(BINOP.MINUS, expLhe.unEx(), expRhe.unEx()));
+        this.addExp(new BINOP(BINOP.MINUS, lheExpr.unEx(), rheExpr.unEx()));
+        return new Exp(new BINOP(BINOP.MINUS, lheExpr.unEx(), rheExpr.unEx()));
     }
 
     public Exp visit(Times t) {
-        var expLhe = t.getLhe().accept(this);
-        var expRhe = t.getRhe().accept(this);
+        var lheExpr = t.getLhe().accept(this);
+        var rheExpr = t.getRhe().accept(this);
 
-        this.addExp(new BINOP(BINOP.MUL, expLhe.unEx(), expRhe.unEx()));
-        return new Exp(new BINOP(BINOP.MUL, expLhe.unEx(), expRhe.unEx()));
+        this.addExp(new BINOP(BINOP.MUL, lheExpr.unEx(), rheExpr.unEx()));
+        return new Exp(new BINOP(BINOP.MUL, lheExpr.unEx(), rheExpr.unEx()));
     }
 
     public Exp visit(IntegerLiteral i) {
@@ -247,11 +244,11 @@ public class IRTreeVisitor implements Visitor<Exp> {
     }
 
     public Exp visit(LessThan l) {
-        var expLhe = l.getLhe().accept(this);
-        var expRhe = l.getRhe().accept(this);
+        var lheExpr = l.getLhe().accept(this);
+        var rheExpr = l.getRhe().accept(this);
 
-        this.addExp(new BINOP(BINOP.MINUS, expLhe.unEx(), expRhe.unEx()));
-        return new Exp(new BINOP(BINOP.MINUS, expLhe.unEx(), expRhe.unEx()));
+        this.addExp(new BINOP(BINOP.MINUS, lheExpr.unEx(), rheExpr.unEx()));
+        return new Exp(new BINOP(BINOP.MINUS, lheExpr.unEx(), rheExpr.unEx()));
     }
 
     public Exp visit(NewArray n) {
@@ -359,38 +356,42 @@ public class IRTreeVisitor implements Visitor<Exp> {
     }
 
     public Exp visit(MainClass m) {
+        currentClassTable = mainTable.getMap().get(m.getClassName().getS());
+        currentMethodTable = currentClassTable.getMethodsContext().get("main");
+
         var escapeList = new ArrayList<Boolean>();
         escapeList.add(false);
+        frame = frame.newFrame("main", escapeList);
 
-        this.currentClassTable = this.mainTable.getMap().get(m.getClassName().toString());
-        this.frame = this.frame.newFrame("main", escapeList);
 
-        // ajeitar aqui
         var stm = m.getStatements().getStatements().getFirst().accept(this);
         var stmList = new ArrayList<Stm>();
         Stm stmBody = new EXP(stm.unEx());
         stmList.add(stmBody);
 
-        this.frame.procEntryExit1(stmList);
-        this.frag.setNext(new ProcFrag(stmBody, this.frame));
-        this.frag = this.frag.getNext();
+        frame.procEntryExit1(stmList);
+        frag.setNext(new ProcFrag(stmBody, frame));
+        frag = frag.getNext();
 
+        currentClassTable = null;
+        currentMethodTable = null;
         return null;
     }
 
     public Exp visit(ClassDeclSimple c) {
-        this.currentClassTable = this.mainTable.getMap().get(c.getClassName().toString());
+        currentClassTable = mainTable.getMap().get(c.getClassName().getS());
 
         c.getClassName().accept(this);
 
         c.getFields().getVarDecls().forEach(field -> field.accept(this));
         c.getMethods().getMethodDecls().forEach(method -> method.accept(this));
 
+        currentClassTable = null;
         return null;
     }
 
     public Exp visit(ClassDeclExtends c) {
-        this.currentClassTable = this.mainTable.getMap().get(c.getClassName().toString());
+        currentClassTable = mainTable.getMap().get(c.getClassName().getS());
 
         c.getClassName().accept(this);
         c.getParent().accept(this);
@@ -398,6 +399,7 @@ public class IRTreeVisitor implements Visitor<Exp> {
         c.getMethods().getMethodDecls().forEach(method -> method.accept(this));
         c.getFields().getVarDecls().forEach(field -> field.accept(this));
 
+        currentClassTable = null;
         return null;
     }
 
@@ -408,18 +410,18 @@ public class IRTreeVisitor implements Visitor<Exp> {
     }
 
     public Exp visit(MethodDecl m) {
+        currentMethodTable = currentClassTable.getMethodsContext().get(m.getIdentifier());
+
         Stm stmBody = new EXP(new CONST(0));
         var escapeList = new ArrayList<Boolean>();
         int sizeFormals = m.getFormals().getFormals().size();
         int sizeStatement = m.getStatements().getStatements().size();
 
-        // variaveis nao escapam no MiniJava
-        for (int i = 0; i < sizeFormals; i++) escapeList.add(false);
+        for (int i = 0; i <= sizeFormals; i++) escapeList.add(false);
 
-        this.currentMethodTable = this.currentClassTable.getMethodsContext().get(m.getIdentifier());
 
         this.frame = this.frame.newFrame(
-                this.currentClassTable.getClassName() + "." + this.currentMethodTable.getMethodName(),
+                this.currentClassTable.getClassName() + "$" + this.currentMethodTable.getMethodName(),
                 escapeList
         );
 
@@ -442,12 +444,11 @@ public class IRTreeVisitor implements Visitor<Exp> {
         this.frag.setNext(new ProcFrag(stmBody, this.frame));
         this.frag = this.frag.getNext();
 
-        this.currentMethodTable = null;
 
+        currentMethodTable = null;
         return null;
     }
 
-    @Override
     public Exp visit(VarDecl v) {
         return null;
     }
@@ -455,5 +456,9 @@ public class IRTreeVisitor implements Visitor<Exp> {
     public Exp visit(Formal f) {
         this.frame.allocLocal(false);
         return null;
+    }
+
+    public void addExp(ExpAbstract exp) {
+        this.listExp.add(exp);
     }
 }

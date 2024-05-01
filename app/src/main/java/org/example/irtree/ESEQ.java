@@ -14,7 +14,7 @@ public class ESEQ extends ExpAbstract {
     public ExpAbstract exp;
 
     public ExpList children() {
-        throw new IRTreeException("kids() not applicable to ESEQ");
+        throw new IRTreeException("children() not applicable to ESEQ");
     }
 
     public ExpAbstract build(ExpList children) {

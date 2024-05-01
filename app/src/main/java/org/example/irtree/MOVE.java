@@ -12,15 +12,15 @@ import lombok.EqualsAndHashCode;
 public class MOVE extends Stm {
     public ExpAbstract dst, src;
 
-    public ExpList kids() {
+    public ExpList children() {
         if (dst instanceof MEM)
             return new ExpList(((MEM) dst).exp, new ExpList(src, null));
         else return new ExpList(src, null);
     }
 
-    public Stm build(ExpList kids) {
+    public Stm build(ExpList children) {
         if (dst instanceof MEM)
-            return new MOVE(new MEM(kids.head), kids.tail.head);
-        else return new MOVE(dst, kids.head);
+            return new MOVE(new MEM(children.head), children.tail.head);
+        else return new MOVE(dst, children.head);
     }
 }

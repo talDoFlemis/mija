@@ -1,11 +1,10 @@
 package org.example.irtree;
 
-import org.example.temp.Temp;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.example.temp.Temp;
 
 @EqualsAndHashCode(callSuper = false)
 @Data

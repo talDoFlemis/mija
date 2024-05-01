@@ -1,6 +1,7 @@
 package org.example.irtree;
 
 public abstract class Stm {
-    public abstract ExpList kids();
-    public abstract Stm build(ExpList kids);
+    public abstract ExpList children();
+
+    public abstract Stm build(ExpList children);
 }

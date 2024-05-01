@@ -1,6 +1,9 @@
 package org.example.visitor.irtree;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.frame.Frame;
 import org.example.irtree.Stm;

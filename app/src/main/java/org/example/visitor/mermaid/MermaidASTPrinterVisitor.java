@@ -1,6 +1,9 @@
 package org.example.visitor.mermaid;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.example.ast.*;
 import org.example.visitor.Visitor;

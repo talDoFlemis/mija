@@ -11,7 +11,7 @@ import org.example.temp.Temp;
 
 import java.util.*;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Data
 @NoArgsConstructor
 public class MipsFrame extends Frame {
@@ -61,14 +61,14 @@ public class MipsFrame extends Frame {
     private static final Label badPtr = new Label("BADPTR");
     private static final Label badSub = new Label("BADSUB");
     private static final HashMap<Temp, String> tempMap = new HashMap<>(32);
-    // Registers defined by a call
-    static Temp[] calldefs = {};
     private static final HashMap<String, Integer> functions = new HashMap<>();
     private static final HashMap<String, Label> labels = new HashMap<>();
+    private static final boolean spilling = true;
+    // Registers defined by a call
+    static Temp[] calldefs = {};
     // Registers live on return
     private static Temp[] returnSink = {};
     private static Temp[] registers = {};
-    private static final boolean spilling = true;
 
     static {
         tempMap.put(ZERO, "$0");
@@ -105,10 +105,6 @@ public class MipsFrame extends Frame {
         tempMap.put(RA, "$ra");
     }
 
-    int maxArgOffset = 0;
-    private int offset = 0;
-    private List<Access> actuals;
-
     static {
         LinkedList<Temp> l = new LinkedList<>();
         l.add(V0);
@@ -133,6 +129,10 @@ public class MipsFrame extends Frame {
         addAll(l, specialRegs);
         registers = l.toArray(registers);
     }
+
+    int maxArgOffset = 0;
+    private int offset = 0;
+    private List<Access> actuals;
 
     private MipsFrame(String n, List<Boolean> f) {
         Integer count = functions.get(n);

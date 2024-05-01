@@ -11,13 +11,13 @@ import java.util.LinkedHashMap;
 @Data
 @EqualsAndHashCode
 public class MethodTable {
+    @Builder.Default
+    LinkedHashMap<String, Type> paramsContext = new LinkedHashMap<>();
+    @Builder.Default
+    HashMap<String, Type> localsContext = new HashMap<>();
     private String methodName;
     private Type methodReturnType;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private ClassTable classParent;
-    @Builder.Default
-    LinkedHashMap<String, Type> paramsContext = new LinkedHashMap<>();
-    @Builder.Default
-    HashMap<String, Type> localsContext = new HashMap<>();
 }

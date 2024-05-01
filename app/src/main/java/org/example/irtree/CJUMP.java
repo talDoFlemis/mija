@@ -34,11 +34,11 @@ public class CJUMP extends Stm {
         };
     }
 
-    public ExpList kids() {
+    public ExpList children() {
         return new ExpList(left, new ExpList(right, null));
     }
 
-    public Stm build(ExpList kids) {
-        return new CJUMP(relop, kids.head, kids.tail.head, condTrue, condFalse);
+    public Stm build(ExpList children) {
+        return new CJUMP(relop, children.head, children.tail.head, condTrue, condFalse);
     }
 }
