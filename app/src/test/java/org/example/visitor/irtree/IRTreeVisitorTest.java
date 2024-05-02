@@ -240,4 +240,26 @@ class IRTreeVisitorTest {
         // Assert
         assertEquals(expectedNode, actualNode);
     }
+
+    static Stream<Arguments> shouldParseSimpleLiterals() {
+        return Stream.of(
+                Arguments.of(new IntegerLiteral(1), new Exp(new CONST(1))),
+                Arguments.of(new True(), new Exp(new CONST(1))),
+                Arguments.of(new False(), new Exp(new CONST(0)))
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("Should parse simple literals")
+    @MethodSource
+    void shouldParseSimpleLiterals(Node node, Exp expectedNode) {
+        // Arrange
+        var visitor = IRTreeVisitor.builder().build();
+
+        // Act
+        Exp actualNode = node.accept(visitor);
+
+        // Assert
+        assertEquals(expectedNode, actualNode);
+    }
 }
