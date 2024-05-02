@@ -30,6 +30,7 @@ dependencies {
 
 tasks {
     compileJavacc {
+        dependsOn(compileKotlin)
         inputDirectory = file("src/main/javacc")
         outputDirectory = file(layout.buildDirectory.dir("generated/javacc"))
     }
@@ -44,6 +45,9 @@ sourceSets {
     main {
         java {
             srcDir(file(layout.buildDirectory.dir("generated/javacc")))
+        }
+        kotlin {
+            srcDir("src/main/kotlin")
         }
     }
 }
