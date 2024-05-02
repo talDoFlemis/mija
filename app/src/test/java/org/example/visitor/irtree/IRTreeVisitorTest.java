@@ -186,7 +186,58 @@ class IRTreeVisitorTest {
         fail();
     }
 
-    void shouldParseBinaryOperatation() {
+    static Stream<Arguments> shouldParseBinaryAndUnaryOperations() {
+        return Stream.of(
+                Arguments.of(
+                        new Plus(new IntegerLiteral(1), new IntegerLiteral(2)),
+                        new Exp(new BINOP(BINOP.PLUS, new CONST(1), new CONST(2)))
+                ),
+                Arguments.of(
+                        new Minus(new IntegerLiteral(1), new IntegerLiteral(2)),
+                        new Exp(new BINOP(BINOP.MINUS, new CONST(1), new CONST(2)))
+                ),
+                Arguments.of(
+                        new Times(new IntegerLiteral(1), new IntegerLiteral(2)),
+                        new Exp(new BINOP(BINOP.MUL, new CONST(1), new CONST(2)))
+                ),
+                Arguments.of(
+                        new Not(new IntegerLiteral(2)),
+                        new Exp(new BINOP(BINOP.MINUS, new CONST(1), new CONST(2)))
+                ),
+                Arguments.of(
+                        new And(new True(), new False()),
+                        new Exp(new BINOP(BINOP.AND, new CONST(1), new CONST(0)))
+                ),
+                Arguments.of(
+                        new LessThan(new IntegerLiteral(1), new IntegerLiteral(2)),
+                        new Exp(new BINOP(BINOP.MINUS, new CONST(1), new CONST(2)))
+                ),
+                Arguments.of(
+                        new Plus(
+                                new Plus(new IntegerLiteral(1),
+                                        new Minus(new IntegerLiteral(2), new IntegerLiteral(3))
+                                ), new IntegerLiteral(4)
+                        ),
+                        new Exp(new BINOP(BINOP.PLUS,
+                                new BINOP(BINOP.PLUS, new CONST(1),
+                                        new BINOP(BINOP.MINUS, new CONST(2), new CONST(3))
+                                ), new CONST(4)
+                        ))
+                )
+        );
+    }
 
+    @DisplayName("Should parse binary and unary operations")
+    @MethodSource
+    @ParameterizedTest
+    void shouldParseBinaryAndUnaryOperations(Node node, Exp expectedNode) {
+        // Arrange
+        var visitor = IRTreeVisitor.builder().build();
+
+        // Act
+        Exp actualNode = node.accept(visitor);
+
+        // Assert
+        assertEquals(expectedNode, actualNode);
     }
 }

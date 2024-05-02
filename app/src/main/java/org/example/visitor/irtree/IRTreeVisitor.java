@@ -27,7 +27,8 @@ public class IRTreeVisitor implements Visitor<Exp> {
     private Frame frame;
     private Frag frag;
     private Frag initialFrag;
-    private List<ExpAbstract> listExp;
+    @Builder.Default
+    private List<ExpAbstract> listExp = new ArrayList<>();
     @Builder.Default
     private MainTable mainTable = new MainTable();
     @Builder.Default
