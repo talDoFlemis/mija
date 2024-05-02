@@ -35,6 +35,8 @@ public class IRTreeVisitor implements Visitor<Exp> {
     private ClassTable currentClassTable = null;
     @Builder.Default
     private MethodTable currentMethodTable = null;
+    @Builder.Default
+    private int currentIfCount = -1;
 
     public IRTreeVisitor(MainTable mainTable, Frame frame) {
         this.mainTable = mainTable;
@@ -362,13 +364,14 @@ public class IRTreeVisitor implements Visitor<Exp> {
     }
 
     public Exp visit(If i) {
+        currentIfCount++;
+        var trueLabel = new Label("if_true_" + currentIfCount);
+        var falseLabel = new Label("if_false_" + currentIfCount);
+        var endLabel = new Label("if_end_" + currentIfCount);
+
         var exp = i.getCondition().accept(this);
         var stm1 = new EXP(i.getThenBranch().accept(this).unEx());
         var stm2 = new EXP(i.getElseBranch().accept(this).unEx());
-
-        var trueLabel = new Label();
-        var falseLabel = new Label();
-        var endLabel = new Label();
 
         var thenStatement = new SEQ(stm1, new LABEL(trueLabel));
         var elseStatement = new SEQ(stm2, new LABEL(falseLabel));
