@@ -314,7 +314,7 @@ class SymbolTableVisitorTest {
                              }},
                         MainTable.builder()
                                 .map(new HashMap<>() {{
-                                    put("class", ClassTable.builder().className("class").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build());
+                                    put("class", ClassTable.builder().className("class").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build());
                                 }})
                                 .build()
                 ),
@@ -324,8 +324,8 @@ class SymbolTableVisitorTest {
                              }},
                         MainTable.builder()
                                 .map(new HashMap<>() {{
-                                    put("class", ClassTable.builder().className("class").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build());
-                                    put("class2", ClassTable.builder().className("class2").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build());
+                                    put("class", ClassTable.builder().className("class").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build());
+                                    put("class2", ClassTable.builder().className("class2").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build());
                                 }})
                                 .build()
                 ),
@@ -348,14 +348,14 @@ class SymbolTableVisitorTest {
                                     put("class", ClassTable.builder()
                                             .className("class")
                                             .parent(null)
-                                            .fieldsContext(new HashMap<>() {{
+                                            .fieldsContext(new LinkedHashMap<>() {{
                                                 put("tubias", new IntegerType());
                                             }})
                                             .methodsContext(new HashMap<>()).build());
                                     put("class2", ClassTable.builder()
                                             .className("class2")
                                             .parent(null)
-                                            .fieldsContext(new HashMap<>() {{
+                                            .fieldsContext(new LinkedHashMap<>() {{
                                                 put("tubias", new IntegerType());
                                             }})
                                             .methodsContext(new HashMap<>()).build());
@@ -468,8 +468,8 @@ class SymbolTableVisitorTest {
                         }},
                         MainTable.builder()
                                 .map(new HashMap<>() {{
-                                    put("class", ClassTable.builder().className("class").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build());
-                                    put("class2", ClassTable.builder().className("class2").parent(ClassTable.builder().className("class").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build()).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build());
+                                    put("class", ClassTable.builder().className("class").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build());
+                                    put("class2", ClassTable.builder().className("class2").parent(ClassTable.builder().className("class").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build()).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build());
                                 }})
                                 .build()
                 ),
@@ -483,9 +483,9 @@ class SymbolTableVisitorTest {
                         }},
                         MainTable.builder()
                                 .map(new HashMap<>() {{
-                                    put("class", ClassTable.builder().className("class").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build());
-                                    put("class2", ClassTable.builder().className("class2").parent(ClassTable.builder().className("class").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build()).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build());
-                                    put("class3", ClassTable.builder().className("class3").parent(ClassTable.builder().className("class2").parent(ClassTable.builder().className("class").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build()).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build()).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build());
+                                    put("class", ClassTable.builder().className("class").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build());
+                                    put("class2", ClassTable.builder().className("class2").parent(ClassTable.builder().className("class").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build()).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build());
+                                    put("class3", ClassTable.builder().className("class3").parent(ClassTable.builder().className("class2").parent(ClassTable.builder().className("class").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build()).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build()).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build());
                                 }})
                                 .build()
                 ),
@@ -510,7 +510,7 @@ class SymbolTableVisitorTest {
                                     put("class", ClassTable.builder()
                                             .className("class")
                                             .parent(null)
-                                            .fieldsContext(new HashMap<>() {{
+                                            .fieldsContext(new LinkedHashMap<>() {{
                                                 put("tubias", new IntegerType());
                                             }}).build());
                                     put("class2", ClassTable.builder()
@@ -518,10 +518,10 @@ class SymbolTableVisitorTest {
                                             .parent(ClassTable.builder()
                                                     .className("class")
                                                     .parent(null)
-                                                    .fieldsContext(new HashMap<>() {{
+                                                    .fieldsContext(new LinkedHashMap<>() {{
                                                         put("tubias", new IntegerType());
                                                     }}).build())
-                                            .fieldsContext(new HashMap<>() {{
+                                            .fieldsContext(new LinkedHashMap<>() {{
                                                 put("tubias", new IntegerType());
                                                 put("tubias2", new IntegerType());
                                             }}).build());
@@ -680,7 +680,7 @@ class SymbolTableVisitorTest {
                                             .parent(null)
                                             .methodsContext(new HashMap<>() {{
                                                 put("main", MethodTable.builder()
-                                                        .classParent(ClassTable.builder().className("class").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build())
+                                                        .classParent(ClassTable.builder().className("class").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build())
                                                         .methodName("main")
                                                         .methodReturnType(null)
                                                         .build());
@@ -700,7 +700,7 @@ class SymbolTableVisitorTest {
                                             .parent(null)
                                             .methodsContext(new HashMap<>() {{
                                                 put("main", MethodTable.builder()
-                                                        .classParent(ClassTable.builder().className("Gepeto").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build())
+                                                        .classParent(ClassTable.builder().className("Gepeto").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build())
                                                         .methodName("main")
                                                         .methodReturnType(null)
                                                         .build());
@@ -720,7 +720,7 @@ class SymbolTableVisitorTest {
                                             .parent(null)
                                             .methodsContext(new HashMap<>() {{
                                                 put("main", MethodTable.builder()
-                                                        .classParent(ClassTable.builder().className("Factorial").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build())
+                                                        .classParent(ClassTable.builder().className("Factorial").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build())
                                                         .methodName("main")
                                                         .methodReturnType(null)
                                                         .build());
@@ -777,7 +777,7 @@ class SymbolTableVisitorTest {
                                             .parent(null)
                                             .methodsContext(new HashMap<>() {{
                                                 put("main", MethodTable.builder()
-                                                        .classParent(ClassTable.builder().className("class").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build())
+                                                        .classParent(ClassTable.builder().className("class").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build())
                                                         .methodName("main")
                                                         .methodReturnType(null)
                                                         .build());
@@ -785,13 +785,13 @@ class SymbolTableVisitorTest {
                                     put("class2", ClassTable.builder()
                                             .className("class2")
                                             .parent(null)
-                                            .fieldsContext(new HashMap<>())
+                                            .fieldsContext(new LinkedHashMap<>())
                                             .methodsContext(new HashMap<>())
                                             .build());
                                     put("class3", ClassTable.builder()
                                             .className("class3")
                                             .parent(null)
-                                            .fieldsContext(new HashMap<>())
+                                            .fieldsContext(new LinkedHashMap<>())
                                             .methodsContext(new HashMap<>())
                                             .build());
                                 }})
@@ -823,7 +823,7 @@ class SymbolTableVisitorTest {
                                             .parent(null)
                                             .methodsContext(new HashMap<>() {{
                                                 put("main", MethodTable.builder()
-                                                        .classParent(ClassTable.builder().className("class").parent(null).fieldsContext(new HashMap<>()).methodsContext(new HashMap<>()).build())
+                                                        .classParent(ClassTable.builder().className("class").parent(null).fieldsContext(new LinkedHashMap<>()).methodsContext(new HashMap<>()).build())
                                                         .methodName("main")
                                                         .methodReturnType(null)
                                                         .build());
@@ -831,16 +831,16 @@ class SymbolTableVisitorTest {
                                     put("class2", ClassTable.builder()
                                             .className("class2")
                                             .parent(null)
-                                            .fieldsContext(new HashMap<>() {{
+                                            .fieldsContext(new LinkedHashMap<>() {{
                                                 put("tubias", new IntegerType());
                                             }})
                                             .build());
                                     put("class3", ClassTable.builder()
                                             .className("class3")
-                                            .parent(ClassTable.builder().className("class2").parent(null).fieldsContext(new HashMap<>() {{
+                                            .parent(ClassTable.builder().className("class2").parent(null).fieldsContext(new LinkedHashMap<>() {{
                                                 put("tubias", new IntegerType());
                                             }}).build())
-                                            .fieldsContext(new HashMap<>() {{
+                                            .fieldsContext(new LinkedHashMap<>() {{
                                                 put("tubias", new IntegerType());
                                             }})
                                             .build());
