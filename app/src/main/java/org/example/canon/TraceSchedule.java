@@ -17,6 +17,7 @@ public class TraceSchedule {
 
 	public StmList stms;
 	BasicBlocks blocks;
+	@Builder.Default
 	HashMap<Label, StmList> table = new HashMap<>();
 
 	public TraceSchedule(BasicBlocks b) {

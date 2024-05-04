@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.example.irtree.*;
 import org.example.temp.Temp;
 
-@AllArgsConstructor
 @Builder
 @Data
 @NoArgsConstructor

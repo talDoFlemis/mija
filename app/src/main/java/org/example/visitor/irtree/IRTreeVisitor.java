@@ -87,7 +87,7 @@ public class IRTreeVisitor implements Visitor<Exp> {
     }
 
     public Exp visit(Identifier i) {
-        var allocLocal = frame.allocLocal(false);
+        var allocLocal = frame.allocLocal();
         var tempReg = allocLocal.exp(new TEMP(frame.FP()));
         addExp(tempReg);
         return new Exp(tempReg);
@@ -143,7 +143,7 @@ public class IRTreeVisitor implements Visitor<Exp> {
     }
 
     public Exp visit(IdentifierExpression i) {
-        var allocLocal = frame.allocLocal(false);
+        var allocLocal = frame.allocLocal();
         var tempReg = allocLocal.exp(new TEMP(frame.FP()));
         addExp(tempReg);
         return new Exp(tempReg);
@@ -537,7 +537,7 @@ public class IRTreeVisitor implements Visitor<Exp> {
     }
 
     public Exp visit(Formal f) {
-        frame.allocLocal(false);
+        frame.allocLocal();
         return null;
     }
 
