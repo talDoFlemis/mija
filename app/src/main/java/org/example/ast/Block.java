@@ -1,17 +1,16 @@
 package org.example.ast;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.example.visitor.Visitor;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class Block extends Statement {
-    private StatementList statements;
+    @Builder.Default
+    private StatementList statements = new StatementList();
 
     @Override
     public <T> T accept(Visitor<T> v) {
