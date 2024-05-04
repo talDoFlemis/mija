@@ -1,16 +1,18 @@
-package org.example.irtree;
+package org.example.canon;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.irtree.StmList;
+
 
 @AllArgsConstructor
-@Data
 @Builder
+@Data
 @NoArgsConstructor
-public class StmList {
-	public Stm head;
-	public StmList tail;
+public class StmListList {
+	public StmList head;
+	public StmListList tail;
 }
 

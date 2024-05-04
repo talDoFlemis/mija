@@ -30,7 +30,7 @@ public class CJUMP extends Stm {
             case UGE -> ULT;
             case UGT -> ULE;
             case ULE -> UGT;
-            default -> throw new Error("bad relop in CJUMP.notRel");
+            default -> throw new IRTreeException("bad relop in CJUMP.notRel");
         };
     }
 

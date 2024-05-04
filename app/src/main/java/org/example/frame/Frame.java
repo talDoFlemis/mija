@@ -14,7 +14,7 @@ public abstract class Frame implements TempMap {
 
     public abstract Frame newFrame(String name, List<Boolean> formals);
 
-    public abstract Access allocLocal(boolean escape);
+    public abstract Access allocLocal();
 
     public abstract Temp FP();
 
