@@ -6,6 +6,7 @@ import org.example.visitor.Visitor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 @NoArgsConstructor
 @Builder
@@ -180,7 +181,7 @@ public class SymbolTableVisitor implements Visitor<Void> {
                 .builder()
                 .className(c.getClassName().getS())
                 .parent(extendsClass)
-                .fieldsContext(new HashMap<>(extendsClass.getFieldsContext()))
+                .fieldsContext(new LinkedHashMap<>(extendsClass.getFieldsContext()))
                 .methodsContext(new HashMap<>(extendsClass.getMethodsContext()))
                 .build();
 
