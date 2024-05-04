@@ -4,6 +4,7 @@ plugins {
     idea
     id("io.freefair.lombok") version "8.6"
     antlr
+    kotlin("plugin.lombok") version "1.9.23"
     kotlin("jvm") version "1.9.23"
 }
 
@@ -26,6 +27,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1-Beta")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
+    implementation(kotlin("reflect"))
 }
 
 tasks {
