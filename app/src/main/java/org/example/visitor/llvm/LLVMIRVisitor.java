@@ -525,6 +525,37 @@ public class LLVMIRVisitor implements Visitor<Value> {
     }
 
     public Value visit(ClassDeclExtends c) {
+        currentClassTable = mainTable.getMap().get(c.getClassName().getS());
+
+        int currentAggregate = 0;
+        LinkedHashMap<String, Pair<Type, Offset>> currentClassFields = new LinkedHashMap<>();
+
+        for (Map.Entry<String, org.example.ast.Type> field : currentClassTable.getFieldsContext().entrySet()) {
+            String name = field.getKey();
+            org.example.ast.Type type = field.getValue();
+
+            var offset = new Offset();
+            offset.addOffset(new org.example.llvm.IntegerType(), new Value("0"));
+            offset.addOffset(new org.example.llvm.IntegerType(), new Value(Integer.toString(currentAggregate)));
+
+            var llvmType = convertASTTypeToLLVMType(type);
+            currentClassFields.put(name, new Pair<>(llvmType, offset));
+            if (llvmType instanceof ClassType clazz) {
+                objectRegisters.put(new Value(name), clazz);
+            }
+            currentAggregate++;
+        }
+
+        var structuredType = ClassType.builder()
+            .name(currentClassTable.getClassName())
+            .fields(currentClassFields)
+            .build();
+        currentClassStructuredType = structuredType;
+        program.addStructuredTypes(structuredType);
+
+        c.getMethods().getMethodDecls().forEach(method -> method.accept(this));
+
+        resetClassScope();
         return null;
     }
 
