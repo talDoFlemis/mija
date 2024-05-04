@@ -7,6 +7,12 @@ object CodeGen {
 
     interface Element {
         fun render(builder: java.lang.StringBuilder): java.lang.StringBuilder
+
+        fun StringBuilder.use(block: StringBuilder.() -> Unit) = apply {
+            append("\n")
+            apply(block)
+            append("\n")
+        }
     }
 
     @JasminDSL
@@ -15,17 +21,26 @@ object CodeGen {
         protected val scope = ArrayList<Element>()
 
         protected fun <T : Element> initScope(instance: T, block: T.() -> Unit): T {
-            val result = instance.apply(block)
+            instance.apply(block)
             scope.add(instance)
-            return result
+            return instance
         }
+    }
 
-        abstract override fun render(builder: java.lang.StringBuilder): java.lang.StringBuilder
+    data object BaseInstance : CodeNode() {
+        fun program(block: ProgramCode.() -> Unit): ProgramCode = ProgramCode().apply(block)
+        override fun render(builder: java.lang.StringBuilder): java.lang.StringBuilder {
+            return scope.fold(builder) { acc, element -> element.render(acc) }
+        }
     }
 
     @JasminDSL
     class ProgramCode : CodeNode() {
-        val mainClass get() = scope.filterIsInstance<ClassCode>().first { it.isMain }
+        val mainClass
+            get() = scope.filterIsInstance<ClassCode>().filter { it.isMain }.run {
+                require(size == 1) { "There should be only one main class" }
+                first()
+            }
         val classes get() = scope.filterIsInstance<ClassCode>().filter { !it.isMain }
         var name
             get() = properties["name"]!!
@@ -33,15 +48,13 @@ object CodeGen {
                 properties["name"] = value
             }
 
-        override fun render(builder: java.lang.StringBuilder) = builder.apply {
-            val line = repeat("-", 80)
+        override fun render(builder: java.lang.StringBuilder): StringBuilder {
+            val line = "----------------------------------------"
 
-            append(line.insert(4, name))
-            mainClass.render(this)
-
-            classes.forEach { it.render(this) }
-
-            append(line)
+            return builder.use {
+                mainClass.render(this)
+                classes.forEach { it.render(this) }
+            }
         }
 
         fun classDecl(isMain: Boolean = false, block: ClassCode.() -> Unit): ClassCode =
@@ -50,6 +63,7 @@ object CodeGen {
 
     @JasminDSL
     class ClassCode(val isMain: Boolean) : CodeNode() {
+        val methods get() = scope.filterIsInstance<MethodDeclCode>()
         var name
             get() = properties["name"]!!
             set(value) {
@@ -64,7 +78,9 @@ object CodeGen {
         override fun render(builder: java.lang.StringBuilder) = builder.apply {
             appendLine(".class public $name")
             appendLine(".super $path")
-            scope.forEach { it.render(this) }
+            methods.forEach { it.render(this) }
+
+            appendLine(".end class")
         }
 
         fun methodDecl(block: MethodDeclCode.() -> Unit): MethodDeclCode = initScope(MethodDeclCode(), block)
@@ -72,6 +88,7 @@ object CodeGen {
 
     @JasminDSL
     class MethodDeclCode : CodeNode() {
+        val statements get() = scope.filterIsInstance<StatementCode>()
         var name
             get() = properties["name"]!!
             set(value) {
@@ -84,10 +101,14 @@ object CodeGen {
             }
 
         override fun render(builder: java.lang.StringBuilder) = builder.apply {
+            append("\n")
             appendLine(".method public $name")
             appendLine(".descriptor $descriptor")
-            scope.forEach { it.render(this) }
+
+            statements.forEach { it.render(this) }
+
             appendLine(".end method")
+            append("\n")
         }
 
         fun statement(block: StatementCode.() -> Unit): StatementCode = initScope(StatementCode(), block)
@@ -103,32 +124,10 @@ object CodeGen {
 
         override fun render(builder: java.lang.StringBuilder) = builder.apply {
             appendLine(".limit stack 10")
+            appendLine("statement $type")
             appendLine(".limit locals 10")
-            scope.forEach { it.render(this) }
         }
     }
 
-
-}
-
-fun main(args: Array<String>) {
-    val program = CodeGen.ProgramCode().apply {
-        name = "HelloWorld Program"
-
-        classDecl(isMain = true) {
-            name = "HelloWorld"
-            path = "java/lang/Object"
-
-            methodDecl {
-                name = "<init>"
-                descriptor = "()V"
-                statement {
-                    type = "void"
-                }
-            }
-        }
-    }
-    val builder = StringBuilder()
-    program.render(builder).toString().also(::println)
 
 }
