@@ -11,12 +11,12 @@ import org.example.visitor.Visitor;
 @Builder
 @AllArgsConstructor
 public class While extends Statement {
-    private Expression condition;
-    @Builder.Default
-    private Statement body = new Block(new StatementList());
+	private Expression condition;
+	@Builder.Default
+	private Statement body = new Block(new StatementList());
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

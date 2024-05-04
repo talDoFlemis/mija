@@ -8,12 +8,12 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class LessThanInstruction implements Instruction {
-    private Value leftOperand;
-    private Value rightOperand;
-    private Value result;
-    private final Type type = new BooleanType();
+	private final Type type = new BooleanType();
+	private Value leftOperand;
+	private Value rightOperand;
+	private Value result;
 
-    public String getInstructionAsString() {
-        return result.getV() + " = icmp slt " + type.getTypeString() + " " + leftOperand.getV() + " , " + rightOperand.getV();
-    }
+	public String getInstructionAsString() {
+		return result.getV() + " = icmp slt " + type.getTypeString() + " " + leftOperand.getV() + " , " + rightOperand.getV();
+	}
 }

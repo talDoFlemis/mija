@@ -11,10 +11,10 @@ import org.example.visitor.Visitor;
 @Builder
 @AllArgsConstructor
 public class NewObject extends Expression {
-    private Identifier identifier;
+	private Identifier identifier;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

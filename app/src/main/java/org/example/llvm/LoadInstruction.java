@@ -8,11 +8,11 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class LoadInstruction implements Instruction {
-    private Type type;
-    private Value pointer;
-    private Value result;
+	private Type type;
+	private Value pointer;
+	private Value result;
 
-    public String getInstructionAsString() {
-        return String.format("%s = load %s, %s* %s", result, type, type, pointer);
-    }
+	public String getInstructionAsString() {
+		return String.format("%s = load %s, %s* %s", result, type, type, pointer);
+	}
 }

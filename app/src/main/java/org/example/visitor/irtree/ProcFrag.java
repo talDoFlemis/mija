@@ -14,12 +14,12 @@ import org.example.irtree.Stm;
 @Data
 @Log4j2
 public class ProcFrag extends Frag {
-    private Stm body;
-    private Frame frame;
+	private Stm body;
+	private Frame frame;
 
-    public ProcFrag(Stm b, Frame f, Frag next) {
-        super(next);
-        body = b;
-        frame = f;
-    }
+	public ProcFrag(Stm b, Frame f, Frag next) {
+		super(next);
+		body = b;
+		frame = f;
+	}
 }

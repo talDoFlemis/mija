@@ -11,12 +11,12 @@ import org.example.visitor.Visitor;
 @Builder
 @AllArgsConstructor
 public class Program extends Node {
-    private MainClass mainClass;
-    @Builder.Default
-    private ClassDeclList classes = new ClassDeclList();
+	private MainClass mainClass;
+	@Builder.Default
+	private ClassDeclList classes = new ClassDeclList();
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

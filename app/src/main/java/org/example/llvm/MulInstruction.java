@@ -7,13 +7,13 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 @Builder
-public class MulInstruction implements Instruction{
-    private Value leftOperand;
-    private Value rightOperand;
-    private Value result;
-    private final Type type = new IntegerType();
+public class MulInstruction implements Instruction {
+	private final Type type = new IntegerType();
+	private Value leftOperand;
+	private Value rightOperand;
+	private Value result;
 
-    public String getInstructionAsString() {
-        return result.getV() + " = mul " + type.getTypeString() + leftOperand.getV() + " , " + rightOperand.getV();
-    }
+	public String getInstructionAsString() {
+		return result.getV() + " = mul " + type.getTypeString() + leftOperand.getV() + " , " + rightOperand.getV();
+	}
 }

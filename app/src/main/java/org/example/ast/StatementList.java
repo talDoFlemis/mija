@@ -12,10 +12,10 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StatementList {
-    @Builder.Default
-    private ArrayList<Statement> statements = new ArrayList<>();
+	@Builder.Default
+	private ArrayList<Statement> statements = new ArrayList<>();
 
-    public void addStatement(Statement statement) {
-        statements.add(statement);
-    }
+	public void addStatement(Statement statement) {
+		statements.add(statement);
+	}
 }

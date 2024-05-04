@@ -8,11 +8,11 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class NotInstruction implements Instruction {
-    private Value result;
-    private Value operand;
-    private final Type type = new BooleanType();
+	private final Type type = new BooleanType();
+	private Value result;
+	private Value operand;
 
-    public String getInstructionAsString() {
-        return result.getV() + " = icmp eq " + type.getTypeString() + " " + operand.getV() + " , 0";
-    }
+	public String getInstructionAsString() {
+		return result.getV() + " = icmp eq " + type.getTypeString() + " " + operand.getV() + " , 0";
+	}
 }

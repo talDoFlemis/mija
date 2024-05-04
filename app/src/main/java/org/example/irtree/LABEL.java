@@ -11,13 +11,13 @@ import org.example.temp.Label;
 @Builder
 @AllArgsConstructor
 public class LABEL extends Stm {
-    public Label label;
+	public Label label;
 
-    public ExpList children() {
-        return null;
-    }
+	public ExpList children() {
+		return null;
+	}
 
-    public Stm build(ExpList children) {
-        return this;
-    }
+	public Stm build(ExpList children) {
+		return this;
+	}
 }

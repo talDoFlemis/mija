@@ -18,89 +18,89 @@ import java.util.Optional;
 @Log4j2
 @NoArgsConstructor
 public class AntlrParser implements ParserStrategy {
-    private final MiniJavaParser parser = new MiniJavaParser(null);
+	private final MiniJavaParser parser = new MiniJavaParser(null);
 
-    public Optional<Program> getProgram(InputStream stream) {
-        log.info("Parsing program");
+	public Optional<Program> getProgram(InputStream stream) {
+		log.info("Parsing program");
 
-        try {
-            var charStream = CharStreams.fromStream(stream);
-            var lexer = new MiniJavaLexer(charStream);
-            lexer.removeErrorListeners();
-            lexer.addErrorListener(AntlrParserExceptionListener.INSTANCE);
+		try {
+			var charStream = CharStreams.fromStream(stream);
+			var lexer = new MiniJavaLexer(charStream);
+			lexer.removeErrorListeners();
+			lexer.addErrorListener(AntlrParserExceptionListener.INSTANCE);
 
-            var tokens = new CommonTokenStream(lexer);
+			var tokens = new CommonTokenStream(lexer);
 
-            parser.setTokenStream(tokens);
-            parser.removeErrorListeners();
-            parser.addErrorListener(AntlrParserExceptionListener.INSTANCE);
+			parser.setTokenStream(tokens);
+			parser.removeErrorListeners();
+			parser.addErrorListener(AntlrParserExceptionListener.INSTANCE);
 
-            var gen = new ASTGenerator();
-            parser.addParseListener(gen);
-            assert parser.getNumberOfSyntaxErrors() == 0;
-            parser.goal();
+			var gen = new ASTGenerator();
+			parser.addParseListener(gen);
+			assert parser.getNumberOfSyntaxErrors() == 0;
+			parser.goal();
 
-            return Optional.of(gen.getProgram());
+			return Optional.of(gen.getProgram());
 
-        } catch (Exception e) {
-            log.error("Error parsing program", e);
-            return Optional.empty();
-        }
-    }
+		} catch (Exception e) {
+			log.error("Error parsing program", e);
+			return Optional.empty();
+		}
+	}
 
-    public boolean isSyntaxOk(InputStream stream) {
-        log.info("Checking syntax");
-        boolean status = true;
+	public boolean isSyntaxOk(InputStream stream) {
+		log.info("Checking syntax");
+		boolean status = true;
 
-        try {
-            var charStream = CharStreams.fromStream(stream);
-            var lexer = new MiniJavaLexer(charStream);
-            lexer.removeErrorListeners();
-            lexer.addErrorListener(AntlrParserExceptionListener.INSTANCE);
+		try {
+			var charStream = CharStreams.fromStream(stream);
+			var lexer = new MiniJavaLexer(charStream);
+			lexer.removeErrorListeners();
+			lexer.addErrorListener(AntlrParserExceptionListener.INSTANCE);
 
-            var tokens = new CommonTokenStream(lexer);
-            parser.setTokenStream(tokens);
-            parser.removeErrorListeners();
-            parser.addErrorListener(AntlrParserExceptionListener.INSTANCE);
-            parser.program();
-        } catch (ParseCancellationException e) {
-            log.error("Syntax error", e);
-            status = false;
-        } catch (Exception e) {
-            log.error("Error", e);
-            status = false;
-        }
+			var tokens = new CommonTokenStream(lexer);
+			parser.setTokenStream(tokens);
+			parser.removeErrorListeners();
+			parser.addErrorListener(AntlrParserExceptionListener.INSTANCE);
+			parser.program();
+		} catch (ParseCancellationException e) {
+			log.error("Syntax error", e);
+			status = false;
+		} catch (Exception e) {
+			log.error("Error", e);
+			status = false;
+		}
 
-        return status;
-    }
+		return status;
+	}
 
-    public Program getProgramOrThrow(InputStream stream) throws LexicalOrSemanticAnalysisException {
-        log.info("Parsing program");
+	public Program getProgramOrThrow(InputStream stream) throws LexicalOrSemanticAnalysisException {
+		log.info("Parsing program");
 
-        try {
-            var charStream = CharStreams.fromStream(stream);
-            var lexer = new MiniJavaLexer(charStream);
-            lexer.removeErrorListeners();
-            lexer.addErrorListener(AntlrParserExceptionListener.INSTANCE);
+		try {
+			var charStream = CharStreams.fromStream(stream);
+			var lexer = new MiniJavaLexer(charStream);
+			lexer.removeErrorListeners();
+			lexer.addErrorListener(AntlrParserExceptionListener.INSTANCE);
 
-            var tokens = new CommonTokenStream(lexer);
+			var tokens = new CommonTokenStream(lexer);
 
-            var parser = new MiniJavaParser(tokens);
+			var parser = new MiniJavaParser(tokens);
 
-            parser.removeErrorListeners();
-            parser.addErrorListener(AntlrParserExceptionListener.INSTANCE);
+			parser.removeErrorListeners();
+			parser.addErrorListener(AntlrParserExceptionListener.INSTANCE);
 
-            var gen = new ASTGenerator();
-            parser.addParseListener(gen);
-            assert parser.getNumberOfSyntaxErrors() == 0;
-            parser.goal();
+			var gen = new ASTGenerator();
+			parser.addParseListener(gen);
+			assert parser.getNumberOfSyntaxErrors() == 0;
+			parser.goal();
 
-            return gen.getProgram();
+			return gen.getProgram();
 
-        } catch (IOException e) {
-            throw new LexicalOrSemanticAnalysisException("IO Exception", e);
-        } catch (Exception e) {
-            throw new LexicalOrSemanticAnalysisException("Error parsing program", e);
-        }
-    }
+		} catch (IOException e) {
+			throw new LexicalOrSemanticAnalysisException("IO Exception", e);
+		} catch (Exception e) {
+			throw new LexicalOrSemanticAnalysisException("Error parsing program", e);
+		}
+	}
 }

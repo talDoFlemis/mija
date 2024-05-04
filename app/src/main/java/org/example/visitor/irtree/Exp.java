@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.example.irtree.ExpAbstract;
 
 @NoArgsConstructor
@@ -13,9 +12,9 @@ import org.example.irtree.ExpAbstract;
 @Data
 public class Exp {
 
-    public ExpAbstract exp;
+	public ExpAbstract exp;
 
-    public ExpAbstract unEx() {
-        return exp;
-    }
+	public ExpAbstract unEx() {
+		return exp;
+	}
 }

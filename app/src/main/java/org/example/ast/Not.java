@@ -9,10 +9,10 @@ import org.example.visitor.Visitor;
 @Data
 @AllArgsConstructor
 public class Not extends Expression {
-    private Expression e;
+	private Expression e;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

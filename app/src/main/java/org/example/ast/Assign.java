@@ -11,11 +11,11 @@ import org.example.visitor.Visitor;
 @Builder
 @AllArgsConstructor
 public class Assign extends Statement {
-    private Identifier identifier;
-    private Expression value;
+	private Identifier identifier;
+	private Expression value;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

@@ -9,14 +9,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RetInstruction implements TerminalInstruction{
-    private Type type;
-    private Value value;
+public class RetInstruction implements TerminalInstruction {
+	private Type type;
+	private Value value;
 
-    public String getInstructionAsString() {
-        if (type == null){
-            return "ret void ";
-        }
-        return String.format("ret %s %s", type.getTypeString(), value.getV());
-    }
+	public String getInstructionAsString() {
+		if (type == null) {
+			return "ret void ";
+		}
+		return String.format("ret %s %s", type.getTypeString(), value.getV());
+	}
 }

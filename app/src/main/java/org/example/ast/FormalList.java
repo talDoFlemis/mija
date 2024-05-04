@@ -10,10 +10,10 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class FormalList {
-    @Builder.Default
-    private ArrayList<Formal> formals = new ArrayList<>();
+	@Builder.Default
+	private ArrayList<Formal> formals = new ArrayList<>();
 
-    public void addFormal(Formal formal) {
-        formals.add(formal);
-    }
+	public void addFormal(Formal formal) {
+		formals.add(formal);
+	}
 }

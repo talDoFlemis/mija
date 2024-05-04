@@ -11,12 +11,12 @@ import org.example.visitor.Visitor;
 @Builder
 @AllArgsConstructor
 public class ArrayAssign extends Statement {
-    private Identifier identifier;
-    private Expression index;
-    private Expression value;
+	private Identifier identifier;
+	private Expression index;
+	private Expression value;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

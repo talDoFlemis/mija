@@ -11,10 +11,10 @@ import org.example.visitor.Visitor;
 @AllArgsConstructor
 @Builder
 public class IntegerLiteral extends Expression {
-    private int value;
+	private int value;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

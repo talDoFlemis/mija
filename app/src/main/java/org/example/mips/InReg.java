@@ -14,13 +14,13 @@ import org.example.temp.Temp;
 @Data
 @Builder
 public class InReg extends Access {
-    Temp temp;
+	Temp temp;
 
-    public ExpAbstract exp(ExpAbstract fp) {
-        return new TEMP(temp);
-    }
+	public ExpAbstract exp(ExpAbstract fp) {
+		return new TEMP(temp);
+	}
 
-    public String toString() {
-        return temp.toString();
-    }
+	public String toString() {
+		return temp.toString();
+	}
 }

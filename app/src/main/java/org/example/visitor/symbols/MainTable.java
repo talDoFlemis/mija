@@ -12,6 +12,6 @@ import java.util.HashMap;
 @Builder
 @NoArgsConstructor
 public class MainTable {
-    @Builder.Default
-    HashMap<String, ClassTable> map = new HashMap<>();
+	@Builder.Default
+	HashMap<String, ClassTable> map = new HashMap<>();
 }

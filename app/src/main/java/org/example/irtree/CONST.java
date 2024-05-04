@@ -10,13 +10,13 @@ import lombok.EqualsAndHashCode;
 @Builder
 @AllArgsConstructor
 public class CONST extends ExpAbstract {
-    public int value;
+	public int value;
 
-    public ExpList children() {
-        return null;
-    }
+	public ExpList children() {
+		return null;
+	}
 
-    public ExpAbstract build(ExpList children) {
-        return this;
-    }
+	public ExpAbstract build(ExpList children) {
+		return this;
+	}
 }

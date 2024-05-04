@@ -10,14 +10,14 @@ import lombok.EqualsAndHashCode;
 @Builder
 @AllArgsConstructor
 public class ESEQ extends ExpAbstract {
-    public Stm stm;
-    public ExpAbstract exp;
+	public Stm stm;
+	public ExpAbstract exp;
 
-    public ExpList children() {
-        throw new IRTreeException("children() not applicable to ESEQ");
-    }
+	public ExpList children() {
+		throw new IRTreeException("children() not applicable to ESEQ");
+	}
 
-    public ExpAbstract build(ExpList children) {
-        throw new IRTreeException("build() not applicable to ESEQ");
-    }
+	public ExpAbstract build(ExpList children) {
+		throw new IRTreeException("build() not applicable to ESEQ");
+	}
 }

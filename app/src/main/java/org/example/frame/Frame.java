@@ -9,34 +9,34 @@ import org.example.temp.TempMap;
 import java.util.List;
 
 public abstract class Frame implements TempMap {
-    public Label name;
-    public List<Access> formals;
+	public Label name;
+	public List<Access> formals;
 
-    public abstract Frame newFrame(String name, List<Boolean> formals);
+	public abstract Frame newFrame(String name, List<Boolean> formals);
 
-    public abstract Access allocLocal();
+	public abstract Access allocLocal();
 
-    public abstract Temp FP();
+	public abstract Temp FP();
 
-    public abstract int wordSize();
+	public abstract int wordSize();
 
-    public abstract ExpAbstract externalCall(String func, List<ExpAbstract> args);
+	public abstract ExpAbstract externalCall(String func, List<ExpAbstract> args);
 
-    public abstract Temp RV();
+	public abstract Temp RV();
 
-    public abstract String string(Label label, String value);
+	public abstract String string(Label label, String value);
 
-    public abstract Label badPtr();
+	public abstract Label badPtr();
 
-    public abstract Label badSub();
+	public abstract Label badSub();
 
-    public abstract String tempMap(Temp temp);
+	public abstract String tempMap(Temp temp);
 
-    public abstract Temp[] registers();
+	public abstract Temp[] registers();
 
-    public abstract String programTail();
+	public abstract String programTail();
 
-    public abstract void procEntryExit1(List<Stm> body);
+	public abstract void procEntryExit1(List<Stm> body);
 
     /*
         public abstract List<Assem.Instr> codegen(List<Stm> stms);

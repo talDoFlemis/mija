@@ -14,10 +14,10 @@ import java.util.LinkedHashMap;
 @Builder
 @EqualsAndHashCode
 public class ClassTable {
-    @Builder.Default
-    LinkedHashMap<String, Type> fieldsContext = new LinkedHashMap<>();
-    @Builder.Default
-    HashMap<String, MethodTable> methodsContext = new HashMap<>();
-    private String className;
-    private ClassTable parent;
+	@Builder.Default
+	LinkedHashMap<String, Type> fieldsContext = new LinkedHashMap<>();
+	@Builder.Default
+	HashMap<String, MethodTable> methodsContext = new HashMap<>();
+	private String className;
+	private ClassTable parent;
 }

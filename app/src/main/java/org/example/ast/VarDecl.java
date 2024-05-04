@@ -11,11 +11,11 @@ import org.example.visitor.Visitor;
 @Builder
 @AllArgsConstructor
 public class VarDecl extends Node {
-    private Type type;
-    private String name;
+	private Type type;
+	private String name;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

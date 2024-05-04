@@ -8,12 +8,12 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class MinusInstruction implements Instruction {
-    private Value leftOperand;
-    private Value rightOperand;
-    private Value result;
-    private final Type type = new IntegerType();
+	private final Type type = new IntegerType();
+	private Value leftOperand;
+	private Value rightOperand;
+	private Value result;
 
-    public String getInstructionAsString() {
-        return result.getV() + " = minus " + type.getTypeString() + leftOperand.getV() + " , " + rightOperand.getV();
-    }
+	public String getInstructionAsString() {
+		return result.getV() + " = minus " + type.getTypeString() + leftOperand.getV() + " , " + rightOperand.getV();
+	}
 }

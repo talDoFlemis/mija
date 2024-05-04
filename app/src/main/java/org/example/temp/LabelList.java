@@ -10,6 +10,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @Builder
 public class LabelList {
-    public Label head;
-    public LabelList tail;
+	public Label head;
+	public LabelList tail;
 }

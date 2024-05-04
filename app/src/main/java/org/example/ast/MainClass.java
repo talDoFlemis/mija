@@ -11,12 +11,12 @@ import org.example.visitor.Visitor;
 @Builder
 @AllArgsConstructor
 public class MainClass extends Node {
-    private Identifier className;
-    private Identifier argsName;
-    private StatementList statements;
+	private Identifier className;
+	private Identifier argsName;
+	private StatementList statements;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

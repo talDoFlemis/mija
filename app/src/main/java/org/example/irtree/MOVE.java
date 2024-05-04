@@ -10,17 +10,17 @@ import lombok.EqualsAndHashCode;
 @Builder
 @AllArgsConstructor
 public class MOVE extends Stm {
-    public ExpAbstract dst, src;
+	public ExpAbstract dst, src;
 
-    public ExpList children() {
-        if (dst instanceof MEM)
-            return new ExpList(((MEM) dst).exp, new ExpList(src, null));
-        else return new ExpList(src, null);
-    }
+	public ExpList children() {
+		if (dst instanceof MEM)
+			return new ExpList(((MEM) dst).exp, new ExpList(src, null));
+		else return new ExpList(src, null);
+	}
 
-    public Stm build(ExpList children) {
-        if (dst instanceof MEM)
-            return new MOVE(new MEM(children.head), children.tail.head);
-        else return new MOVE(dst, children.head);
-    }
+	public Stm build(ExpList children) {
+		if (dst instanceof MEM)
+			return new MOVE(new MEM(children.head), children.tail.head);
+		else return new MOVE(dst, children.head);
+	}
 }

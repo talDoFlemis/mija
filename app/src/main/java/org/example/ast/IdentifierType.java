@@ -11,10 +11,10 @@ import org.example.visitor.Visitor;
 @AllArgsConstructor
 @ToString
 public class IdentifierType extends Type {
-    private String s;
+	private String s;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

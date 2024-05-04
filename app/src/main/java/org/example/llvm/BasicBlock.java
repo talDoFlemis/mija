@@ -12,16 +12,16 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BasicBlock {
-    @Builder.Default
-    private Value label = new Value("entry");
-    @Builder.Default
-    private ArrayList<PhiInstruction> phiInstructions = new ArrayList<>();
-    @Builder.Default
-    private ArrayList<Instruction> instructions = new ArrayList<>();
-    @Builder.Default
-    private TerminalInstruction terminalInstruction = new RetInstruction();
+	@Builder.Default
+	private Value label = new Value("entry");
+	@Builder.Default
+	private ArrayList<PhiInstruction> phiInstructions = new ArrayList<>();
+	@Builder.Default
+	private ArrayList<Instruction> instructions = new ArrayList<>();
+	@Builder.Default
+	private TerminalInstruction terminalInstruction = new RetInstruction();
 
-    public void addInstruction(Instruction i){
-        instructions.add(i);
-    }
+	public void addInstruction(Instruction i) {
+		instructions.add(i);
+	}
 }

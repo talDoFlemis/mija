@@ -5,8 +5,8 @@ import org.example.visitor.Visitor;
 
 @EqualsAndHashCode(callSuper = false)
 public class False extends Expression {
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Value {
-    private final String v;
+	private final String v;
 }

@@ -10,13 +10,13 @@ import lombok.EqualsAndHashCode;
 @Builder
 @AllArgsConstructor
 public class EXP extends Stm {
-    public ExpAbstract exp;
+	public ExpAbstract exp;
 
-    public ExpList children() {
-        return new ExpList(exp, null);
-    }
+	public ExpList children() {
+		return new ExpList(exp, null);
+	}
 
-    public Stm build(ExpList children) {
-        return new EXP(children.head);
-    }
+	public Stm build(ExpList children) {
+		return new EXP(children.head);
+	}
 }
