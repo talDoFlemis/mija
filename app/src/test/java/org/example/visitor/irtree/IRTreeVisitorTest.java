@@ -15,7 +15,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class IRTreeVisitorTest {
 	static MainClass mockedMainClass() {
@@ -32,45 +33,6 @@ class IRTreeVisitorTest {
 		var exp = new Exp(new CALL(new NAME(new Label("_print")), new ExpList(new CONST(1), new ExpList(new CONST(0), null))));
 		var sout = new Sout(new IntegerLiteral(1));
 		return new Pair<>(exp, sout);
-	}
-
-
-	@Test
-	@DisplayName("Should check a non empty list of expression")
-	void shouldCheckANonEmptyListOfExpression() {
-		// ARRANGE
-		Program prog = Program.builder()
-			.mainClass(mockedMainClass())
-			.classes(new ClassDeclList(new ArrayList<>() {{
-				add(ClassDeclSimple.builder()
-					.className(new Identifier("method"))
-					.methods(new MethodDeclList(new ArrayList<>() {{
-						add(MethodDecl.builder()
-							.identifier("main")
-							.formals(new FormalList(new ArrayList<>()))
-							.varDecls(new VarDeclList(new ArrayList<>() {{
-								add(VarDecl.builder().name("x").type(new IntegerType()).build());
-							}}))
-							.statements(new StatementList(new ArrayList<>() {{
-								add(new Sout(new IdentifierExpression("x")));
-							}}))
-							.type(new IntegerType())
-							.returnExpression(new IntegerLiteral(1))
-							.build());
-					}}))
-					.build());
-			}}))
-			.build();
-		SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
-		prog.accept(symbolTableVisitor);
-
-		IRTreeVisitor irTreeVisitor = new IRTreeVisitor(symbolTableVisitor.getMainTable(), new MipsFrame());
-
-		// ACT
-		prog.accept(irTreeVisitor);
-
-		// ASSERT
-		assertFalse(irTreeVisitor.getListExp().isEmpty());
 	}
 
 	static Stream<Arguments> shouldParseBinaryAndUnaryOperations() {
@@ -114,40 +76,12 @@ class IRTreeVisitorTest {
 		);
 	}
 
-	@DisplayName("Should parse binary and unary operations")
-	@MethodSource
-	@ParameterizedTest
-	void shouldParseBinaryAndUnaryOperations(Node node, Exp expectedNode) {
-		// Arrange
-		var visitor = IRTreeVisitor.builder().build();
-
-		// Act
-		Exp actualNode = node.accept(visitor);
-
-		// Assert
-		assertEquals(expectedNode, actualNode);
-	}
-
 	static Stream<Arguments> shouldParseSimpleLiterals() {
 		return Stream.of(
 			Arguments.of(new IntegerLiteral(1), new Exp(new CONST(1))),
 			Arguments.of(new True(), new Exp(new CONST(1))),
 			Arguments.of(new False(), new Exp(new CONST(0)))
 		);
-	}
-
-	@ParameterizedTest
-	@DisplayName("Should parse simple literals")
-	@MethodSource
-	void shouldParseSimpleLiterals(Node node, Exp expectedNode) {
-		// Arrange
-		var visitor = IRTreeVisitor.builder().build();
-
-		// Act
-		Exp actualNode = node.accept(visitor);
-
-		// Assert
-		assertEquals(expectedNode, actualNode);
 	}
 
 	static Stream<Arguments> shouldParseASOUTStatement() {
@@ -167,6 +101,72 @@ class IRTreeVisitorTest {
 				))
 			)
 		);
+	}
+
+	@Test
+	@DisplayName("Should check a non empty list of expression")
+	void shouldCheckANonEmptyListOfExpression() {
+		// ARRANGE
+		Program prog = Program.builder()
+			.mainClass(mockedMainClass())
+			.classes(new ClassDeclList(new ArrayList<>() {{
+				add(ClassDeclSimple.builder()
+					.className(new Identifier("method"))
+					.methods(new MethodDeclList(new ArrayList<>() {{
+						add(MethodDecl.builder()
+							.identifier("main")
+							.formals(new FormalList(new ArrayList<>()))
+							.varDecls(new VarDeclList(new ArrayList<>() {{
+								add(VarDecl.builder().name("x").type(new IntegerType()).build());
+							}}))
+							.statements(new StatementList(new ArrayList<>() {{
+								add(new Sout(new IdentifierExpression("x")));
+							}}))
+							.type(new IntegerType())
+							.returnExpression(new IntegerLiteral(1))
+							.build());
+					}}))
+					.build());
+			}}))
+			.build();
+		SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor();
+		prog.accept(symbolTableVisitor);
+
+		IRTreeVisitor irTreeVisitor = new IRTreeVisitor(symbolTableVisitor.getMainTable(), new MipsFrame());
+
+		// ACT
+		prog.accept(irTreeVisitor);
+
+		// ASSERT
+		assertFalse(irTreeVisitor.getListExp().isEmpty());
+	}
+
+	@DisplayName("Should parse binary and unary operations")
+	@MethodSource
+	@ParameterizedTest
+	void shouldParseBinaryAndUnaryOperations(Node node, Exp expectedNode) {
+		// Arrange
+		var visitor = IRTreeVisitor.builder().build();
+
+		// Act
+		Exp actualNode = node.accept(visitor);
+
+		// Assert
+		assertEquals(expectedNode, actualNode);
+	}
+
+	@ParameterizedTest
+	@DisplayName("Should parse simple literals")
+	@MethodSource
+	void shouldParseSimpleLiterals(Node node, Exp expectedNode) {
+		// Arrange
+		var visitor = IRTreeVisitor.builder().build();
+
+		// Act
+		Exp actualNode = node.accept(visitor);
+
+		// Assert
+		assertEquals(expectedNode, actualNode);
 	}
 
 	@DisplayName("Should parse a SOUT statement")
@@ -206,36 +206,38 @@ class IRTreeVisitorTest {
 					.left(
 						SEQ.builder()
 							.left(
+								CJUMP.builder()
+									.relop(CJUMP.EQ)
+									.left(new CONST(1))
+									.right(new CONST(1))
+									.condTrue(new Label("if_true_0"))
+									.condFalse(new Label("if_false_0"))
+									.build()
+							)
+							.right(
 								SEQ.builder()
-									.left(new LABEL(new Label("if_end_0")))
-									.right(
-										CJUMP.builder()
-											.relop(CJUMP.EQ)
-											.left(new CONST(1))
-											.right(new CONST(1))
-											.condTrue(new Label("if_true_0"))
-											.condFalse(new Label("if_false_0"))
+									.left(
+										SEQ.builder()
+											.left(
+												SEQ.builder()
+													.left(new LABEL(new Label("if_true_0")))
+													.right(new EXP(mockedSout.component1().unEx()))
+													.build()
+											)
+											.right(new JUMP(new Label("if_end_0")))
 											.build()
 									)
-									.build()
-							)
-							.right(
-								null
-							)
-							.build()
-					)
-					.right(
-						SEQ.builder()
-							.left(
-								SEQ.builder()
-									.left(EXP.builder().exp(mockedSout.component1().unEx()).build())
-									.right(new LABEL(new Label("if_true_0")))
-									.build()
-							)
-							.right(
-								SEQ.builder()
-									.left(EXP.builder().exp(mockedSout.component1().unEx()).build())
-									.right(new LABEL(new Label("if_false_0")))
+									.right(
+										SEQ.builder()
+											.left(
+												SEQ.builder()
+													.left(new LABEL(new Label("if_false_0")))
+													.right(new EXP(mockedSout.component1().unEx()))
+													.build()
+											)
+											.right(new JUMP(new Label("if_end_0")))
+											.build()
+									)
 									.build()
 							)
 							.build()

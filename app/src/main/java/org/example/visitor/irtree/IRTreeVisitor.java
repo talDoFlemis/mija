@@ -369,28 +369,34 @@ public class IRTreeVisitor implements Visitor<Exp> {
         var falseLabel = new Label("if_false_" + currentIfCount);
         var endLabel = new Label("if_end_" + currentIfCount);
 
-        var exp = i.getCondition().accept(this);
-        var stm1 = new EXP(i.getThenBranch().accept(this).unEx());
-        var stm2 = new EXP(i.getElseBranch().accept(this).unEx());
+        var condExpr = i.getCondition().accept(this);
+        var trueStmt = new EXP(i.getThenBranch().accept(this).unEx());
+        var falseStmt = new EXP(i.getElseBranch().accept(this).unEx());
 
-        var thenStatement = new SEQ(stm1, new LABEL(trueLabel));
-        var elseStatement = new SEQ(stm2, new LABEL(falseLabel));
-        var seqIfStatement = new SEQ(thenStatement, elseStatement);
+        var thenStatement = new SEQ(
+            new SEQ(new LABEL(trueLabel), trueStmt),
+            new JUMP(endLabel)
+        );
+        var elseStatement = new SEQ(
+            new SEQ(new LABEL(falseLabel), falseStmt),
+            new JUMP(endLabel)
+        );
+        var thenElseStmt = new SEQ(thenStatement, elseStatement);
 
-        var cjumpIf = CJUMP.builder()
+        var condStmt = CJUMP.builder()
                 .relop(CJUMP.EQ)
                 .left(new CONST(1))
-                .right(exp.unEx())
+                .right(condExpr.unEx())
                 .condTrue(trueLabel)
                 .condFalse(falseLabel)
                 .build();
 
-        var condition = new SEQ(new LABEL(endLabel), cjumpIf);
-        var seq = new SEQ(condition, seqIfStatement);
+        var ifStmt = new SEQ(condStmt, thenElseStmt);
 
-        var ifEseq = new ESEQ(new SEQ(seq, new LABEL(endLabel)), null);
-        addExp(ifEseq);
-        return new Exp(ifEseq);
+        // sera que precisa desse ESEQ? IDK you tell me
+        var ifESEQ = new ESEQ(new SEQ(ifStmt, new LABEL(endLabel)), null);
+        addExp(ifESEQ);
+        return new Exp(ifESEQ);
     }
 
     public Exp visit(Assign a) {
@@ -439,14 +445,14 @@ public class IRTreeVisitor implements Visitor<Exp> {
         frame = frame.newFrame("main", escapeList);
 
         var size = m.getStatements().getStatements().size();
-        for (int i = size-1; i >= 0; i--) {
+        for (int i = 0; i < size; i++) {
             var stm = m.getStatements().getStatements().get(i).accept(this);
             stmBody = new EXP(stm.unEx());
             stmList.add(stmBody);
         }
 
         frame.procEntryExit1(stmList);
-        frag.setNext(new ProcFrag(stmBody, frame));
+        frag.setNext(new ProcFrag(stmList.getFirst(), frame));
         frag = frag.getNext();
 
         currentClassTable = null;

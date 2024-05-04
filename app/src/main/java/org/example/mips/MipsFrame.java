@@ -267,12 +267,12 @@ public class MipsFrame extends Frame {
         }
         args.addFirst(new CONST(0));
 
-        ExpList auxiliar_exp2_list = null;
+        ExpList auxExprList = null;
 
         for (ExpAbstract arg : args) {
-            auxiliar_exp2_list = new ExpList(arg, auxiliar_exp2_list);
+            auxExprList = new ExpList(arg, auxExprList);
         }
-        return new CALL(new NAME(l), auxiliar_exp2_list);
+        return new CALL(new NAME(l), auxExprList);
     }
 
     public String string(Label lab, String string) {
