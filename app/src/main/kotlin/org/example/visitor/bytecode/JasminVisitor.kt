@@ -4,6 +4,7 @@ import org.example.ast.*
 
 object JasminVisitor {
 
+
     fun CodeGen.ProgramCode.visit(mainClass: MainClass) {
         classDecl(isMain = true) {
 
@@ -17,7 +18,15 @@ object JasminVisitor {
 
 
                 for (statement in mainClass.statements.statements) {
-
+                    when (statement) {
+                        is Assign -> {
+                            fieldManipulation {
+                                opcode = "putfield"
+                                operand1 = mainClass.className.s
+                                operand2 = statement.identifier.s
+                            }
+                        }
+                    }
                 }
             }
         }
