@@ -2,6 +2,7 @@ package bytecode
 
 import org.example.ast.*
 import org.example.visitor.bytecode.CodeGen
+import org.example.visitor.bytecode.JasminVisitor.visit
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -34,9 +35,10 @@ class JasminVisitorTest {
                     descriptor = "([Ljava/lang/String;)V"
                     visibility = "public"
 
-                    statement {
-                        type = "void"
-                        name = "field1 = 0"
+                    fieldManipulation {
+                        opcode = "putfield"
+                        operand1 = "Main"
+                        operand2 = "field1"
                     }
                 }
             }
@@ -46,9 +48,7 @@ class JasminVisitorTest {
         val program = CodeGen.BaseInstance.program {
             name = "MiniJava Program"
 
-            with(JasminVisitor) {
-                visit(mainClassNode)
-            }
+            visit(mainClassNode)
         }.render(StringBuilder()).toString()
 
         // Assert
