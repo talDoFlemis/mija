@@ -4,14 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.log4j.Log4j2;
 import org.example.ast.Program;
+import org.example.irtree.SOUT;
 import org.example.mips.MipsFrame;
 import org.example.parser.JavaCCParser;
 import org.example.visitor.irtree.IRTreeVisitor;
 import org.example.visitor.mermaid.MermaidASTPrinterVisitor;
+import org.example.visitor.symbols.MainTable;
 import org.example.visitor.types.TypeCheckingVisitor;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 @AllArgsConstructor
 @Builder
@@ -70,17 +73,25 @@ public class MijaCompiler {
 		}
 	}
 
+	public IRTreeVisitor getIRTreeVisitor(MainTable table, Program program, MipsFrame frame) {
+		log.info("Generating IRTree code");
+		var irTree = new IRTreeVisitor(table, frame);
+		program.accept(irTree);
+
+		log.info("IRTree code generated");
+		return irTree;
+	}
+
 	public void compile(InputStream inputStream, OutputStream outputStream) throws LexicalOrSemanticAnalysisException, SemanticAnalysisException {
+		var printo = new SOUT((PrintStream) outputStream);
 		// Check lexical and syntactic analysis
 		Program program = getAbstractSyntaxTreeFromStream(inputStream);
 		isSemanticallyOkOrThrow(program);
 
-		// Intermediate code generation
+		// Generating intermediate code
 		var frame = new MipsFrame();
-		var irTree = new IRTreeVisitor(semanticAnalysis.getMainTable(), frame);
-		program.accept(irTree);
-
-		log.info(irTree.getListExp());
+		IRTreeVisitor irTree = getIRTreeVisitor(semanticAnalysis.getMainTable(), program, frame);
+		irTree.getListExp().forEach(printo::prExp);
 
 	}
 

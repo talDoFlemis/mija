@@ -21,6 +21,7 @@ public class TraceSchedule {
 	HashMap<Label, StmList> table = new HashMap<>();
 
 	public TraceSchedule(BasicBlocks b) {
+		table = new HashMap<>();
 		blocks = b;
 		for (var l = b.blocks; l != null; l = l.tail) {
 			table.put(((LABEL) l.head.head).label, l.head);
