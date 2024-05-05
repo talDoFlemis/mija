@@ -15,14 +15,14 @@ import org.example.irtree.MEM;
 @Data
 @Builder
 public class InFrame extends Access {
-    int offset;
+	int offset;
 
-    public ExpAbstract exp(ExpAbstract fp) {
-        return new MEM
-                (new BINOP(BINOP.PLUS, fp, new CONST(offset)));
-    }
+	public ExpAbstract exp(ExpAbstract fp) {
+		return new MEM
+			(new BINOP(BINOP.PLUS, fp, new CONST(offset)));
+	}
 
-    public String toString() {
-        return Integer.toString(this.offset);
-    }
+	public String toString() {
+		return Integer.toString(this.offset);
+	}
 }

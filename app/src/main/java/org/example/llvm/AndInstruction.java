@@ -8,12 +8,12 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class AndInstruction implements Instruction {
-    private Value leftOperand;
-    private Value rightOperand;
-    private Value result;
-    private final Type type = new BooleanType();
+	private final Type type = new BooleanType();
+	private Value leftOperand;
+	private Value rightOperand;
+	private Value result;
 
-    public String getInstructionAsString() {
-        return result.getV() + " = and " + type.getTypeString() + leftOperand.getV() + " , " + rightOperand.getV();
-    }
+	public String getInstructionAsString() {
+		return result.getV() + " = and " + type.getTypeString() + leftOperand.getV() + " , " + rightOperand.getV();
+	}
 }

@@ -11,10 +11,10 @@ import org.example.visitor.Visitor;
 @Data
 @AllArgsConstructor
 public class Identifier extends Node {
-    private String s;
+	private String s;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

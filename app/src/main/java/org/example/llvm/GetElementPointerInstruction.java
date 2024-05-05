@@ -12,21 +12,21 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @Builder
 public class GetElementPointerInstruction implements Instruction {
-    private Type baseType;
-    private Value baseAddress;
-    private Value result;
-    private Offset offset;
+	private Type baseType;
+	private Value baseAddress;
+	private Value result;
+	private Offset offset;
 
-    public String getInstructionAsString() {
-        String dimensions = convertOffsets();
-        return String.format("%s = getelementptr %s, %s* %s, %s", result.getV(), baseType.getTypeString(), baseType.getTypeString(), baseAddress.getV(), dimensions);
-    }
+	public String getInstructionAsString() {
+		String dimensions = convertOffsets();
+		return String.format("%s = getelementptr %s, %s* %s, %s", result.getV(), baseType.getTypeString(), baseType.getTypeString(), baseAddress.getV(), dimensions);
+	}
 
-    private String convertOffsets() {
-        var arr = new ArrayList<>(offset.size());
-        for (Pair<Type, Value> entry : offset.getOffsets()) {
-            arr.add(String.format("%s %s", entry.component1().getTypeString(), entry.component2().getV()));
-        }
-        return Strings.join(arr, ',');
-    }
+	private String convertOffsets() {
+		var arr = new ArrayList<>(offset.size());
+		for (Pair<Type, Value> entry : offset.getOffsets()) {
+			arr.add(String.format("%s %s", entry.component1().getTypeString(), entry.component2().getV()));
+		}
+		return Strings.join(arr, ',');
+	}
 }

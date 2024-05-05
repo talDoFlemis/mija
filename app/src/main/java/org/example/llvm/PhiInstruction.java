@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 @AllArgsConstructor
 public class PhiInstruction implements Instruction {
-    public String getInstructionAsString() {
-        return "";
-    }
+	public String getInstructionAsString() {
+		return "";
+	}
 }

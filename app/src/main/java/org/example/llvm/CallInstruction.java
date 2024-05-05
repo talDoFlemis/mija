@@ -11,20 +11,20 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 public class CallInstruction implements Instruction {
-    private Type returnType;
-    private Function functionCalled;
-    private LinkedHashMap<Value, Type> args;
-    private Value result;
+	private Type returnType;
+	private Function functionCalled;
+	private LinkedHashMap<Value, Type> args;
+	private Value result;
 
-    public String getInstructionAsString() {
-        var argList = args.sequencedEntrySet()
-                .stream()
-                .map(e -> String.format("%s %s", e.getKey().getV(), e.getValue().getTypeString()))
-                .collect(Collectors.joining(","));
+	public String getInstructionAsString() {
+		var argList = args.sequencedEntrySet()
+			.stream()
+			.map(e -> String.format("%s %s", e.getKey().getV(), e.getValue().getTypeString()))
+			.collect(Collectors.joining(","));
 
-        if (returnType instanceof VoidType) {
-            return String.format("%s %s(%s)", returnType.getTypeString(), functionCalled.getName(), argList);
-        }
-        return String.format("%s = %s %s(%s)", result.getV(), returnType.getTypeString(), functionCalled.getName(), argList);
-    }
+		if (returnType instanceof VoidType) {
+			return String.format("%s %s(%s)", returnType.getTypeString(), functionCalled.getName(), argList);
+		}
+		return String.format("%s = %s %s(%s)", result.getV(), returnType.getTypeString(), functionCalled.getName(), argList);
+	}
 }

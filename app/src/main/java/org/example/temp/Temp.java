@@ -10,15 +10,15 @@ import lombok.EqualsAndHashCode;
 @Data
 @Builder
 public class Temp {
-    private static int count;
-    private int num;
+	private static int count;
+	private int num;
 
-    public String toString() {
-        return "t" + num;
-    }
+	public Temp() {
+		num = count++;
+	}
 
-    public Temp() {
-        num = count++;
-    }
+	public String toString() {
+		return "t" + num;
+	}
 }
 

@@ -10,10 +10,10 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class ClassDeclList {
-    @Builder.Default
-    private ArrayList<ClassDecl> classDecls =  new ArrayList<>();
+	@Builder.Default
+	private ArrayList<ClassDecl> classDecls = new ArrayList<>();
 
-    public void addClassDecl(ClassDecl classDecl) {
-        classDecls.add(classDecl);
-    }
+	public void addClassDecl(ClassDecl classDecl) {
+		classDecls.add(classDecl);
+	}
 }

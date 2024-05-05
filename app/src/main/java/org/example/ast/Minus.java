@@ -11,11 +11,11 @@ import org.example.visitor.Visitor;
 @Builder
 @AllArgsConstructor
 public class Minus extends Expression {
-    private Expression lhe;
-    private Expression rhe;
+	private Expression lhe;
+	private Expression rhe;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

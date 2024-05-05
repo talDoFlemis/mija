@@ -1,6 +1,9 @@
 package org.example.visitor.symbols;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.example.ast.Type;
 
 import java.util.HashMap;
@@ -11,10 +14,10 @@ import java.util.LinkedHashMap;
 @Builder
 @EqualsAndHashCode
 public class ClassTable {
-    private String className;
-    private ClassTable parent;
-    @Builder.Default
-    LinkedHashMap<String, Type> fieldsContext = new LinkedHashMap<>();
-    @Builder.Default
-    HashMap<String, MethodTable> methodsContext = new HashMap<>();
+	@Builder.Default
+	LinkedHashMap<String, Type> fieldsContext = new LinkedHashMap<>();
+	@Builder.Default
+	HashMap<String, MethodTable> methodsContext = new HashMap<>();
+	private String className;
+	private ClassTable parent;
 }

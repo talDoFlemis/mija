@@ -9,11 +9,11 @@ import org.example.visitor.Visitor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Block extends Statement {
-    @Builder.Default
-    private StatementList statements = new StatementList();
+	@Builder.Default
+	private StatementList statements = new StatementList();
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

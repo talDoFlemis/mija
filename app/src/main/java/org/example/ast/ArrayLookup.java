@@ -11,11 +11,11 @@ import org.example.visitor.Visitor;
 @Builder
 @AllArgsConstructor
 public class ArrayLookup extends Expression {
-    private Expression array;
-    private Expression idx;
+	private Expression array;
+	private Expression idx;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

@@ -11,10 +11,10 @@ import org.example.visitor.Visitor;
 @Builder
 @AllArgsConstructor
 public class ArrayLength extends Expression {
-    private Expression array;
+	private Expression array;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

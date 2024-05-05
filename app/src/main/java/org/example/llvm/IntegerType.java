@@ -4,7 +4,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
 public class IntegerType implements Type {
-    public String getTypeString() {
-        return "i32";
-    }
+	public String getTypeString() {
+		return "i32";
+	}
 }

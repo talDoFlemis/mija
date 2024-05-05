@@ -10,15 +10,15 @@ import lombok.EqualsAndHashCode;
 @Builder
 @AllArgsConstructor
 public class CALL extends ExpAbstract {
-    public ExpAbstract func;
-    public ExpList args;
+	public ExpAbstract func;
+	public ExpList args;
 
-    public ExpList kids() {
-        return new ExpList(func, args);
-    }
+	public ExpList children() {
+		return new ExpList(func, args);
+	}
 
-    public ExpAbstract build(ExpList kids) {
-        return new CALL(kids.head, kids.tail);
-    }
+	public ExpAbstract build(ExpList children) {
+		return new CALL(children.head, children.tail);
+	}
 
 }

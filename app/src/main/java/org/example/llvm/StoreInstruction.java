@@ -8,11 +8,11 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class StoreInstruction implements Instruction {
-    private Type type;
-    private Value value;
-    private Value pointer;
+	private Type type;
+	private Value value;
+	private Value pointer;
 
-    public String getInstructionAsString() {
-        return String.format("store %s %s, %s* %s", type, value, type, pointer);
-    }
+	public String getInstructionAsString() {
+		return String.format("store %s %s, %s* %s", type, value, type, pointer);
+	}
 }
