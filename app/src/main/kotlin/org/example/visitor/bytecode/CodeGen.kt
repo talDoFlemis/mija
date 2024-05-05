@@ -1,4 +1,4 @@
-package bytecode
+package org.example.visitor.bytecode
 
 
 object CodeGen {
@@ -25,6 +25,8 @@ object CodeGen {
             scope.add(instance)
             return instance
         }
+
+
     }
 
     data object BaseInstance : CodeNode() {
@@ -49,8 +51,6 @@ object CodeGen {
             }
 
         override fun render(builder: java.lang.StringBuilder): StringBuilder {
-            val line = "----------------------------------------"
-
             return builder.use {
                 mainClass.render(this)
                 classes.forEach { it.render(this) }
@@ -61,34 +61,7 @@ object CodeGen {
             initScope(ClassCode(isMain), block)
     }
 
-    @JasminDSL
-    class ClassCode(val isMain: Boolean) : CodeNode() {
-        val methods get() = scope.filterIsInstance<MethodDeclCode>()
-        var name
-            get() = properties["name"]!!
-            set(value) {
-                properties["name"] = value
-            }
-        var path
-            get() = properties["path"]!!
-            set(value) {
-                properties["path"] = value
-            }
-
-        override fun render(builder: java.lang.StringBuilder) = builder.apply {
-            appendLine(".class public $name")
-            appendLine(".super $path")
-            methods.forEach { it.render(this) }
-
-            appendLine(".end class")
-        }
-
-        fun methodDecl(block: MethodDeclCode.() -> Unit): MethodDeclCode = initScope(MethodDeclCode(), block)
-    }
-
-    @JasminDSL
-    class MethodDeclCode : CodeNode() {
-        val statements get() = scope.filterIsInstance<StatementCode>()
+    abstract class DeclarableCode : CodeNode() {
         var name
             get() = properties["name"]!!
             set(value) {
@@ -100,33 +73,77 @@ object CodeGen {
                 properties["descriptor"] = value
             }
 
-        override fun render(builder: java.lang.StringBuilder) = builder.apply {
-            append("\n")
+        var visibility
+            get() = properties["visibility"]!!
+            set(value) {
+                require(value in setOf("public", "private", "protected")) { "Invalid visibility" }
+                properties["visibility"] = value
+            }
+
+    }
+
+
+    @JasminDSL
+    class ClassCode(val isMain: Boolean) : DeclarableCode() {
+        val methods get() = scope.filterIsInstance<MethodCode>()
+        val fields get() = scope.filterIsInstance<FieldCode>()
+
+        var path
+            get() = properties["path"]!!
+            set(value) {
+                properties["path"] = value
+            }
+
+
+        override fun render(builder: java.lang.StringBuilder) = builder.use {
+            appendLine(".class public $name")
+            appendLine(".super $path")
+            fields.forEach { it.render(this) }
+            methods.forEach { it.render(this) }
+            appendLine(".end class")
+        }
+
+        fun methodDecl(block: MethodCode.() -> Unit): MethodCode = initScope(MethodCode(), block)
+
+        fun fieldDecl(block: FieldCode.() -> Unit): FieldCode = initScope(FieldCode(), block)
+    }
+
+
+    class FieldCode : DeclarableCode() {
+        override fun render(builder: java.lang.StringBuilder) = builder.use {
+            appendLine(".field $visibility $name $descriptor")
+        }
+    }
+
+    @JasminDSL
+    class MethodCode : DeclarableCode() {
+        val statements get() = scope.filterIsInstance<StatementCode>()
+
+        val stack get() = statements.size
+
+        override fun render(builder: java.lang.StringBuilder) = builder.use {
             appendLine(".method public $name")
             appendLine(".descriptor $descriptor")
+            appendLine(".limit stack $stack")
 
             statements.forEach { it.render(this) }
 
             appendLine(".end method")
-            append("\n")
         }
 
-        fun statement(block: StatementCode.() -> Unit): StatementCode = initScope(StatementCode(), block)
-    }
+        fun fieldManipulation(block: FieldManipulationCode.() -> Unit) =
+            initScope(FieldManipulationCode(), block)
 
-    @JasminDSL
-    class StatementCode : CodeNode() {
-        var type
-            get() = properties["type"]!!
-            set(value) {
-                properties["type"] = value
-            }
+        fun methodCall(block: MethodCallCode.() -> Unit) = initScope(MethodCallCode(), block)
 
-        override fun render(builder: java.lang.StringBuilder) = builder.apply {
-            appendLine(".limit stack 10")
-            appendLine("statement $type")
-            appendLine(".limit locals 10")
-        }
+        fun localVar(block: LocalVarCode.() -> Unit) = initScope(LocalVarCode(), block)
+
+        fun classObjcOperation(block: ClassObjcOperationCode.() -> Unit) =
+            initScope(ClassObjcOperationCode(), block)
+
+        fun pushOrInc(block: PushOrIncCode.() -> Unit) = initScope(PushOrIncCode(), block)
+
+        fun branch(block: BranchCode.() -> Unit) = initScope(BranchCode(), block)
     }
 
 
