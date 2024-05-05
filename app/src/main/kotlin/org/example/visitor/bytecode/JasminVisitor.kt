@@ -17,20 +17,35 @@ object JasminVisitor {
                 visibility = "public"
 
 
-                for (statement in mainClass.statements.statements) {
-                    when (statement) {
-                        is Assign -> {
-                            fieldManipulation {
-                                opcode = "putfield"
-                                operand1 = mainClass.className.s
-                                operand2 = statement.identifier.s
-                            }
-                        }
-                    }
+                for (statement in mainClass.statements.statements)
+                    visit(statement)
+            }
+        }
+    }
+
+    fun CodeGen.MethodCode.visit(statement: Statement) {
+        when (statement) {
+            is Assign -> {
+                fieldManipulation {
+                    opcode = "putfield"
+                    operand1 = "Main"
+                    operand2 = statement.identifier.s
+                }
+            }
+
+            is Sout -> {
+                fieldManipulation {
+                    opcode = "getstatic"
+                    operand1 = "java/lang/System/out"
+                }
+                fieldManipulation {
+                    opcode = "invokevirtual"
+                    operand1 = "java/io/PrintStream/println(I)V"
                 }
             }
         }
     }
+
 
     fun visit(program: Program): CodeGen.ProgramCode {
         return CodeGen.BaseInstance.program {
@@ -55,28 +70,8 @@ object JasminVisitor {
                             name = method.identifier.toString()
                             descriptor = "()V"
 
-                            for (statement in method.statements.statements) {
-                                when (statement) {
-                                    is Assign -> {
-                                        fieldManipulation {
-                                            opcode = "putfield"
-                                            operand1 = classDecl.className.s
-                                            operand2 = statement.identifier.s
-                                        }
-                                    }
-
-                                    is Sout -> {
-                                        fieldManipulation {
-                                            opcode = "getstatic"
-                                            operand1 = "java/lang/System/out"
-                                        }
-                                        fieldManipulation {
-                                            opcode = "invokevirtual"
-                                            operand1 = "java/io/PrintStream/println(I)V"
-                                        }
-                                    }
-                                }
-                            }
+                            for (statement in method.statements.statements)
+                                visit(statement)
                         }
                     }
                 }
