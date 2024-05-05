@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.example.ast.*;
 import org.example.frame.Frame;
 import org.example.irtree.*;
+import org.example.mips.MipsFrame;
 import org.example.temp.Label;
 import org.example.visitor.Visitor;
 import org.example.visitor.symbols.ClassTable;
@@ -24,7 +25,7 @@ import java.util.List;
 @Data
 @Log4j2
 public class IRTreeVisitor implements Visitor<Exp> {
-	private Frame frame;
+	private MipsFrame frame;
 	private Frag frag;
 	private Frag initialFrag;
 	@Builder.Default
@@ -36,7 +37,7 @@ public class IRTreeVisitor implements Visitor<Exp> {
 	@Builder.Default
 	private MethodTable currentMethodTable = null;
 
-	public IRTreeVisitor(MainTable mainTable, Frame frame) {
+	public IRTreeVisitor(MainTable mainTable, MipsFrame frame) {
 		this.mainTable = mainTable;
 		this.frame = frame;
 		this.frag = new Frag(null);
@@ -470,17 +471,12 @@ public class IRTreeVisitor implements Visitor<Exp> {
 		escapeList.add(false);
 		frame = frame.newFrame("main", escapeList);
 
-		//fixme: isso pode quebrar as coisas alguma hora
-		var size = m.getStatements().getStatements().size();
-		for (int i = 0; i < size; i++) {
-			var stm = m.getStatements().getStatements().get(i).accept(this);
-			stmBody = new EXP(stm.unEx());
-			stmList.add(stmBody);
-		}
+		var stmt = m.getStatements().getStatements().getFirst().accept(this);
+		stmBody = new EXP(stmt.unEx());
+		stmList.add(stmBody);
 
-		//fixme: isso tmb
 		frame.procEntryExit1(stmList);
-		frag.setNext(new ProcFrag(stmList.getFirst(), frame));
+		frag.setNext(new ProcFrag(stmBody, frame));
 		frag = frag.getNext();
 
 		currentClassTable = null;

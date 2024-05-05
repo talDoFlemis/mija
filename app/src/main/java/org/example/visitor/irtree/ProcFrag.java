@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.frame.Frame;
 import org.example.irtree.Stm;
+import org.example.mips.MipsFrame;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -15,9 +16,9 @@ import org.example.irtree.Stm;
 @Log4j2
 public class ProcFrag extends Frag {
 	private Stm body;
-	private Frame frame;
+	private MipsFrame frame;
 
-	public ProcFrag(Stm b, Frame f, Frag next) {
+	public ProcFrag(Stm b, MipsFrame f, Frag next) {
 		super(next);
 		body = b;
 		frame = f;
