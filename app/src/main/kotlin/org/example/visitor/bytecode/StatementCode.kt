@@ -1,23 +1,51 @@
 package org.example.visitor.bytecode
 
 @CodeGen.JasminDSL
-abstract class StatementCode(
-    vararg val operands: String,
+class StatementCode(
+    vararg val opcodes: String,
 ) : CodeGen.CodeNode() {
-    var opcode: String
-        get() = properties["opcode"]!!
-        set(value) {
-            require(value in operands) { "Invalid opcode: $value" }
-            properties["opcode"] = value
-        }
+
+
+    fun fieldManipulation(block: FieldManipulationCode.() -> Unit) =
+        initScope(FieldManipulationCode(), block)
+
+    fun methodCall(block: MethodCallCode.() -> Unit) = initScope(MethodCallCode(), block)
+
+    fun localVar(block: LocalVarCode.() -> Unit) = initScope(LocalVarCode(), block)
+
+    fun classObjcOperation(block: ClassObjcOperationCode.() -> Unit) =
+        initScope(ClassObjcOperationCode(), block)
+
+    fun pushOrInc(block: PushOrIncCode.() -> Unit) = initScope(PushOrIncCode(), block)
+
+    fun branch(block: BranchCode.() -> Unit) = initScope(BranchCode(), block)
+    override fun render(builder: java.lang.StringBuilder): java.lang.StringBuilder {
+        return scope.fold(builder) { acc, element -> element.render(acc) }
+    }
 
 
 }
 
+fun interface Instruction : CodeGen.Element {
+    fun requireOpcode(value: String, opcodes: Array<out String>) {
+        require(value in opcodes) { "Invalid opcode: $value" }
+    }
+}
+
+
+abstract class Aux(vararg val opcodes: String) : CodeGen.CodeNode(), Instruction {
+    var opcode: String
+        get() = properties["opcode"]!!
+        set(value) {
+            require(value in opcodes) { "Invalid opcode: $value" }
+            properties["opcode"] = value
+        }
+}
+
 @CodeGen.JasminDSL
 abstract class SimpleInstructionCode(
-    vararg opcode: String
-) : StatementCode(*opcode) {
+    vararg opcodes: String
+) : Aux(*opcodes) {
     var operand: String
         get() = properties["operand"]!!
         set(value) {
@@ -31,7 +59,7 @@ abstract class SimpleInstructionCode(
 
 abstract class BinaryInstructionCode(
     vararg opcode: String
-) : StatementCode(*opcode) {
+) : Aux(*opcode) {
     var operand1: String
         get() = properties["op_first"]!!
         set(value) {
