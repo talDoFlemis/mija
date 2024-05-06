@@ -4,6 +4,7 @@ plugins {
     idea
     id("io.freefair.lombok") version "8.6"
     antlr
+    kotlin("plugin.lombok") version "1.9.23"
     kotlin("jvm") version "1.9.23"
 }
 
