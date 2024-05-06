@@ -4,6 +4,7 @@ plugins {
     idea
     id("io.freefair.lombok") version "8.6"
     antlr
+    kotlin("plugin.lombok") version "1.9.23"
     kotlin("jvm") version "1.9.23"
 }
 
@@ -13,6 +14,7 @@ repositories {
 
 dependencies {
     testImplementation(libs.junit.jupiter)
+    testImplementation("org.assertj:assertj-core:3.25.1")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
@@ -30,6 +32,7 @@ dependencies {
 
 tasks {
     compileJavacc {
+        dependsOn(compileKotlin)
         inputDirectory = file("src/main/javacc")
         outputDirectory = file(layout.buildDirectory.dir("generated/javacc"))
     }
@@ -44,6 +47,9 @@ sourceSets {
     main {
         java {
             srcDir(file(layout.buildDirectory.dir("generated/javacc")))
+        }
+        kotlin {
+            srcDir("src/main/kotlin")
         }
     }
 }
