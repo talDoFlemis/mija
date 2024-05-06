@@ -1,5 +1,9 @@
 package jasmin
 
+import org.example.ast.IntegerLiteral
+import org.example.ast.Sout
+import org.example.ast.Statement
+
 
 enum class Visibility(val kind: String) {
     PUBLIC("public"),
@@ -18,7 +22,7 @@ data class AccessSpec(val visibility: Visibility, val access: Access) {
 }
 
 interface Utils {
-    val example: String
+    fun example(inject: String = ""): String
 }
 
 fun interface Jasmin {
@@ -40,7 +44,7 @@ data class ClassDef(
     val accessSpec: AccessSpec,
     val methods: ArrayList<MethodDef>,
     val fields: ArrayList<FieldDef>,
-    val superClass: ArrayList<ClassDef.Super> = arrayListOf()
+    val superClass: ArrayList<Super> = arrayListOf()
 ) : Directive, Utils by Companion {
 
 
@@ -58,33 +62,33 @@ data class ClassDef(
             it.associateBy(Super::name)
         }
 
-        override val example = """
+        override fun example(inject: String) = """
             |.source MyClass.j
             |.class  public MyClass
-            |${FieldDef.example}    
-            |${MethodDef.example}
+            |${FieldDef.example()}    
+            |${MethodDef.example(inject)}
             |.super  java/lang/Object
             """
             .trimMargin("|")
             .trim()
     }
 
-    inner class Source(private val name: String) : Directive {
+    class Source(private val name: String) : Directive {
         override fun toJasmin(ident: String): String = "$ident.source $name.j"
     }
 
-    inner class Class(private val name: String) : Directive {
+    class Class(private val name: String, private val accessSpec: AccessSpec) : Directive {
         override fun toJasmin(ident: String): String = "$ident.class ${accessSpec.kind} $name"
     }
 
-    inner class Super(val name: String) : Directive {
-        override fun toJasmin(ident: String): String = "$ident.super $superClass"
+    class Super(val name: String) : Directive {
+        override fun toJasmin(ident: String): String = "$ident.super $name"
     }
 
 
     override fun toJasmin(ident: String): String = """
         |${Source(name).toJasmin(ident)}
-        |${Class(name).toJasmin(ident)}
+        |${Class(name, accessSpec).toJasmin(ident)}
         |${with(fieldsScope) { fields.toJasmin("$ident\t") }}
         |${with(methodsScope) { methods.toJasmin("$ident\t") }}
         |${with(superScope) { superClass.toJasmin("$ident\t") }}
@@ -100,7 +104,7 @@ data class FieldDef(
     val value: String?
 ) : Directive, Utils by Companion {
     companion object : Utils {
-        override val example = ".field public final PI F = 3.14"
+        override fun example(inject: String) = ".field public final PI F = $inject"
     }
 
     override fun toJasmin(ident: String): String =
@@ -109,27 +113,19 @@ data class FieldDef(
 
 data class MethodDef(
     val signature: Signature,
-    val instructions: List<Instruction>,
-    val varsLimit: Int,
-    val stackLimit: Int
+    val instructions: List<Instruction<*>>,
+    val varsLimit: Int? = null,
+    val stackLimit: Int? = null
 ) : Directive, Utils by Companion {
     companion object : Utils {
 
-        override val example = """
+        override fun example(inject: String) = """
         |.method public static main([Ljava/lang/String;)V
-        |   ${/*allocate stack big enough to hold 2 items*/""}
         |   .limit stack 2
         |   
-        |   ${/*push java.lang.System.out (type PrintStream)*/""}
-        |   getstatic java/lang/System/out Ljava/io/PrintStream;
-        |   
-        |   ${/*push string to be printed*/""}
-        |   ldc "Hello World"
-        |   
-        |   ${/* invoke println */""}
+        |   getstatic java/lang/System/out Ljava/io/PrintStream
+        |   ldc $inject
         |   invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-        |   
-        |   ; terminate main
         |   return
         |.end method"""
             .trimMargin("|")
@@ -140,40 +136,58 @@ data class MethodDef(
         override fun toJasmin(ident: String): String = "$ident.limit $token $limit"
     }
 
-    inner class Stack(limit: Int) : Limit("stack", limit)
+    class Stack(limit: Int) : Limit("stack", limit)
 
-    inner class Vars(limit: Int) : Limit("vars", limit)
+    class Vars(limit: Int) : Limit("vars", limit)
 
-    inner class Signature(
+    class Signature(
         val name: String, val accessSpec: AccessSpec, val returnType: String, val args: List<String>
     ) : Directive {
         override fun toJasmin(ident: String): String =
-            "$ident.method $name ${accessSpec.kind} $returnType(${args.joinToString("")})V"
+            "$ident.method ${accessSpec.kind} $name([${args.joinToString("")})$returnType"
     }
 
-    inner class End : Directive {
-        override fun toJasmin(ident: String): String = "$ident.end method"
+    class End : Directive {
+        override fun toJasmin(ident: String): String = "$ident\treturn\n$ident.end method"
     }
 
     override fun toJasmin(ident: String): String = """
         |${signature.toJasmin(ident)}
-        |${Stack(stackLimit).toJasmin("\t$ident")}
-        |${Vars(varsLimit).toJasmin("\t$ident")}
+        |${stackLimit?.let { Stack(it).toJasmin("\t$ident") } ?: ""}
+        |${varsLimit?.let { Vars(varsLimit).toJasmin("\t$ident") } ?: ""}
         |${instructions.joinToString("\n") { it.toJasmin("\t$ident") }}
         |${End().toJasmin(ident)}
         """
-        .trimIndent()
+        .trimMargin("|")
         .trim()
 }
 
 
-sealed interface Instruction : Jasmin
-abstract class UnaryInstruction(val token: String, val index: Int) : Instruction {
-    override fun toJasmin(ident: String): String = "$ident.$token $index"
+interface Instruction<T : Statement> : Jasmin {
+    val statement: T
+    fun T.toJasmin(ident: String): String
+
+    override fun toJasmin(ident: String): String = statement.toJasmin(ident)
+
 }
 
-class Line(val number: Int) : UnaryInstruction("line", number)
-class bipush(val value: Int) : UnaryInstruction("bipush", value)
+data class Print(
+    override val statement: Sout
+) : Instruction<Sout> {
+    constructor(value: Int) : this(
+        Sout(
+            IntegerLiteral(value)
+        )
+    )
 
+    override fun Sout.toJasmin(ident: String): String =
+        """
+        |${ident}getstatic java/lang/System/out Ljava/io/PrintStream
+        |${ident}ldc $expression
+        |${ident}invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+        """
+            .trimMargin("|")
+            .trim()
+}
 
 sealed interface Label : Jasmin
