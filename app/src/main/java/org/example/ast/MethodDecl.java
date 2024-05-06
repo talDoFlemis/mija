@@ -11,18 +11,18 @@ import org.example.visitor.Visitor;
 @Builder
 @AllArgsConstructor
 public class MethodDecl extends Node {
-    private Type type;
-    private String identifier;
-    @Builder.Default
-    private FormalList formals = new FormalList();
-    @Builder.Default
-    private VarDeclList varDecls = new VarDeclList();
-    @Builder.Default
-    private StatementList statements = new StatementList();
-    private Expression returnExpression;
+	private Type type;
+	private String identifier;
+	@Builder.Default
+	private FormalList formals = new FormalList();
+	@Builder.Default
+	private VarDeclList varDecls = new VarDeclList();
+	@Builder.Default
+	private StatementList statements = new StatementList();
+	private Expression returnExpression;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }

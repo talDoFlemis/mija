@@ -12,10 +12,10 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VarDeclList {
-    @Builder.Default
-    private ArrayList<VarDecl> varDecls = new ArrayList<>();
+	@Builder.Default
+	private ArrayList<VarDecl> varDecls = new ArrayList<>();
 
-    public void addVarDecl(VarDecl varDecl) {
-        varDecls.add(varDecl);
-    }
+	public void addVarDecl(VarDecl varDecl) {
+		varDecls.add(varDecl);
+	}
 }

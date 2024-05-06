@@ -11,10 +11,10 @@ import org.example.visitor.Visitor;
 @Builder
 @AllArgsConstructor
 public class Sout extends Statement {
-    private Expression expression;
+	private Expression expression;
 
-    @Override
-    public <T> T accept(Visitor<T> v) {
-        return v.visit(this);
-    }
+	@Override
+	public <T> T accept(Visitor<T> v) {
+		return v.visit(this);
+	}
 }
