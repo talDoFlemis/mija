@@ -35,11 +35,14 @@ class JasminVisitorTest {
                     descriptor = "([Ljava/lang/String;)V"
                     visibility = "public"
 
-                    fieldManipulation {
-                        opcode = "putfield"
-                        operand1 = "Main"
-                        operand2 = "field1"
+                    statement {
+                        fieldManipulation {
+                            opcode = "putfield"
+                            operand1 = "Main"
+                            operand2 = "field1"
+                        }
                     }
+
                 }
             }
         }.render(StringBuilder()).toString()

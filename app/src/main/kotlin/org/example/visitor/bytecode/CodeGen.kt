@@ -133,6 +133,21 @@ object CodeGen {
 
 
         fun statement(block: StatementCode.() -> Unit): StatementCode = initScope(StatementCode(), block)
+
+        fun fieldManipulation(block: FieldManipulationCode.() -> Unit) =
+            initScope(FieldManipulationCode(), block)
+
+        fun methodCall(block: MethodCallCode.() -> Unit) = initScope(MethodCallCode(), block)
+
+        fun localVar(block: LocalVarCode.() -> Unit) = initScope(LocalVarCode(), block)
+
+        fun classObjcOperation(block: ClassObjcOperationCode.() -> Unit) =
+            initScope(ClassObjcOperationCode(), block)
+
+        fun pushOrInc(block: PushOrIncCode.() -> Unit) = initScope(PushOrIncCode(), block)
+
+        fun branch(block: BranchCode.() -> Unit) = initScope(BranchCode(), block)
+
     }
 
 

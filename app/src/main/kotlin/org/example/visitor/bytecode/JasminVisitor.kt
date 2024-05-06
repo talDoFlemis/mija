@@ -17,6 +17,7 @@ object JasminVisitor {
                 visibility = "public"
 
                 statement {
+
                     for (statement in mainClass.statements.statements)
                         visit(statement)
                 }
@@ -31,7 +32,7 @@ object JasminVisitor {
             operand2 = statement.identifier.s
         }
 
-    fun StatementCode.visit(statement: While) = statement.run {
+    fun StatementCode.visit(statement: While) {
         branch {
             opcode = "ifne"
             operand = "L1"
@@ -134,6 +135,7 @@ object JasminVisitor {
 
         }
     }
+
 
     fun <T : Statement> StatementCode.visit(statement: T) {
         when (statement) {
