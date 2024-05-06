@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.ast.*;
-import org.example.frame.Frame;
 import org.example.irtree.*;
+import org.example.mips.MipsFrame;
 import org.example.temp.Label;
 import org.example.visitor.Visitor;
 import org.example.visitor.symbols.ClassTable;
@@ -24,7 +24,7 @@ import java.util.List;
 @Data
 @Log4j2
 public class IRTreeVisitor implements Visitor<Exp> {
-	private Frame frame;
+	private MipsFrame frame;
 	private Frag frag;
 	private Frag initialFrag;
 	@Builder.Default
@@ -36,7 +36,7 @@ public class IRTreeVisitor implements Visitor<Exp> {
 	@Builder.Default
 	private MethodTable currentMethodTable = null;
 
-	public IRTreeVisitor(MainTable mainTable, Frame frame) {
+	public IRTreeVisitor(MainTable mainTable, MipsFrame frame) {
 		this.mainTable = mainTable;
 		this.frame = frame;
 		this.frag = new Frag(null);

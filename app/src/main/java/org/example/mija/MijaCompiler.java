@@ -13,6 +13,7 @@ import org.example.parser.JavaCCParser;
 import org.example.visitor.irtree.IRTreeVisitor;
 import org.example.visitor.irtree.ProcFrag;
 import org.example.visitor.mermaid.MermaidASTPrinterVisitor;
+import org.example.visitor.symbols.MainTable;
 import org.example.visitor.types.TypeCheckingVisitor;
 
 import java.io.InputStream;
@@ -78,6 +79,15 @@ public class MijaCompiler {
 		}
 	}
 
+	public IRTreeVisitor getIRTreeVisitor(MainTable table, Program program, MipsFrame frame) {
+		log.info("Generating IRTree code");
+		var irTree = new IRTreeVisitor(table, frame);
+		program.accept(irTree);
+
+		log.info("IRTree code generated");
+		return irTree;
+	}
+
 	public void compile(InputStream inputStream, OutputStream outputStream) throws LexicalOrSemanticAnalysisException, SemanticAnalysisException {
 		printo.setOut((PrintStream) outputStream);
 
@@ -87,11 +97,11 @@ public class MijaCompiler {
 
 		// Intermediate code generation
 		var frame = new MipsFrame();
-		var irTree = new IRTreeVisitor(semanticAnalysis.getMainTable(), frame);
-		program.accept(irTree);
+		IRTreeVisitor irTree = getIRTreeVisitor(semanticAnalysis.getMainTable(), program, frame);
 
 		log.info(">> Intermediate Code <<");
 		irTree.getListExp().forEach(printo::prExp);
+
 		var nextFrag = (ProcFrag) irTree.getInitialFrag().getNext();
 		var canonIRTree = new TraceSchedule(new BasicBlocks(Canon.linearize(nextFrag.getBody())));
 

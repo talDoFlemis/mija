@@ -229,7 +229,7 @@ public class MipsFrame extends Frame {
 				"         syscall          \n";
 	}
 
-	public Frame newFrame(String name, List<Boolean> formals) {
+	public MipsFrame newFrame(String name, List<Boolean> formals) {
 		if (this.name != null)
 			name = this.name + "." + name;
 		return new MipsFrame(name, formals);
