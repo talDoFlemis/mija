@@ -1,9 +1,5 @@
 package jasmin
 
-import org.example.ast.IntegerLiteral
-import org.example.ast.Sout
-import org.example.ast.Statement
-
 
 enum class Visibility(val kind: String) {
     PUBLIC("public"),
@@ -124,9 +120,8 @@ data class MethodDef(
         override fun example(inject: Map<String, String>, exIndent: String) = """
         |.method public static main([Ljava/lang/String;)V
         |   .limit stack 2
-        |   
         |   getstatic java/lang/System/out Ljava/io/PrintStream
-        |   ldc ${inject["method-print"] ?: "10"}
+        |   ldc ${inject["block-print"] ?: "10"}
         |   invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
         |   return
         |.end method"""
@@ -165,31 +160,3 @@ data class MethodDef(
 }
 
 
-interface Instruction<T : Statement> : Jasmin {
-    val statement: T
-    fun T.toJasmin(ident: String): String
-
-    override fun toJasmin(ident: String): String = statement.toJasmin(ident)
-
-}
-
-data class Print(
-    override val statement: Sout
-) : Instruction<Sout> {
-    constructor(value: Int) : this(
-        Sout(
-            IntegerLiteral(value)
-        )
-    )
-
-    override fun Sout.toJasmin(ident: String): String =
-        """
-        |${ident}getstatic java/lang/System/out Ljava/io/PrintStream
-        |${ident}ldc $expression
-        |${ident}invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
-        """
-            .trimMargin("|")
-            .trim()
-}
-
-sealed interface Label : Jasmin

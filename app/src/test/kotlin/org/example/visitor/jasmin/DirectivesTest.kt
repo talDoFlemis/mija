@@ -5,7 +5,7 @@ import jasmin.MethodDef.Signature
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-abstract class DirectivesTest<T : Directive>(
+abstract class JasminTest<T : Jasmin>(
     val example: String, val instance: T
 ) {
     @Test
@@ -20,6 +20,10 @@ abstract class DirectivesTest<T : Directive>(
         assertThat(result).isEqualToIgnoringWhitespace(expected)
     }
 }
+
+abstract class DirectivesTest<T : Directive>(
+    example: String, instance: T
+) : JasminTest<T>(example, instance)
 
 data object FieldDefTest : DirectivesTest<FieldDef>(
     FieldDef.example(), FieldDef(
@@ -36,7 +40,7 @@ data object FieldDefTest : DirectivesTest<FieldDef>(
 data object MethodDefTest : DirectivesTest<MethodDef>(
     MethodDef.example(
         mapOf(
-            "method-print" to "IntegerLiteral(value=10)"
+            "block-print" to "10"
         )
     ), MethodDef(
         signature = Signature(
@@ -51,7 +55,6 @@ data object MethodDefTest : DirectivesTest<MethodDef>(
         stackLimit = 2,
         instructions = listOf(
             Print(10)
-
         )
     )
 )
@@ -59,7 +62,7 @@ data object MethodDefTest : DirectivesTest<MethodDef>(
 data object ClassDefTest : DirectivesTest<ClassDef>(
     ClassDef.example(
         mapOf(
-            "method-print" to "IntegerLiteral(value=10)",
+            "block-print" to "10",
             "field-value" to "3.14159"
         ), ""
     ), ClassDef(
@@ -73,3 +76,4 @@ data object ClassDefTest : DirectivesTest<ClassDef>(
         methods = arrayListOf(MethodDefTest.instance)
     )
 )
+
