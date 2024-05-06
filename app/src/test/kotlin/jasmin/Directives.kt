@@ -22,7 +22,7 @@ data class AccessSpec(val visibility: Visibility, val access: Access) {
 }
 
 interface Utils {
-    fun example(inject: String = ""): String
+    fun example(inject: Map<String, String> = mapOf(), exIndent: String = ""): String
 }
 
 fun interface Jasmin {
@@ -62,12 +62,12 @@ data class ClassDef(
             it.associateBy(Super::name)
         }
 
-        override fun example(inject: String) = """
+        override fun example(inject: Map<String, String>, exIndent: String) = """
             |.source MyClass.j
-            |.class  public MyClass
-            |${FieldDef.example()}    
-            |${MethodDef.example(inject)}
-            |.super  java/lang/Object
+            |.class public ${inject["class-name"] ?: "MyClass"}
+            |${FieldDef.example(inject, exIndent = "\t$exIndent")}    
+            |${MethodDef.example(inject, "\t$exIndent")}
+            |.super java/lang/Object
             """
             .trimMargin("|")
             .trim()
@@ -93,7 +93,7 @@ data class ClassDef(
         |${with(methodsScope) { methods.toJasmin("$ident\t") }}
         |${with(superScope) { superClass.toJasmin("$ident\t") }}
         """
-        .trimIndent()
+        .trimMargin("|")
         .trim()
 }
 
@@ -104,7 +104,9 @@ data class FieldDef(
     val value: String?
 ) : Directive, Utils by Companion {
     companion object : Utils {
-        override fun example(inject: String) = ".field public final PI F = $inject"
+
+        override fun example(inject: Map<String, String>, exIndent: String) =
+            "$exIndent.field public final PI F = ${inject["field-value"] ?: 3.14}"
     }
 
     override fun toJasmin(ident: String): String =
@@ -119,12 +121,12 @@ data class MethodDef(
 ) : Directive, Utils by Companion {
     companion object : Utils {
 
-        override fun example(inject: String) = """
+        override fun example(inject: Map<String, String>, exIndent: String) = """
         |.method public static main([Ljava/lang/String;)V
         |   .limit stack 2
         |   
         |   getstatic java/lang/System/out Ljava/io/PrintStream
-        |   ldc $inject
+        |   ldc ${inject["method-print"] ?: "10"}
         |   invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
         |   return
         |.end method"""
