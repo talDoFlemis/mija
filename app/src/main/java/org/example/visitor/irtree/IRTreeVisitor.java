@@ -464,23 +464,25 @@ public class IRTreeVisitor implements Visitor<Exp> {
 		currentClassTable = mainTable.getMap().get(m.getClassName().getS());
 		currentMethodTable = currentClassTable.getMethodsContext().get("main");
 
-		Stm stmBody = null;
+		Stm stmBody = new EXP(new CONST(0));
 		var stmList = new ArrayList<Stm>();
 		var escapeList = new ArrayList<Boolean>();
 		escapeList.add(false);
 		frame = frame.newFrame("main", escapeList);
 
-		//fixme: isso pode quebrar as coisas alguma hora
 		var size = m.getStatements().getStatements().size();
 		for (int i = 0; i < size; i++) {
-			var stm = m.getStatements().getStatements().get(i).accept(this);
-			stmBody = new EXP(stm.unEx());
-			stmList.add(stmBody);
+			stmBody = new SEQ(
+				stmBody,
+				new EXP(
+					m.getStatements().getStatements().get(i).accept(this).unEx()
+				)
+			);
 		}
+		stmList.add(stmBody);
 
-		//fixme: isso tmb
 		frame.procEntryExit1(stmList);
-		frag.setNext(new ProcFrag(stmList.getFirst(), frame));
+		frag.setNext(new ProcFrag(stmBody, frame));
 		frag = frag.getNext();
 
 		currentClassTable = null;

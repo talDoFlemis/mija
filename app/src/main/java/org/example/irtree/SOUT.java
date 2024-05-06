@@ -1,9 +1,6 @@
 package org.example.irtree;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.example.temp.DefaultMap;
 import org.example.temp.TempMap;
 
@@ -12,10 +9,12 @@ import org.example.temp.TempMap;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class SOUT {
 
 	java.io.PrintStream out;
-	TempMap tempMap;
+	@Builder.Default
+	TempMap tempMap = new DefaultMap();
 
 	public SOUT(java.io.PrintStream o) {
 		out = o;

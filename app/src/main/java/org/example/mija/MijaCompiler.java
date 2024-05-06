@@ -4,14 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.log4j.Log4j2;
 import org.example.ast.Program;
+import org.example.canon.Canon;
+import org.example.canon.TraceSchedule;
+import org.example.canon.BasicBlocks;
+import org.example.irtree.SOUT;
 import org.example.mips.MipsFrame;
 import org.example.parser.JavaCCParser;
 import org.example.visitor.irtree.IRTreeVisitor;
+import org.example.visitor.irtree.ProcFrag;
 import org.example.visitor.mermaid.MermaidASTPrinterVisitor;
 import org.example.visitor.types.TypeCheckingVisitor;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 @AllArgsConstructor
 @Builder
@@ -21,6 +27,8 @@ public class MijaCompiler {
 	private ParserStrategy parser = new JavaCCParser();
 	@Builder.Default
 	private SemanticAnalysisStrategy semanticAnalysis = new TypeCheckingVisitor();
+	@Builder.Default
+	private SOUT printo = new SOUT();
 
 	public boolean isLexicalAndSyntacticallyOk(InputStream stream) {
 		log.debug("Checking lexical and syntactic analysis");
@@ -71,6 +79,8 @@ public class MijaCompiler {
 	}
 
 	public void compile(InputStream inputStream, OutputStream outputStream) throws LexicalOrSemanticAnalysisException, SemanticAnalysisException {
+		printo.setOut((PrintStream) outputStream);
+
 		// Check lexical and syntactic analysis
 		Program program = getAbstractSyntaxTreeFromStream(inputStream);
 		isSemanticallyOkOrThrow(program);
@@ -80,7 +90,15 @@ public class MijaCompiler {
 		var irTree = new IRTreeVisitor(semanticAnalysis.getMainTable(), frame);
 		program.accept(irTree);
 
-		log.info(irTree.getListExp());
+		log.info(">> Intermediate Code <<");
+		irTree.getListExp().forEach(printo::prExp);
+		var nextFrag = (ProcFrag) irTree.getInitialFrag().getNext();
+		var canonIRTree = new TraceSchedule(new BasicBlocks(Canon.linearize(nextFrag.getBody())));
+
+		log.info(">> Intermediate Cannonical Code <<");
+		for (var i = canonIRTree.stms; i != null; i = i.tail) {
+			printo.prStm(i.head);
+		}
 
 	}
 
