@@ -3,7 +3,18 @@ package jasmin
 
 enum class Visibility(val kind: String) {
     PUBLIC("public"),
-    PRIVATE("private")
+    PRIVATE("private"),
+    PROTECTED("protected")
+}
+
+enum class Access(val kind: String) {
+    STATIC("static"),
+    FINAL("final"),
+    NONE("")
+}
+
+data class AccessSpec(val visibility: Visibility, val access: Access) {
+    val kind: String = "${visibility.kind} ${access.kind}"
 }
 
 interface Utils {
@@ -26,7 +37,7 @@ fun interface Scope<T : Directive> {
 
 data class ClassDef(
     val name: String,
-    val accessSpec: Visibility,
+    val accessSpec: AccessSpec,
     val methods: ArrayList<MethodDef>,
     val fields: ArrayList<FieldDef>,
     val superClass: ArrayList<ClassDef.Super> = arrayListOf()
@@ -63,7 +74,7 @@ data class ClassDef(
     }
 
     inner class Class(private val name: String) : Directive {
-        override fun toJasmin(ident: String): String = "$ident.class ${accessSpec.name} $name"
+        override fun toJasmin(ident: String): String = "$ident.class ${accessSpec.kind} $name"
     }
 
     inner class Super(val name: String) : Directive {
@@ -84,16 +95,16 @@ data class ClassDef(
 
 data class FieldDef(
     val name: String,
-    val accessSpec: Visibility,
+    val accessSpec: AccessSpec,
     val type: String,
-    val value: Int?
+    val value: String?
 ) : Directive, Utils by Companion {
     companion object : Utils {
         override val example = ".field public final PI F = 3.14"
     }
 
     override fun toJasmin(ident: String): String =
-        "$ident.field $name ${accessSpec.name} $type" + (if (value != null) " = $value" else "")
+        "$ident.field ${accessSpec.kind} $name $type" + (if (value != null) " = $value" else "")
 }
 
 data class MethodDef(
@@ -134,10 +145,10 @@ data class MethodDef(
     inner class Vars(limit: Int) : Limit("vars", limit)
 
     inner class Signature(
-        val name: String, val accessSpec: Visibility, val returnType: String, val args: List<String>
+        val name: String, val accessSpec: AccessSpec, val returnType: String, val args: List<String>
     ) : Directive {
         override fun toJasmin(ident: String): String =
-            "$ident.method $name ${accessSpec.name} $returnType(${args.joinToString("")})V"
+            "$ident.method $name ${accessSpec.kind} $returnType(${args.joinToString("")})V"
     }
 
     inner class End : Directive {
