@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.example.ast.*;
-import org.example.frame.Frame;
 import org.example.irtree.*;
 import org.example.mips.MipsFrame;
 import org.example.temp.Label;
@@ -465,14 +464,21 @@ public class IRTreeVisitor implements Visitor<Exp> {
 		currentClassTable = mainTable.getMap().get(m.getClassName().getS());
 		currentMethodTable = currentClassTable.getMethodsContext().get("main");
 
-		Stm stmBody = null;
+		Stm stmBody = new EXP(new CONST(0));
 		var stmList = new ArrayList<Stm>();
 		var escapeList = new ArrayList<Boolean>();
 		escapeList.add(false);
 		frame = frame.newFrame("main", escapeList);
 
-		var stmt = m.getStatements().getStatements().getFirst().accept(this);
-		stmBody = new EXP(stmt.unEx());
+		var size = m.getStatements().getStatements().size();
+		for (int i = 0; i < size; i++) {
+			stmBody = new SEQ(
+				stmBody,
+				new EXP(
+					m.getStatements().getStatements().get(i).accept(this).unEx()
+				)
+			);
+		}
 		stmList.add(stmBody);
 
 		frame.procEntryExit1(stmList);
