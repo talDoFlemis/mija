@@ -3,6 +3,8 @@ package org.example.mips;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.example.assem.Instr;
+import org.example.assem.InstrList;
 import org.example.frame.Access;
 import org.example.frame.Frame;
 import org.example.irtree.*;
@@ -131,6 +133,7 @@ public class MipsFrame extends Frame {
 
 	int maxArgOffset = 0;
 	private int offset = 0;
+	private MipsCodegen mipsCodegen;
 	private List<Access> actuals;
 
 	private MipsFrame(String n, List<Boolean> f) {
@@ -170,7 +173,7 @@ public class MipsFrame extends Frame {
 		}
 	}
 
-	private static <R> void addAll(java.util.Collection<R> c, R[] a) {
+	private static <R> void addAll(Collection<R> c, R[] a) {
 		c.addAll(Arrays.asList(a));
 	}
 
@@ -348,5 +351,18 @@ public class MipsFrame extends Frame {
 	public void procEntryExit1(List<Stm> body) {
 		assignFormals(formals.iterator(), actuals.iterator(), body);
 		assignCallees(0, body);
+	}
+
+	public InstrList codegen(StmList stms) {
+		InstrList instrList = null;
+		InstrList instr;
+		for (StmList stmsIter = stms; stmsIter != null; stmsIter = stmsIter.tail) {
+			instr = mipsCodegen.codegen(stmsIter.head);
+			while (instr != null) {
+				instrList = new InstrList(instr.head, instrList);
+				instr = instr.tail;
+			}
+		}
+		return instrList;
 	}
 }
