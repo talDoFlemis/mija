@@ -3,13 +3,16 @@ package org.example.mija;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.log4j.Log4j2;
+import org.example.assem.InstrList;
 import org.example.ast.Program;
 import org.example.canon.Canon;
 import org.example.canon.TraceSchedule;
 import org.example.canon.BasicBlocks;
 import org.example.irtree.SOUT;
+import org.example.mips.MaximalMunchCodegen;
 import org.example.mips.MipsFrame;
 import org.example.parser.JavaCCParser;
+import org.example.temp.DefaultMap;
 import org.example.visitor.irtree.IRTreeVisitor;
 import org.example.visitor.irtree.ProcFrag;
 import org.example.visitor.mermaid.MermaidASTPrinterVisitor;
@@ -96,19 +99,21 @@ public class MijaCompiler {
 		isSemanticallyOkOrThrow(program);
 
 		// Intermediate code generation
+		log.info("Processing intermediate code");
 		var frame = new MipsFrame();
 		IRTreeVisitor irTree = getIRTreeVisitor(semanticAnalysis.getMainTable(), program, frame);
 
-		log.info(">> Intermediate Code <<");
-		irTree.getListExp().forEach(printo::prExp);
-
+		log.info("Processing canon code");
 		var nextFrag = (ProcFrag) irTree.getInitialFrag().getNext();
-		var canonIRTree = new TraceSchedule(new BasicBlocks(Canon.linearize(nextFrag.getBody())));
+		var traceSchedule = new TraceSchedule(new BasicBlocks(Canon.linearize(nextFrag.getBody())));
 
-		log.info(">> Intermediate Cannonical Code <<");
-		for (var i = canonIRTree.stms; i != null; i = i.tail) {
-			printo.prStm(i.head);
-		}
+		log.info("Generating instruction List");
+		var codegen = new MaximalMunchCodegen(frame);
+		frame.setMipsCodegen(codegen);
+		InstrList instrList = frame.codegen(traceSchedule.stms);
+
+		for (var instr = instrList; instr != null; instr = instr.tail)
+			System.out.println(instrList.head.format(new DefaultMap()));
 
 	}
 
