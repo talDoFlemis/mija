@@ -3,11 +3,18 @@ package org.example.mija;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.log4j.Log4j2;
+import org.example.assem.InstrList;
 import org.example.ast.Program;
+import org.example.canon.Canon;
+import org.example.canon.TraceSchedule;
+import org.example.canon.BasicBlocks;
 import org.example.irtree.SOUT;
+import org.example.mips.MaximalMunchCodegen;
 import org.example.mips.MipsFrame;
 import org.example.parser.JavaCCParser;
+import org.example.temp.DefaultMap;
 import org.example.visitor.irtree.IRTreeVisitor;
+import org.example.visitor.irtree.ProcFrag;
 import org.example.visitor.mermaid.MermaidASTPrinterVisitor;
 import org.example.visitor.symbols.MainTable;
 import org.example.visitor.types.TypeCheckingVisitor;
@@ -24,6 +31,8 @@ public class MijaCompiler {
 	private ParserStrategy parser = new JavaCCParser();
 	@Builder.Default
 	private SemanticAnalysisStrategy semanticAnalysis = new TypeCheckingVisitor();
+	@Builder.Default
+	private SOUT printo = new SOUT();
 
 	public boolean isLexicalAndSyntacticallyOk(InputStream stream) {
 		log.debug("Checking lexical and syntactic analysis");
@@ -83,15 +92,28 @@ public class MijaCompiler {
 	}
 
 	public void compile(InputStream inputStream, OutputStream outputStream) throws LexicalOrSemanticAnalysisException, SemanticAnalysisException {
-		var printo = new SOUT((PrintStream) outputStream);
+		printo.setOut((PrintStream) outputStream);
+
 		// Check lexical and syntactic analysis
 		Program program = getAbstractSyntaxTreeFromStream(inputStream);
 		isSemanticallyOkOrThrow(program);
 
-		// Generating intermediate code
+		// Intermediate code generation
+		log.info("Processing intermediate code");
 		var frame = new MipsFrame();
 		IRTreeVisitor irTree = getIRTreeVisitor(semanticAnalysis.getMainTable(), program, frame);
-		irTree.getListExp().forEach(printo::prExp);
+
+		log.info("Processing canon code");
+		var nextFrag = (ProcFrag) irTree.getInitialFrag().getNext();
+		var traceSchedule = new TraceSchedule(new BasicBlocks(Canon.linearize(nextFrag.getBody())));
+
+		log.info("Generating instruction List");
+		var codegen = new MaximalMunchCodegen(frame);
+		frame.setMipsCodegen(codegen);
+		InstrList instrList = frame.codegen(traceSchedule.stms);
+
+		for (var instr = instrList; instr != null; instr = instr.tail)
+			System.out.println(instrList.head.format(new DefaultMap()));
 
 	}
 
